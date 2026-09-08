@@ -49,10 +49,11 @@ export function reminderPayload({ silent = true, preview = false, enabled = true
       : row(button('تذكيري', 'settings'), button(paused ? 'استئناف التذكير' : 'إيقاف ٢٤ ساعة', paused ? 'resume' : 'pause_today'))
   ], { silent, ephemeral: preview });
 }
-export function reminderIntroPayload({ enabled = false, subscribedHere = true } = {}) {
+export function reminderIntroPayload({ enabled = false, subscribedHere = true, frequency = 'daily', delivery = 'silent' } = {}) {
   return envelope([
     text('## تذكير المجلس، باختيارك 🌿\nشاهد شكل الرسالة أولًا، ثم قرّر إن كنت تريد وصولها في الخاص.'),
-    text('بعد مجلس صوتي مشترك مدته ٥ دقائق أو أكثر، ينتظر رفيق نحو ٤٥ ثانية بعد خروجك لاحتمال عودتك. يبدأ برسالة صامتة واحدة كل ٢٤ ساعة كحد أقصى.'),
+    text('بعد مجلس صوتي مشترك مدته ٥ دقائق أو أكثر، ينتظر رفيق نحو ٤٥ ثانية بعد خروجك لاحتمال عودتك.'),
+    text(`اختيارك الحالي: ${frequency === 'session' ? 'بفاصل ساعتين، وحتى ٣ مرات خلال ٢٤ ساعة' : 'مرة كل ٢٤ ساعة كحد أقصى'} · ${delivery === 'normal' ? 'بتنبيه عادي حسب إعدادات ديسكورد' : 'في الخاص بلا تنبيه دفع أو سطح مكتب'}.`),
     text('-# الذكر عند القيام من المجلس؛ مهلة الإرسال لتنظيم التنبيه. يمكنك إيقاف التذكير متى شئت.'),
     separator(), row(button('شاهد نموذج الرسالة', 'preview'), button(enabled && subscribedHere ? 'ضبط تذكيري' : 'فعّل تذكير المجلس', enabled && subscribedHere ? 'settings' : 'enable', 3)),
     row(button('الآن أتصفّح فقط', 'home'))
