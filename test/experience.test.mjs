@@ -55,3 +55,12 @@ test('home reflects the current one-shot timer without creating another', async 
   assert.equal(h.store.getUser('1').breakAt, before);
   assert.deepEqual(h.sent, []);
 });
+test('the reminder introduction explains saved delivery preferences before opt-in', async t => {
+  const h = experience(t);
+  await h.act('frequency',['session']); await h.act('delivery',['normal']);
+  const intro = JSON.stringify(await h.act('reminder_intro'));
+  assert.match(intro, /بفاصل ساعتين/);
+  assert.match(intro, /بتنبيه عادي/);
+  assert.equal(h.store.getUser('1').enabled, false);
+  assert.deepEqual(h.sent, []);
+});
