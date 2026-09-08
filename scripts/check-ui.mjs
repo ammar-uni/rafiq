@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
 import { welcomePayload, reminderPayload, enabledPayload, settingsPayload, ideaPayload, pausedPayload, disabledPayload, homePayload, libraryPayload, sourcePayload, methodologyPayload, privacyPayload, supportPayload, forgetPromptPayload, breakPayload, breakReminderPayload, FLAGS } from '../src/messages.mjs';
-import { DHIKR_CARDS, GOOD_DEEDS } from '../src/content.mjs';
+import { DHIKR_CARDS, GOOD_DEEDS, IDEA_CATEGORIES } from '../src/content.mjs';
+import { reminderIntroPayload, ideaSourcePayload } from '../src/messages.mjs';
 const samples = [welcomePayload(), reminderPayload(), reminderPayload({silent:false}), reminderPayload({preview:true}), reminderPayload({preview:true,enabled:false}), reminderPayload({preview:true,paused:true}), enabledPayload(), settingsPayload(), settingsPayload({frequency:'session',delivery:'silent',enabled:true,paused:true}), pausedPayload(), disabledPayload(), ...GOOD_DEEDS.map((_,i)=>ideaPayload(i)), homePayload(), homePayload({enabled:true}), homePayload({enabled:true,dmBlocked:true}), ...DHIKR_CARDS.flatMap(card=>[libraryPayload({selectedId:card.id}),sourcePayload(card.id)]), libraryPayload({onlyFavorites:true}), libraryPayload({onlyFavorites:true,favorites:['guidance'],selectedId:'guidance'}), methodologyPayload(), privacyPayload(), forgetPromptPayload(), breakPayload(), breakPayload({breakAt:1800000000000}), breakReminderPayload()];
 samples.push(privacyPayload({privacyURL:'https://rafiq.test/privacy',supportURL:'https://rafiq.test/support'}), supportPayload(), supportPayload({supportURL:'https://rafiq.test/support'}));
+samples.push(reminderIntroPayload(), reminderIntroPayload({enabled:true}), homePayload({breakAt:1800000000000,favoriteCount:5}), ...IDEA_CATEGORIES.flatMap(category => GOOD_DEEDS.filter(idea => category.id === 'all' || idea.category === category.id).flatMap(idea => [ideaPayload(GOOD_DEEDS.indexOf(idea), {category:category.id}), ideaSourcePayload(idea.id, {category:category.id})])), ...DHIKR_CARDS.map(card => sourcePayload(card.id, {onlyFavorites:true})), supportPayload({supportURL:'https://rafiq.test/support',reportCard:DHIKR_CARDS[0]}));
 for (const payload of samples) {
   assert.ok(payload.flags & FLAGS.componentsV2);
   assert.equal(payload.content, undefined);
@@ -25,7 +27,14 @@ for (const payload of samples) {
       const types=component.components.map(child=>child.type);
       assert.ok(types.every(type=>type===2) || (types.length===1 && types[0]===3));
     }
+    if (component.type === 9) {
+      assert.ok(component.components.length >= 1 && component.components.length <= 3);
+      assert.ok(component.components.every(child => child.type === 10));
+      assert.equal(component.accessory.type, 2);
+      visit(component.accessory, 9);
+    }
     if (component.type === 2) {
+      assert.ok([1,9].includes(parent));
       assert.ok(component.label.length <= 38);
       assert.ok([1,2,3,4,5].includes(component.style));
     }

@@ -1,4 +1,4 @@
-import { DHIKR_CARDS, GOOD_DEEDS, dhikrById } from './content.mjs';
+import { DHIKR_CARDS, GOOD_DEEDS, IDEA_CATEGORIES, dhikrById, ideaById } from './content.mjs';
 import { DAY, MINUTE } from './store.mjs';
 import * as ui from './messages.mjs';
 
@@ -8,7 +8,7 @@ export class RafiqApp {
   }
   state(userId, guildId = null) {
     const user = this.store.getUser(userId);
-    return { ...user, paused: user.pausedUntil > this.now(), subscribedHere: guildId ? this.store.isSubscribed(userId, guildId) : true };
+    return { ...user, favoriteCount: this.store.favorites(userId).length, paused: user.pausedUntil > this.now(), subscribedHere: guildId ? this.store.isSubscribed(userId, guildId) : true };
   }
   handle(input) { return this.queue.run(input.userId, () => this.route(input)); }
 
@@ -18,6 +18,7 @@ export class RafiqApp {
     const library = (selectedId, onlyFavorites = false) => ui.libraryPayload({ selectedId, onlyFavorites, favorites: this.store.favorites(userId) });
     if (action === 'home' || action === 'cancel') return ui.homePayload(user);
     if (action === 'preview') return ui.reminderPayload({ ...user, preview: true });
+    if (action === 'reminder_intro') return ui.reminderIntroPayload(user);
     if (action === 'settings' || action === 'save') return settings('');
     if (action === 'library') return library(DHIKR_CARDS[0].id);
     if (action === 'favorites') return library(null, true);
@@ -61,12 +62,26 @@ export class RafiqApp {
       if (values.length !== 1 || !dhikrById(values[0])) return ui.noticePayload('الذكر غير موجود', 'تصفّح المكتبة من مساحتك.');
       return library(values[0], action === 'favorite_select');
     }
-    if (action.startsWith('source_') && dhikrById(action.slice(7))) return ui.sourcePayload(action.slice(7));
-    if (action.startsWith('card_') && dhikrById(action.slice(5))) return library(action.slice(5));
-    if (action.startsWith('favorite_') && dhikrById(action.slice(9))) {
-      const cardId = action.slice(9);
-      this.store.toggleFavorite(userId, cardId);
-      return library(cardId);
+    const cardAction = /^(source|card|favorite)_([a-z-]+)(_saved)?$/.exec(action);
+    if (cardAction && dhikrById(cardAction[2])) {
+      const [, kind, cardId, saved] = cardAction;
+      if (kind === 'source') return ui.sourcePayload(cardId, { onlyFavorites: Boolean(saved) });
+      if (kind === 'favorite') this.store.toggleFavorite(userId, cardId);
+      return library(cardId, Boolean(saved));
+    }
+    if (action.startsWith('report_')) {
+      const reportCard = dhikrById(action.slice(7)) || ideaById(action.slice(7));
+      if (reportCard) return ui.supportPayload({ supportURL: this.supportURL, reportCard });
+    }
+    if (action === 'idea_category') {
+      if (values.length === 1 && IDEA_CATEGORIES.some(item => item.id === values[0])) return ui.ideaPayload(0, { category: values[0] });
+      return ui.noticePayload('اختيار غير صالح', 'اختر نوع الفكرة من القائمة.');
+    }
+    const ideaSource = /^idea_source_([a-z-]+)_(all|family|friends|play)$/.exec(action);
+    if (ideaSource && ideaById(ideaSource[1])) return ui.ideaSourcePayload(ideaSource[1], { category: ideaSource[2] });
+    const ideaAction = /^idea_(all|family|friends|play)_(\d+)$/.exec(action);
+    if (ideaAction && Number(ideaAction[2]) < GOOD_DEEDS.length) {
+      return ui.ideaPayload(Number(ideaAction[2]), { category: ideaAction[1] });
     }
     if (action === 'idea' || /^idea_\d+$/.test(action)) {
       const index = action === 'idea' ? 0 : Number(action.slice(5));

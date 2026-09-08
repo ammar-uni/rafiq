@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Client, MessagePayload, MessageFlags, PermissionFlagsBits } from 'discord.js';
 import { acknowledgePrivate, toDiscord, canManageGuild, setupPanel } from '../src/discord-adapter.mjs';
-import { welcomePayload, libraryPayload } from '../src/messages.mjs';
+import { welcomePayload, libraryPayload, homePayload, BRAND } from '../src/messages.mjs';
 import { readConfig } from '../src/config.mjs';
 import { COMMANDS, INSTALL_PERMISSIONS, inviteURL } from '../src/commands.mjs';
 
@@ -16,9 +16,13 @@ test('discord.js serializes the native components and suppresses mentions', asyn
   const welcome = MessagePayload.create(target, toDiscord(welcomePayload())).resolveBody();
   await welcome.resolveFiles();
   assert.equal(welcome.files.length, 1);
-  assert.equal(welcome.files[0].name, 'rafiq-banner.webp');
+  assert.equal(welcome.files[0].name, BRAND.banner);
   assert.equal(welcome.body.attachments.length, 1);
   assert.equal(welcome.body.attachments[0].id, '0');
+  const home = MessagePayload.create(target, toDiscord(homePayload())).resolveBody().body;
+  const sections = home.components[0].components.filter(component => component.type === 9);
+  assert.equal(sections.length, 3);
+  assert.equal(sections[0].accessory.custom_id, 'rafiq:v1:library');
   await client.destroy();
 });
 

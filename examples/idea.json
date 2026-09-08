@@ -7,15 +7,53 @@
   "components": [
     {
       "type": 17,
-      "accent_color": 6663305,
+      "accent_color": 13283706,
       "components": [
         {
           "type": 10,
-          "content": "-# 🌱 فكرة لعمل خير · 1 من 6\n## اطمئن على والديك\nاسأل عن حالهما، أو اعرض مساعدة يحتاجانها اليوم."
+          "content": "-# 🌱 فكرة لعمل خير · ١ من ٦\n## اطمئن على والديك\nاسأل عن حالهما، أو اعرض مساعدة يحتاجانها اليوم."
         },
         {
           "type": 10,
-          "content": "-# أصل الفكرة: برّ الوالدين وحسن صحبتهما.\n-# [المصدر](https://binbaz.org.sa/audios/592/13-من-حديث-وانك-لن-تنفق-نفقة-تبتغي-بها-وجه-الله-الا-اجرت-بها) · طريقة التطبيق اقتراح من رفيق"
+          "content": "-# صياغة تطبيقية من رفيق؛ الحديث ومصدره في «الدليل والتوضيح»."
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 3,
+              "custom_id": "rafiq:v1:idea_category",
+              "placeholder": "فكرة تناسب موقفك",
+              "min_values": 1,
+              "max_values": 1,
+              "options": [
+                {
+                  "label": "كل الأفكار",
+                  "description": "تصفّح أفكار الخير الست",
+                  "value": "all",
+                  "default": true
+                },
+                {
+                  "label": "مع أهلي",
+                  "description": "برّ الوالدين وصلة الرحم",
+                  "value": "family",
+                  "default": false
+                },
+                {
+                  "label": "مع أصحابي",
+                  "description": "نفع وكلمة طيبة",
+                  "value": "friends",
+                  "default": false
+                },
+                {
+                  "label": "أثناء اللعب",
+                  "description": "هدوء وحسن تعامل",
+                  "value": "play",
+                  "default": false
+                }
+              ]
+            }
+          ]
         },
         {
           "type": 14,
@@ -27,9 +65,26 @@
           "components": [
             {
               "type": 2,
-              "label": "فكرة أخرى",
+              "label": "الفكرة السابقة",
               "style": 2,
-              "custom_id": "rafiq:v1:idea_1"
+              "custom_id": "rafiq:v1:idea_all_5"
+            },
+            {
+              "type": 2,
+              "label": "فكرة أخرى",
+              "style": 3,
+              "custom_id": "rafiq:v1:idea_all_1"
+            }
+          ]
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "الدليل والتوضيح",
+              "style": 2,
+              "custom_id": "rafiq:v1:idea_source_parents_all"
             },
             {
               "type": 2,

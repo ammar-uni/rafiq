@@ -1,0 +1,53 @@
+{
+  "flags": 32832,
+  "allowed_mentions": {
+    "parse": [],
+    "replied_user": false
+  },
+  "components": [
+    {
+      "type": 17,
+      "accent_color": 13283706,
+      "components": [
+        {
+          "type": 10,
+          "content": "## دليل الفكرة\nاطمئن على والديك\nأصل الفكرة: برّ الوالدين وحسن صحبتهما."
+        },
+        {
+          "type": 10,
+          "content": "[صحيح البخاري (٥٩٧١)](https://sunnah.com/bukhari:5971) · الصحابي: أبو هريرة رضي الله عنه.\n[صحيح مسلم (٢٥٤٨)](https://sunnah.com/muslim:2548a) · الصحابي: أبو هريرة رضي الله عنه."
+        },
+        {
+          "type": 10,
+          "content": "أصل الفكرة حديث السؤال عمّن أحق بحسن الصحبة. السؤال عن الحال وعرض المساعدة مثالان من رفيق، وليسا نص الحديث."
+        },
+        {
+          "type": 10,
+          "content": "-# طابَقنا المادة مع المصادر بتاريخ 2026-09-08."
+        },
+        {
+          "type": 14,
+          "divider": true,
+          "spacing": 1
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "العودة للفكرة",
+              "style": 2,
+              "custom_id": "rafiq:v1:idea_all_0"
+            },
+            {
+              "type": 2,
+              "label": "ملاحظة على المحتوى",
+              "style": 2,
+              "custom_id": "rafiq:v1:report_parents"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -11,11 +11,7 @@
       "components": [
         {
           "type": 10,
-          "content": "## مساحتك مع رفيق 🌿\nشيء يسير من الخير، في وقت يناسبك."
-        },
-        {
-          "type": 10,
-          "content": "-# تذكير المجلس غير مفعّل"
+          "content": "## مساحتك مع رفيق 🌿\nخيرٌ يرافقك. اختر ما يناسب لحظتك."
         },
         {
           "type": 14,
@@ -23,48 +19,75 @@
           "spacing": 1
         },
         {
-          "type": 1,
+          "type": 9,
           "components": [
             {
-              "type": 2,
-              "label": "أذكار موثّقة",
-              "style": 3,
-              "custom_id": "rafiq:v1:library"
-            },
+              "type": 10,
+              "content": "### 🌿 أذكار موثّقة\nذكر ودعاء، مع المصدر متى أردت."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "أذكار موثّقة",
+            "style": 3,
+            "custom_id": "rafiq:v1:library"
+          }
+        },
+        {
+          "type": 9,
+          "components": [
             {
-              "type": 2,
-              "label": "فكرة خير",
-              "style": 2,
-              "custom_id": "rafiq:v1:idea"
-            },
+              "type": 10,
+              "content": "### 🌱 فكرة خير\nمع أهلك، مع أصحابك، أو أثناء اللعب."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "فكرة خير",
+            "style": 2,
+            "custom_id": "rafiq:v1:idea"
+          }
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "### ⏳ وقت لاستراحة\nحدّد وقتًا لرسالة واحدة تذكّرك باستراحتك."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "وقت لاستراحة",
+            "style": 2,
+            "custom_id": "rafiq:v1:break"
+          }
+        },
+        {
+          "type": 14,
+          "divider": true,
+          "spacing": 1
+        },
+        {
+          "type": 10,
+          "content": "-# تذكير المجلس غير مفعّل"
+        },
+        {
+          "type": 1,
+          "components": [
             {
               "type": 2,
               "label": "محفوظاتي",
               "style": 2,
               "custom_id": "rafiq:v1:favorites"
-            }
-          ]
-        },
-        {
-          "type": 1,
-          "components": [
-            {
-              "type": 2,
-              "label": "وقت لاستراحة",
-              "style": 2,
-              "custom_id": "rafiq:v1:break"
             },
             {
               "type": 2,
               "label": "فعّل تذكير المجلس",
               "style": 2,
-              "custom_id": "rafiq:v1:enable"
+              "custom_id": "rafiq:v1:reminder_intro"
             }
           ]
-        },
-        {
-          "type": 10,
-          "content": "-# تفعيل تذكير المجلس يسمح لرفيق بإرسال ذكر في الخاص بعد خروجك من الصوت. يمكنك إيقافه متى شئت."
         },
         {
           "type": 14,
