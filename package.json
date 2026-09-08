@@ -1,0 +1,26 @@
+{
+  "name": "rafiq",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "description": "A gentle, opt-in Discord reminder bot with sourced Arabic content",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "setup:local": "node scripts/setup-local.mjs",
+    "start": "node --env-file-if-exists=.env src/index.mjs",
+    "register": "node --env-file-if-exists=.env scripts/register-commands.mjs",
+    "invite": "node --env-file-if-exists=.env scripts/invite.mjs",
+    "doctor": "node --env-file-if-exists=.env scripts/doctor.mjs",
+    "check": "node scripts/check-content.mjs && node scripts/check-ui.mjs && node --test",
+    "test": "node --test",
+    "demo": "node scripts/demo.mjs",
+    "export:messages": "node scripts/export-messages.mjs",
+    "preview:build": "node scripts/build-preview.mjs",
+    "preview": "npm run preview:build && node scripts/serve-preview.mjs"
+  },
+  "dependencies": {
+    "discord.js": "14.27.0"
+  }
+}
