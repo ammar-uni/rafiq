@@ -33,7 +33,7 @@ export function welcomePayload() {
       text(`## ${COPY.welcomeTitle}\n${COPY.welcomeBody}`),
       text(`-# ${COPY.welcomeDetail}`),
       separator(),
-      row(button('افتح رفيق', 'home', 3), button('أذكار موثّقة', 'library'), button('فكرة خير', 'idea'))
+      row(button('رفيقك للخير', 'home', 3), button('أذكار موثّقة', 'library'), button('فكرة خير', 'idea'))
     ], { silent: true }),
     attachments: [{ id: '0', filename: BRAND.banner, description: 'غلاف رفيق' }]
   };

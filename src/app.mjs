@@ -34,7 +34,7 @@ export class RafiqApp {
     if (action === 'enable') {
       if (guildId) this.store.subscribe(userId, guildId);
       else if (this.store.subscriptions(userId).length) this.store.updateUser(userId, { enabled: true, pausedUntil: 0 });
-      else return ui.noticePayload('فعّله من سيرفرك', 'افتح رفيق داخل السيرفر الذي تريده، ثم فعّل تذكير المجلس هناك.');
+      else return ui.noticePayload('فعّله من سيرفرك', 'اختر «رفيقك للخير» من بطاقة السيرفر الذي تريده، ثم فعّل تذكير المجلس هناك.');
       if (this.store.getUser(userId).dmBlocked) return settings('حُفظ اشتراكك، لكن الإرسال معلّق حتى ينجح اختبار الخاص.');
       return ui.enabledPayload(this.store.getUser(userId));
     }
