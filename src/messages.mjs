@@ -129,7 +129,7 @@ export function sourcePayload(id) {
   if (!card) throw new RangeError('Unknown dhikr');
   return envelope([
     text(`## مصدر ${card.title}\n${card.source.reference}\n${card.source.note}`),
-    text(`[اقرأ المصدر في موقع الشيخ ابن باز](${card.source.url})\n-# طابَقنا المادة مع المصدر بتاريخ ${card.source.checkedOn}. تفاصيل التوثيق محفوظة مع المحتوى.`),
+    text(`[شرح الشيخ ابن باز](${card.source.url})\n-# طابَقنا المادة مع المصادر بتاريخ ${card.source.checkedOn}.`),
     separator(), row(button('العودة للذكر', `card_${id}`), button('منهج المحتوى', 'methodology'))
   ], { ephemeral: true });
 }
@@ -137,7 +137,7 @@ export function sourcePayload(id) {
 export function methodologyPayload() {
   return envelope([
     text('## ذكرٌ تعرف مصدره\nنعتمد القرآن والسنة الثابتة، مع العناية بفهم السلف، ونرجع إلى شروح أهل العلم الموثوقين، ومنها شروح الشيخ ابن باز.'),
-    text('لكل ذكر مصدر وتخريج أو حكم منقول. اقتراحات رفيق العملية مميّزة عن النصوص الشرعية. لا نخصّص ذكرًا بعدد أو وقت تعبدي بلا دليل، ولا يولّد البوت فتاوى.'),
+    text('نذكر مخرّج الحديث على البطاقة، وتفاصيل الرواية والحكم في «المصدر والتوضيح»، بالرجوع إلى كتب أئمة الحديث. اقتراحات رفيق العملية مميّزة عن النصوص الشرعية. لا نخصّص ذكرًا بعدد أو وقت تعبدي بلا دليل، ولا يولّد البوت فتاوى.'),
     text('-# المحفوظات للوصول السريع. لا نقاط للحسنات، ولا ترتيب للأعضاء بحسب العبادة.'),
     separator(), row(button('تصفّح الأذكار', 'library', 3), button('مساحتي', 'home'))
   ], { ephemeral: true });
