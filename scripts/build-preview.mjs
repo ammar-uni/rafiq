@@ -5,7 +5,7 @@ const source=await readFile(new URL('../design/preview.fragment.html',import.met
 const content=(await readFile(new URL('../src/content.mjs',import.meta.url),'utf8')).replace(/^export /gm,'');
 const messages=(await readFile(new URL('../src/messages.mjs',import.meta.url),'utf8')).replace(/^import .*;\r?\n/gm,'').replace(/^export /gm,'');
 const library=content+'\n'+messages;
-const banner=(await readFile(new URL('../assets/rafiq-banner.webp',import.meta.url))).toString('base64');
+const banner=(await readFile(new URL('../assets/rafiq-banner-v2.webp',import.meta.url))).toString('base64');
 const avatar=(await readFile(new URL('../assets/rafiq-avatar.webp',import.meta.url))).toString('base64');
 const result=source.replace('__MESSAGE_LIBRARY__',()=>library).replaceAll('__BANNER_WEBP__',`data:image/webp;base64,${banner}`).replaceAll('__AVATAR_WEBP__',`data:image/webp;base64,${avatar}`);
 if(Buffer.byteLength(result)>1000000)throw new Error('Inline preview is too large');
