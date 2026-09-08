@@ -1,0 +1,69 @@
+{
+  "flags": 36864,
+  "allowed_mentions": {
+    "parse": [],
+    "replied_user": false
+  },
+  "components": [
+    {
+      "type": 17,
+      "accent_color": 6663305,
+      "components": [
+        {
+          "type": 12,
+          "items": [
+            {
+              "media": {
+                "url": "attachment://rafiq-banner.webp"
+              },
+              "description": "رفيق — نختمها بذكر الله. رمز محادثة عاجي يحتضن نبتة خضراء."
+            }
+          ]
+        },
+        {
+          "type": 10,
+          "content": "## خيرٌ خفيف، في وقته.\nذكرٌ موثّق، وفكرة خير، واستراحة في وقت تختاره. افتح مساحتك واختر ما ينفعك."
+        },
+        {
+          "type": 10,
+          "content": "-# يظهر لك وحدك · التذكير بعد المجلس باختيارك · بلا منشن جماعي"
+        },
+        {
+          "type": 14,
+          "divider": true,
+          "spacing": 1
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "افتح رفيق",
+              "style": 3,
+              "custom_id": "rafiq:v1:home"
+            },
+            {
+              "type": 2,
+              "label": "أذكار موثّقة",
+              "style": 2,
+              "custom_id": "rafiq:v1:library"
+            },
+            {
+              "type": 2,
+              "label": "فكرة خير",
+              "style": 2,
+              "custom_id": "rafiq:v1:idea"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "attachments": [
+    {
+      "id": "0",
+      "filename": "rafiq-banner.webp",
+      "description": "غلاف رفيق"
+    }
+  ]
+}

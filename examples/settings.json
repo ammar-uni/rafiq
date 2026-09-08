@@ -1,0 +1,114 @@
+{
+  "flags": 32832,
+  "allowed_mentions": {
+    "parse": [],
+    "replied_user": false
+  },
+  "components": [
+    {
+      "type": 17,
+      "accent_color": 6663305,
+      "components": [
+        {
+          "type": 10,
+          "content": "## تذكيرك على راحتك\n-# التذكير غير مفعّل · اختياراتك تُحفظ فورًا"
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 3,
+              "custom_id": "rafiq:v1:frequency",
+              "placeholder": "كم مرة؟",
+              "min_values": 1,
+              "max_values": 1,
+              "options": [
+                {
+                  "value": "daily",
+                  "label": "مرة كل ٢٤ ساعة كحد أقصى",
+                  "description": "بداية خفيفة لتقليل تكرار الرسائل",
+                  "default": true
+                },
+                {
+                  "value": "session",
+                  "label": "بعد المجالس",
+                  "description": "فاصل ساعتين؛ حتى ٣ مرات خلال ٢٤ ساعة",
+                  "default": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 3,
+              "custom_id": "rafiq:v1:delivery",
+              "placeholder": "كيف تصلك الرسالة؟",
+              "min_values": 1,
+              "max_values": 1,
+              "options": [
+                {
+                  "value": "normal",
+                  "label": "تنبيه عادي",
+                  "description": "حسب إعدادات الإشعارات في ديسكورد",
+                  "default": false
+                },
+                {
+                  "value": "silent",
+                  "label": "في الخاص، بلا تنبيه",
+                  "description": "دون إشعار دفع أو تنبيه سطح المكتب",
+                  "default": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": 14,
+          "divider": true,
+          "spacing": 1
+        },
+        {
+          "type": 10,
+          "content": "-# التكرار وطريقة التنبيه والإيقاف مشتركة بين السيرفرات التي فعّلت فيها رفيق."
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "فعّل تذكيري",
+              "style": 2,
+              "custom_id": "rafiq:v1:enable"
+            },
+            {
+              "type": 2,
+              "label": "اختبر الخاص",
+              "style": 2,
+              "custom_id": "rafiq:v1:test_dm"
+            }
+          ]
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "إيقاف كل التنبيهات",
+              "style": 2,
+              "custom_id": "rafiq:v1:disable"
+            },
+            {
+              "type": 2,
+              "label": "مساحتي",
+              "style": 2,
+              "custom_id": "rafiq:v1:home"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "flags": 32832,
+  "allowed_mentions": {
+    "parse": [],
+    "replied_user": false
+  },
+  "components": [
+    {
+      "type": 17,
+      "accent_color": 6663305,
+      "components": [
+        {
+          "type": 10,
+          "content": "## تذكيرك جاهز 🌿\nأذكّرك في الخاص بعد خروجك من الصوت، إذا استمرت جلستك ٥ دقائق على الأقل وحضر معك شخص آخر."
+        },
+        {
+          "type": 10,
+          "content": "-# مرة كل ٢٤ ساعة كحد أقصى · ننتظر نحو ٤٥ ثانية لاحتمال عودتك"
+        },
+        {
+          "type": 14,
+          "divider": true,
+          "spacing": 1
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "اختبر الخاص",
+              "style": 2,
+              "custom_id": "rafiq:v1:test_dm"
+            },
+            {
+              "type": 2,
+              "label": "ضبط التذكير",
+              "style": 2,
+              "custom_id": "rafiq:v1:settings"
+            },
+            {
+              "type": 2,
+              "label": "مساحتي",
+              "style": 2,
+              "custom_id": "rafiq:v1:home"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

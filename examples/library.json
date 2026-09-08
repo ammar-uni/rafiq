@@ -1,0 +1,100 @@
+{
+  "flags": 32832,
+  "allowed_mentions": {
+    "parse": [],
+    "replied_user": false
+  },
+  "components": [
+    {
+      "type": 17,
+      "accent_color": 6663305,
+      "components": [
+        {
+          "type": 10,
+          "content": "-# أذكار موثّقة · عند ختام المجلس\n## كفارة المجلس\nسبحانك اللهم وبحمدك،\nأشهد أن لا إله إلا أنت،\nأستغفرك وأتوب إليك."
+        },
+        {
+          "type": 10,
+          "content": "-# صحّح ابن باز حديث كفارة المجلس"
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 3,
+              "custom_id": "rafiq:v1:dhikr_select",
+              "placeholder": "اختر ذكرًا",
+              "min_values": 1,
+              "max_values": 1,
+              "options": [
+                {
+                  "label": "كفارة المجلس",
+                  "value": "majlis",
+                  "description": "عند ختام المجلس",
+                  "default": true
+                },
+                {
+                  "label": "كلمتان خفيفتان",
+                  "value": "two-words",
+                  "description": "ذكر مطلق",
+                  "default": false
+                },
+                {
+                  "label": "أربع كلمات",
+                  "value": "four-words",
+                  "description": "ذكر مطلق",
+                  "default": false
+                },
+                {
+                  "label": "لا حول ولا قوة إلا بالله",
+                  "value": "hawqala",
+                  "description": "ذكر مطلق",
+                  "default": false
+                },
+                {
+                  "label": "دعاء جامع",
+                  "value": "guidance",
+                  "description": "دعاء مأثور",
+                  "default": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": 14,
+          "divider": true,
+          "spacing": 1
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "المصدر والتوضيح",
+              "style": 2,
+              "custom_id": "rafiq:v1:source_majlis"
+            },
+            {
+              "type": 2,
+              "label": "حفظ الذكر",
+              "style": 2,
+              "custom_id": "rafiq:v1:favorite_majlis"
+            }
+          ]
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "مساحتي",
+              "style": 2,
+              "custom_id": "rafiq:v1:home"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
