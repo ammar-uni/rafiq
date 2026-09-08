@@ -1,0 +1,16 @@
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { resolve, dirname } from 'node:path';
+import { Script } from 'node:vm';
+const source=await readFile(new URL('../design/preview.fragment.html',import.meta.url),'utf8');
+const content=(await readFile(new URL('../src/content.mjs',import.meta.url),'utf8')).replace(/^export /gm,'');
+const messages=(await readFile(new URL('../src/messages.mjs',import.meta.url),'utf8')).replace(/^import .*;\r?\n/gm,'').replace(/^export /gm,'');
+const library=content+'\n'+messages;
+const banner=(await readFile(new URL('../assets/rafiq-banner.webp',import.meta.url))).toString('base64');
+const avatar=(await readFile(new URL('../assets/rafiq-avatar.webp',import.meta.url))).toString('base64');
+const result=source.replace('__MESSAGE_LIBRARY__',()=>library).replaceAll('__BANNER_WEBP__',`data:image/webp;base64,${banner}`).replaceAll('__AVATAR_WEBP__',`data:image/webp;base64,${avatar}`);
+if(Buffer.byteLength(result)>1000000)throw new Error('Inline preview is too large');
+if(/__[A-Z_]+__/.test(result))throw new Error('Unresolved preview placeholder');
+new Script(result.match(/<script>([\s\S]*?)<\/script>/)[1]);
+const destination=resolve(process.argv[2]||'output/rafiq-identity.html');
+await mkdir(dirname(destination),{recursive:true});await writeFile(destination,result);
+console.log(`Preview compiled and readied: ${destination} (${Math.round(Buffer.byteLength(result)/1024)} KB)`);
