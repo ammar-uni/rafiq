@@ -1,0 +1,12 @@
+**
+!Dockerfile
+!.dockerignore
+!package.json
+!package-lock.json
+!src/
+!src/**
+!scripts/
+!scripts/run.mjs
+!scripts/healthcheck.mjs
+!assets/
+!assets/rafiq-banner-v2.webp

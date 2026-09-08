@@ -6,16 +6,17 @@ import { RafiqApp } from './app.mjs';
 import { ReminderEngine } from './reminders.mjs';
 import { noticePayload } from './messages.mjs';
 import { assertReviewedContent } from './content-review.mjs';
+import { runtimeLog, safeErrorCode } from './runtime-log.mjs';
 import { acknowledgePrivate, makeSendDM, setupPanel, statusPayload, toDiscord } from './discord-adapter.mjs';
 
 function safeError(context, error) {
-  const code = String(error?.code || error?.name || 'unknown').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 60);
-  console.error(`[${context}] ${code}`);
+  runtimeLog(context, { code: safeErrorCode(error) });
 }
 
 async function main() {
   let config;
-  try { assertReviewedContent(); config = readConfig(process.env, { requireRuntime: true }); } catch (error) { console.error(error.message); process.exitCode = 1; return; }
+  try { assertReviewedContent(); } catch (error) { safeError('content-review-failed', error); process.exitCode = 65; if (process.connected) process.disconnect(); return; }
+  try { config = readConfig(process.env, { requireRuntime: true }); } catch (error) { safeError('configuration-failed', error); process.exitCode = 78; if (process.connected) process.disconnect(); return; }
   const store = new Store(config.databasePath, { encryptionKey: config.encryptionKey });
   const queue = new SerialQueue();
   const client = new Client({
@@ -54,8 +55,8 @@ async function main() {
   }
   client.once(Events.ClientReady, () => {
     if (client.application.id !== config.applicationId) {
-      console.error('DISCORD_TOKEN does not belong to DISCORD_APPLICATION_ID.');
-      process.exitCode = 1;
+      runtimeLog('application-mismatch');
+      process.exitCode = 78;
       void stop();
       return;
     }
@@ -64,11 +65,12 @@ async function main() {
     try {
       store.reconcileGuilds([...client.guilds.cache.keys()]);
       store.prune(Date.now());
-    } catch (error) { safeError('storage', error); process.exitCode = 1; void stop(); return; }
+    } catch (error) { safeError('storage', error); process.exitCode = 73; void stop(); return; }
     identityVerified = true;
     connected = true;
     seedAll();
-    console.log('Rafiq is ready. Use /rafiq or /rafiq-setup.');
+    runtimeLog('ready');
+    reportHealth();
   });
   client.on(Events.VoiceStateUpdate, (before, after) => {
     if (!identityVerified || !connected || stopping || before.channelId === after.channelId || after.member?.user.bot) return;
@@ -77,14 +79,14 @@ async function main() {
       else engine.leave({ userId: after.id, guildId: after.guild.id });
     } catch (error) { safeError('voice-event', error); }
   });
-  client.on(Events.ShardDisconnect, () => { connected = false; engine.clearVoice(); });
-  client.on(Events.ShardReconnecting, () => { connected = false; engine.clearVoice(); });
-  client.on(Events.ShardResume, () => { connected = true; seedAll(); });
+  client.on(Events.ShardDisconnect, () => { connected = false; engine.clearVoice(); runtimeLog('gateway-disconnected'); reportHealth(); });
+  client.on(Events.ShardReconnecting, () => { connected = false; engine.clearVoice(); runtimeLog('gateway-reconnecting'); reportHealth(); });
+  client.on(Events.ShardResume, () => { connected = true; seedAll(); runtimeLog('gateway-resumed'); reportHealth(); });
   client.on(Events.ShardReady, () => { if (client.isReady()) { connected = true; seedAll(); } });
   client.on(Events.GuildDelete, guild => { engine.removeGuild(guild.id); store.removeGuild(guild.id); });
   client.on(Events.GuildUnavailable, guild => engine.removeGuild(guild.id));
   client.on(Events.Error, error => safeError('discord', error));
-  client.on(Events.Warn, () => console.warn('[discord] A gateway warning occurred.'));
+  client.on(Events.Warn, () => runtimeLog('gateway-warning'));
   client.on(Events.InteractionCreate, async interaction => {
     if (stopping || !identityVerified) return;
     const isCommand = interaction.isChatInputCommand() && ['rafiq', 'rafiq-setup', 'rafiq-status'].includes(interaction.commandName);
@@ -112,20 +114,33 @@ async function main() {
   });
   let tickPromise = Promise.resolve();
   const timer = setInterval(() => { if (!engine.running) tickPromise = engine.tick().catch(error => safeError('scheduler', error)); }, 5000);
+  function reportHealth() {
+    if (process.connected) process.send({ type: 'rafiq:health', ready: identityVerified && connected && !stopping && client.isReady() }, () => {});
+  }
+  const heartbeat = setInterval(reportHealth, 5000);
+  heartbeat.unref();
   async function stop() {
     if (stopping) return;
     stopping = true;
+    reportHealth();
     clearInterval(timer);
+    clearInterval(heartbeat);
     engine.clearVoice();
     await tickPromise;
     await queue.drain();
     await client.destroy();
     store.close();
+    runtimeLog('stopped');
+    if (process.connected) process.disconnect();
   }
   process.once('SIGINT', () => { void stop(); });
   process.once('SIGTERM', () => { void stop(); });
+  process.on('message', message => { if (message?.type === 'rafiq:stop') void stop(); });
+  process.once('disconnect', () => { void stop(); });
   try { await client.login(config.token); }
-  catch (error) { safeError('login', error); process.exitCode = 1; await stop(); }
+  catch (error) { safeError('login', error); process.exitCode = ['TokenInvalid', 'TOKEN_INVALID', 4004, 4013, 4014].includes(error.code) ? 78 : 1; await stop(); }
 }
 
-main().catch(error => { safeError('startup', error); process.exitCode = 1; });
+process.once('uncaughtException', error => { safeError('fatal-uncaught', error); process.exit(1); });
+process.once('unhandledRejection', error => { safeError('fatal-rejection', error); process.exit(1); });
+main().catch(error => { safeError('startup', error); process.exitCode = error.code === 'RAF_STORAGE' ? 73 : 1; if (process.connected) process.disconnect(); });

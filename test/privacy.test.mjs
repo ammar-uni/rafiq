@@ -23,7 +23,7 @@ function storage(t) {
   return { filename, folder, options, open };
 }
 
-test('all user and server data is encrypted on disk, with no plaintext SQLite or journal files', t => {
+test('all user and server data is encrypted on disk; the coordination file is empty', t => {
   const h = storage(t); const store = h.open();
   const userId = '123456789012345678';
   store.subscribe(userId, '234567890123456789');
@@ -34,7 +34,8 @@ test('all user and server data is encrypted on disk, with no plaintext SQLite or
   for (const value of [userId, '234567890123456789', '345678901234567890', '456789012345678901', 'hawqala', 'SQLite format', h.options.encryptionKey]) {
     assert.equal(bytes.includes(Buffer.from(value)), false);
   }
-  assert.deepEqual(readdirSync(h.folder), ['data.enc']);
+  assert.deepEqual(readdirSync(h.folder), ['data.enc', 'data.enc.guard']);
+  assert.equal(readFileSync(h.filename + '.guard').length, 0);
   assert.deepEqual({ ...h.open().getPanel('234567890123456789') }, { channel_id: '345678901234567890', message_id: '456789012345678901' });
 });
 

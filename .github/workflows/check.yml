@@ -17,3 +17,10 @@ jobs:
       - run: npm run export:messages
       - run: npm run preview:build
       - run: git diff --exit-code -- examples/
+      - name: Build the runtime image without credentials
+        run: docker build -t rafiq:check .
+      - name: Verify encrypted state across containers without network access
+        run: |
+          docker volume create rafiq-check-data
+          docker run --rm --network none --read-only --tmpfs /tmp:size=16m -v rafiq-check-data:/data -v "$PWD/test/image-smoke.mjs:/app/image-smoke.mjs:ro" rafiq:check node image-smoke.mjs seed
+          docker run --rm --network none --read-only --tmpfs /tmp:size=16m -v rafiq-check-data:/data -v "$PWD/test/image-smoke.mjs:/app/image-smoke.mjs:ro" rafiq:check node image-smoke.mjs read
