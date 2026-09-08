@@ -5,6 +5,7 @@ import { SerialQueue } from './serial.mjs';
 import { RafiqApp } from './app.mjs';
 import { ReminderEngine } from './reminders.mjs';
 import { noticePayload } from './messages.mjs';
+import { assertReviewedContent } from './content-review.mjs';
 import { acknowledgePrivate, makeSendDM, setupPanel, statusPayload, toDiscord } from './discord-adapter.mjs';
 
 function safeError(context, error) {
@@ -14,7 +15,7 @@ function safeError(context, error) {
 
 async function main() {
   let config;
-  try { config = readConfig(process.env, { requireRuntime: true }); } catch (error) { console.error(error.message); process.exitCode = 1; return; }
+  try { assertReviewedContent(); config = readConfig(process.env, { requireRuntime: true }); } catch (error) { console.error(error.message); process.exitCode = 1; return; }
   const store = new Store(config.databasePath, { encryptionKey: config.encryptionKey });
   const queue = new SerialQueue();
   const client = new Client({

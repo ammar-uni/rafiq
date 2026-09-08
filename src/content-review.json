@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "method": "Arabic wording and attribution compared with linked primary texts; see docs/content-audit.md. Not independent scholarly certification.",
+  "entries": [
+    {
+      "id": "majlis",
+      "checkedOn": "2026-09-08",
+      "sha256": "fa18a4ea45c9a92f9f09385695cf1a604e5bd3d94a5db9701e45b95d4dc175b2"
+    },
+    {
+      "id": "two-words",
+      "checkedOn": "2026-09-08",
+      "sha256": "9f19ac996b8a8d9ce740243571b2fa13ccf23f5924d4621178304892e0ba2a87"
+    },
+    {
+      "id": "four-words",
+      "checkedOn": "2026-09-08",
+      "sha256": "ae4a03b7033077c607e3ed1c09efaeb4250b70211473ffdab7f3e6f09704974b"
+    },
+    {
+      "id": "hawqala",
+      "checkedOn": "2026-09-08",
+      "sha256": "3485f7cbcc7cf29677c9c373c2a8fc4a687f57c213419f67dbbafd249b4e23f9"
+    },
+    {
+      "id": "guidance",
+      "checkedOn": "2026-09-08",
+      "sha256": "3393d07e26c6afa2db132afe7b1516f257a22fea3d5fae72382c32ebc0d93565"
+    },
+    {
+      "id": "parents",
+      "checkedOn": "2026-09-08",
+      "sha256": "b74c36a43d46be4ebb81b66021e29b130cd17a900d3e39baaf7f0fd394ec091f"
+    },
+    {
+      "id": "help",
+      "checkedOn": "2026-09-08",
+      "sha256": "fea0ac6b016993b6921744186b6328581900403616e8818f0d147bd50f38ba64"
+    },
+    {
+      "id": "kind-word",
+      "checkedOn": "2026-09-08",
+      "sha256": "2f0d48700844759a91b210c00188c47ae5fdc2bb28a6ca75bfc1590ae91e7cff"
+    },
+    {
+      "id": "calm",
+      "checkedOn": "2026-09-08",
+      "sha256": "6a44c362347f57c2a5ed34b68a01969d025c8dcc72055c0cb2b13211ca35d0d5"
+    },
+    {
+      "id": "kinship",
+      "checkedOn": "2026-09-08",
+      "sha256": "50b3857612b4f9990200222f1871760b7be3134ca40e6b66d4bda6adcc2e0d01"
+    },
+    {
+      "id": "no-insult",
+      "checkedOn": "2026-09-08",
+      "sha256": "ecc2dcbb3ca38c5c422e99e590ab5950db580818e7332ca40d4dba744ab94725"
+    }
+  ]
+}
