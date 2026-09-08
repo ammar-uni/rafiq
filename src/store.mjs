@@ -74,7 +74,7 @@ export class Store {
           } catch (error) { this.db.exec('ROLLBACK'); throw error; }
         } else this.persist();
       }
-    } catch (error) { this.db.close(); this.snapshot?.close(); throw error; }
+    } catch (error) { this.db.close(); this.snapshot?.close(); error.code = 'RAF_STORAGE'; throw error; }
   }
 
   persist() {

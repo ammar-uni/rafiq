@@ -1,6 +1,7 @@
 import { createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
 import { closeSync, existsSync, fsyncSync, mkdirSync, openSync, readFileSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
+import { StorageLease } from './storage-lease.mjs';
 
 const MAGIC = Buffer.from('RAFIQ01\n');
 const MAX_BYTES = 16 * 1024 * 1024;
@@ -18,12 +19,9 @@ export class EncryptedSnapshot {
   constructor(filename, key) {
     this.key = dataKey(key);
     this.filename = resolve(filename);
-    this.lockfile = this.filename + '.lock';
     mkdirSync(dirname(this.filename), { recursive: true, mode: 0o700 });
-    try { this.lock = openSync(this.lockfile, 'wx', 0o600); }
-    catch { this.key.fill(0); throw storageError('Cannot lock the data file. Run only one bot process. See docs/setup.md for recovery after a crash.'); }
-    try { writeFileSync(this.lock, String(process.pid)); }
-    catch (error) { this.close(); throw error; }
+    try { this.lease = new StorageLease(this.filename); }
+    catch (error) { this.key.fill(0); throw error; }
   }
 
   read() {
@@ -71,9 +69,7 @@ export class EncryptedSnapshot {
   }
 
   close() {
-    if (this.lock === undefined) return;
-    closeSync(this.lock); this.lock = undefined;
+    this.lease?.close(); this.lease = null;
     this.key.fill(0);
-    try { unlinkSync(this.lockfile); } catch (error) { if (error.code !== 'ENOENT') throw error; }
   }
 }
