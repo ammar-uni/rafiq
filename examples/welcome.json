@@ -38,7 +38,7 @@
           "components": [
             {
               "type": 2,
-              "label": "افتح رفيق",
+              "label": "رفيقك للخير",
               "style": 3,
               "custom_id": "rafiq:v1:home"
             },
