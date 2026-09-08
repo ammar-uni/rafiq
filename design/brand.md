@@ -1,5 +1,15 @@
 # هوية رفيق
 
+## تحديث الإصدار 0.4.0
+
+الغلاف الحالي هو `assets/rafiq-banner-v2.webp`، وأصله `assets/rafiq-banner-v2-source.png`. أُنتج بأداة ImageGen المدمجة مع الغلاف السابق مرجعًا، ثم صُغّر وضُغط إلى 1536 × 512 (نحو 58 كيلوبايت). النص «رفيق — خيرٌ يرافقك» عبارة للهوية، وليس حديثًا أو آية. بقيت الأصول السابقة محفوظة. تمت مراجعة اتصال الحروف ووضوح النص في الحجم المستخدم بديسكورد.
+
+في الواجهة: ثلاثة أقسام أصلية من ديسكورد للأذكار والخير والاستراحة، ألوان خضراء للذكر وذهبية للأفكار وزرقاء للمؤقّت. يظهر الغلاف في الترحيب فقط. بقيت النصوص الدينية كنص قابل للقراءة، مع العزو المختصر والتفاصيل في صفحة مستقلة. لا تأثيرات متحركة أو رسائل عامة إضافية لجذب الانتباه.
+
+نص التوليد المستخدم:
+
+> Create a refined new version of this existing Rafiq Arabic Discord welcome banner. The supplied image is the EDIT TARGET and brand reference. Preserve the distinctive ivory ceramic speech bubble enclosing two emerald leaves, the calm deep midnight teal and restrained champagne gold, and exceptionally high quality 3D materials. Keep a panoramic 3:1 banner composition, 1536x512 or equivalent. Evolve the composition with a graceful softly illuminated path/arc flowing from the emblem at left toward ample typography space on the right; subtle depth and one elegant leaf accent. Warm and welcoming to young adult gamers, sophisticated collectible-quality art, calm, no exaggerated effects. The bot now helps with authentic dhikr, kindness and thoughtful breaks, not only ending gatherings. On the right display the Arabic name exactly "رفيق" in large clean expertly connected ivory Arabic type. Replace the old subtitle completely with exactly "خيرٌ يرافقك" in smaller champagne Arabic. These are original brand words, not religious scripture. No other text, no Quran or hadith, no faces/people, mascots, religious architecture, trophies, worship scores, badges, game controllers, watermarks, or UI controls. Full bleed, no border, no outer rounded frame; important content within 8% safe margins. Preserve legibility at 540x180. Deliver the single finished banner.
+
 رمز محادثة عاجي يحتضن نبتة زمردية: المجلس والكلمة الطيبة والنمو. خلفية ليلية داكنة مع ذهب شامباني محدود، ولمسة ثلاثية الأبعاد قريبة من رسوم الألعاب الهادئة. تظهر الهوية الكاملة في الترحيب، وتظل رسالة الذكر اليومية قصيرة.
 
 ## طريقة الإنتاج
