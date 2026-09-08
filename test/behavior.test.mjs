@@ -219,7 +219,7 @@ test('preferences, subscriptions, timers, favorites and rate limits survive reop
     assert.equal(store.db.prepare('SELECT count(*) AS n FROM reminder_attempts').get().n, 0);
   } finally {
     store?.close();
-    for (const suffix of ['', '-wal', '-shm']) rmSync(filename + suffix, { force: true });
+    for (const suffix of ['', '.guard', '-wal', '-shm']) rmSync(filename + suffix, { force: true });
     rmdirSync(folder);
   }
 });
