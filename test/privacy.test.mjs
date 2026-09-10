@@ -92,6 +92,29 @@ test('deletion and retention cleanup persist across restart', t => {
   }
 });
 
+test('v1 snapshots preserve old dhikr plus new idea bookmarks and delete both on request', t => {
+  const h = storage(t); let store = h.open();
+  store.subscribe('1', '10'); store.subscribe('1', '20'); store.toggleFavorite('1', 'guidance');
+  store.close(); store = h.open();
+  store.toggleIdeaFavorite('1', 'parents'); store.unsubscribe('1', '10');
+  store.close(); store = h.open();
+  assert.deepEqual(store.favorites('1'), ['guidance']);
+  assert.deepEqual(store.savedIdeas('1'), ['parents']);
+  assert.deepEqual(store.subscriptions('1'), ['20']);
+  assert.equal(readFileSync(h.filename).includes(Buffer.from('idea:parents')), false);
+  const original = readFileSync(h.filename);
+  const write = store.snapshot.write;
+  store.snapshot.write = () => { throw new Error('disk unavailable'); };
+  assert.throws(() => store.toggleIdeaFavorite('1', 'parents'), /disk unavailable/);
+  assert.throws(() => store.unsubscribe('1', '20'), /disk unavailable/);
+  assert.deepEqual(store.savedIdeas('1'), ['parents']);
+  assert.deepEqual(store.subscriptions('1'), ['20']);
+  assert.deepEqual(readFileSync(h.filename), original);
+  store.snapshot.write = write;
+  store.forget('1'); store.close(); store = h.open();
+  assert.deepEqual(store.bookmarks('1'), []);
+});
+
 test('live runtime requires a key and real policy/support links while invite generation does not', () => {
   const env = { DISCORD_APPLICATION_ID: '123456789012345678', DISCORD_TOKEN: 'private-test-token' };
   assert.doesNotThrow(() => readConfig(env));

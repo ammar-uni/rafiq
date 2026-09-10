@@ -21,7 +21,7 @@ test('discord.js serializes the native components and suppresses mentions', asyn
   assert.equal(welcome.body.attachments[0].id, '0');
   const home = MessagePayload.create(target, toDiscord(homePayload())).resolveBody().body;
   const sections = home.components[0].components.filter(component => component.type === 9);
-  assert.equal(sections.length, 3);
+  assert.equal(sections.length, 4);
   assert.equal(sections[0].accessory.custom_id, 'rafiq:v1:library');
   await client.destroy();
 });
