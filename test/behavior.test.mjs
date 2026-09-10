@@ -18,7 +18,7 @@ function harness(t, send) {
   const sent = [];
   const sendDM = send || (async (userId, payload, nonce) => sent.push({ userId, payload, nonce }));
   const engine = new ReminderEngine({ store, queue, sendDM, now: () => clock, canSend: () => online });
-  const app = new RafiqApp({ store, queue, sendDM, now: () => clock, cancelUser: userId => engine.cancelUser(userId) });
+  const app = new RafiqApp({ store, queue, sendDM, now: () => clock, cancelUser: userId => engine.cancelUser(userId), cancelGuild: (userId, guildId) => engine.discard(userId, guildId) });
   const act = (action, values = [], userId = '1', guildId = '10') => app.handle({ userId, guildId, action, values });
   const enter = (options = {}) => engine.join({ userId: '1', guildId: '10', channelId: '100', hasCompany: true, ...options });
   const leave = (options = {}) => engine.leave({ userId: '1', guildId: '10', ...options });
@@ -43,6 +43,45 @@ test('unsubscribed, solo and short sessions never notify', async t => {
   h.enter({ hasCompany: false }); h.advance(10 * MINUTE); h.leave(); h.advance(LEAVE_GRACE); await h.engine.tick();
   h.enter(); h.advance(MINUTE); h.leave(); h.advance(LEAVE_GRACE); await h.engine.tick();
   assert.equal(h.sent.length, 0);
+});
+
+test('unsubscribing one server cancels its pending farewell but preserves other servers and a timer', async t => {
+  const h = harness(t);
+  await h.act('enable'); await h.act('enable', [], '1', '20');
+  await h.act('break_30'); const deadline = h.store.getUser('1').breakAt;
+  h.enter(); h.advance(5 * MINUTE); h.leave();
+  assert.equal(h.engine.pending.size, 1);
+  await h.act('unsubscribe_here');
+  assert.equal(h.engine.pending.size, 0);
+  assert.deepEqual(h.store.subscriptions('1'), ['20']);
+  assert.equal(h.store.getUser('1').enabled, true);
+  assert.equal(h.store.getUser('1').breakAt, deadline);
+  // Re-enabling before the old deadline must not resurrect that farewell.
+  await h.act('enable'); h.advance(LEAVE_GRACE); await h.engine.tick();
+  assert.equal(h.sent.length, 0);
+  await h.act('unsubscribe_here'); await h.act('unsubscribe_here', [], '1', '20');
+  assert.equal(h.store.getUser('1').enabled, false);
+  h.advance(30 * MINUTE - (5 * MINUTE + LEAVE_GRACE)); await h.engine.tick();
+  assert.equal(h.sent.length, 1);
+  assert.match(JSON.stringify(h.sent[0].payload), /حان وقت الاستراحة/);
+});
+
+test('server opt-out from a DM does not change subscriptions; only a guild view offers it', async t => {
+  const h = harness(t); await h.act('enable');
+  assert.match(JSON.stringify(await h.act('settings')), /unsubscribe_here/);
+  assert.doesNotMatch(JSON.stringify(await h.act('settings', [], '1', null)), /unsubscribe_here/);
+  await h.act('unsubscribe_here', [], '1', null);
+  assert.deepEqual(h.store.subscriptions('1'), ['10']);
+});
+
+test('extending a timer cancels its old delivery deadline and emits exactly once at the new one', async t => {
+  const h = harness(t); await h.act('break_15');
+  h.advance(10 * MINUTE); await h.act('break_extend_15');
+  h.advance(5 * MINUTE); await h.engine.tick(); assert.equal(h.sent.length, 0);
+  h.advance(15 * MINUTE); await h.engine.tick(); await h.engine.tick();
+  assert.equal(h.sent.length, 1);
+  assert.equal(h.store.getUser('1').breakAt, null);
+  assert.match(JSON.stringify(h.sent[0].payload), /ذكّرني بعد ١٥ دقيقة/);
 });
 
 test('an existing subscriber can opt in from a second server without disabling the first', async t => {

@@ -4,26 +4,32 @@ import { MessageFlags, PermissionFlagsBits } from 'discord.js';
 import { BRAND, FLAGS, noticePayload, welcomePayload } from './messages.mjs';
 import { INSTALL_PERMISSIONS } from './commands.mjs';
 
-export function toDiscord(payload, { forEdit = false } = {}) {
+export function toDiscord(payload, { forEdit = false, sounds = [] } = {}) {
   const result = {
     flags: forEdit ? payload.flags & ~FLAGS.ephemeral & ~FLAGS.silent : payload.flags,
     components: structuredClone(payload.components),
     allowedMentions: { parse: [], repliedUser: false }
   };
   if (payload.attachments?.length) {
-    if (payload.attachments.length !== 1 || payload.attachments[0].filename !== BRAND.banner) throw new Error('Unknown attachment');
-    result.files = [{ attachment: fileURLToPath(new URL(`../assets/${BRAND.banner}`, import.meta.url)), name: BRAND.banner, description: 'غلاف رفيق' }];
+    if (payload.attachments.length !== 1) throw new Error('Unknown attachment');
+    const attachment = payload.attachments[0];
+    if (attachment.filename === BRAND.banner && !attachment.soundId) result.files = [{ attachment: fileURLToPath(new URL(`../assets/${BRAND.banner}`, import.meta.url)), name: BRAND.banner, description: 'غلاف رفيق' }];
+    else {
+      const sound = sounds.find(item => item.id === attachment.soundId && item.filename === attachment.filename);
+      if (!sound) throw new Error('Unknown attachment');
+      result.files = [{ attachment: sound.path, name: sound.filename, description: sound.label }];
+    }
     result.attachments = [];
   }
   return result;
 }
 
-export function makeSendDM(client) {
+export function makeSendDM(client, { sounds = [] } = {}) {
   return async (userId, payload, key) => {
     const user = await client.users.fetch(userId);
     // No message content or authentication values are logged.
     const nonce = createHash('sha256').update(key).digest('hex').slice(0, 24);
-    return user.send({ ...toDiscord(payload), nonce, enforceNonce: true });
+    return user.send({ ...toDiscord(payload, { sounds }), nonce, enforceNonce: true });
   };
 }
 

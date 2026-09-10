@@ -1,0 +1,10 @@
+[Unit]
+Description=Check GitHub for a tested Rafiq update
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/rafiq-update
+TimeoutStartSec=15min
+UMask=0022

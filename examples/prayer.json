@@ -1,0 +1,96 @@
+{
+  "flags": 32832,
+  "allowed_mentions": {
+    "parse": [],
+    "replied_user": false
+  },
+  "components": [
+    {
+      "type": 17,
+      "accent_color": 9088708,
+      "components": [
+        {
+          "type": 10,
+          "content": "## 🕰️ مواقيت صلاتك"
+        },
+        {
+          "type": 10,
+          "content": "**مكة المكرمة، السعودية**\n-# Asia/Riyadh · 2026-09-09"
+        },
+        {
+          "type": 10,
+          "content": "**الفجر**　04:49\n**الظهر**　12:18\n**العصر**　15:43\n**المغرب**　18:30\n**العشاء**　20:00"
+        },
+        {
+          "type": 10,
+          "content": "الصلاة القادمة: **الفجر** <t:1788918540:R>."
+        },
+        {
+          "type": 10,
+          "content": "-# أم القرى — مكة · التذكير غير مفعّل"
+        },
+        {
+          "type": 10,
+          "content": "المواقيت محسوبة لمركز المدينة؛ طابقها مع جدول مسجدك قبل التفعيل. التذكير لخمس صلوات يوميًا في الخاص، مستقل عن تذكير المجلس. حدّث المدينة عند السفر."
+        },
+        {
+          "type": 14,
+          "divider": true,
+          "spacing": 1
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "تغيير المدينة",
+              "style": 2,
+              "custom_id": "rafiq:v1:prayer_location"
+            },
+            {
+              "type": 2,
+              "label": "ضبط الحساب",
+              "style": 2,
+              "custom_id": "rafiq:v1:prayer_calculation"
+            }
+          ]
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "راجعت الجدول؛ فعّل التذكير",
+              "style": 3,
+              "custom_id": "rafiq:v1:prayer_enable",
+              "disabled": false
+            },
+            {
+              "type": 2,
+              "label": "الإشعار والصوت",
+              "style": 2,
+              "custom_id": "rafiq:v1:prayer_audio"
+            }
+          ]
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "إعداداتي العامة",
+              "style": 2,
+              "custom_id": "rafiq:v1:settings"
+            },
+            {
+              "type": 2,
+              "label": "مساحتي",
+              "style": 2,
+              "custom_id": "rafiq:v1:home"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

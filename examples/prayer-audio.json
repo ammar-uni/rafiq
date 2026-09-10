@@ -1,0 +1,68 @@
+{
+  "flags": 32832,
+  "allowed_mentions": {
+    "parse": [],
+    "replied_user": false
+  },
+  "components": [
+    {
+      "type": 17,
+      "accent_color": 9088708,
+      "components": [
+        {
+          "type": 10,
+          "content": "## الإشعار والصوت\nاختر كيف تصلك تذكيرات الصلاة. إعدادات ديسكورد وجهازك تتحكم في سماع الإشعار أثناء اللعب أو المكالمة."
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 3,
+              "custom_id": "rafiq:v1:prayer_delivery",
+              "placeholder": "طريقة إشعار الصلاة",
+              "min_values": 1,
+              "max_values": 1,
+              "options": [
+                {
+                  "value": "silent",
+                  "label": "رسالة صامتة",
+                  "default": true
+                },
+                {
+                  "value": "normal",
+                  "label": "إشعار ديسكورد المعتاد",
+                  "default": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": 10,
+          "content": "**الصوت المخصص**\nيمكن إضافة ملفات صوتية هنا لاحقًا. اختيار ملف يرفقه بالتذكير لتشغيله بيدك؛ لا يبدأ تلقائيًا ولا يُسمع لبقية القناة. تشغيل صوت خاص تلقائيًا أثناء اللعب يحتاج تطبيقًا مرافقًا على جهازك؛ هذه الإمكانية لم تُضف بعد."
+        },
+        {
+          "type": 10,
+          "content": "-# لم تُضف ملفات صوتية بعد. الإشعار المعتاد متاح الآن، ولا يتجاوز الكتم أو وضع عدم الإزعاج."
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "اختبر إشعار الصلاة",
+              "style": 2,
+              "custom_id": "rafiq:v1:prayer_test"
+            },
+            {
+              "type": 2,
+              "label": "مواقيت صلاتي",
+              "style": 3,
+              "custom_id": "rafiq:v1:prayer"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

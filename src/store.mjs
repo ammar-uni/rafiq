@@ -1,6 +1,7 @@
 import { DatabaseSync } from 'node:sqlite';
-import { dhikrById } from './content.mjs';
+import { dhikrById, ideaById } from './content.mjs';
 import { EncryptedSnapshot } from './encrypted-snapshot.mjs';
+import { DEFAULT_PRAYER, PRAYERS, validatePrayer, readStoredPrayer } from './prayer-config.mjs';
 
 export const MINUTE = 60_000;
 export const DAY = 24 * 60 * MINUTE;
@@ -10,7 +11,8 @@ const id = value => { if (typeof value !== 'string' || !/^\d{1,25}$/.test(value)
 const tables = {
   users: ['user_id', ...Object.values(columns)],
   subscriptions: ['user_id', 'guild_id'], favorites: ['user_id', 'card_id'],
-  reminder_attempts: ['user_id', 'attempted_at'], guild_panels: ['guild_id', 'channel_id', 'message_id']
+  reminder_attempts: ['user_id', 'attempted_at'], guild_panels: ['guild_id', 'channel_id', 'message_id'],
+  prayer_settings: ['user_id', 'settings'], prayer_attempts: ['user_id', 'local_day', 'prayer', 'attempted_at']
 };
 
 export class Store {
@@ -52,21 +54,32 @@ export class Store {
         channel_id TEXT NOT NULL,
         message_id TEXT NOT NULL
       );
-      PRAGMA user_version = 1;
+      CREATE TABLE prayer_settings (
+        user_id TEXT PRIMARY KEY REFERENCES users(user_id) ON DELETE CASCADE,
+        settings TEXT NOT NULL
+      );
+      CREATE TABLE prayer_attempts (
+        user_id TEXT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+        local_day TEXT NOT NULL, prayer TEXT NOT NULL, attempted_at INTEGER NOT NULL,
+        PRIMARY KEY(user_id, local_day, prayer)
+      );
+      PRAGMA user_version = 2;
     `);
     try {
       if (filename !== ':memory:') {
         this.snapshot = new EncryptedSnapshot(filename, encryptionKey);
         const saved = this.snapshot.read();
         if (saved) {
-          if (saved.version !== 1 || !saved.tables || Object.keys(saved.tables).length !== Object.keys(tables).length) throw new Error('Unsupported snapshot structure');
+          const sourceTables = Object.entries(tables).filter(([name]) => saved.version !== 1 || !name.startsWith('prayer_'));
+          if (![1, 2].includes(saved.version) || !saved.tables || Object.keys(saved.tables).length !== sourceTables.length) throw new Error('Unsupported snapshot structure');
           this.db.exec('BEGIN IMMEDIATE');
           try {
-            for (const [table, names] of Object.entries(tables)) {
+            for (const [table, names] of sourceTables) {
               if (!Array.isArray(saved.tables[table])) throw new Error('Invalid snapshot table');
               const insert = this.db.prepare('INSERT INTO ' + table + ' (' + names.join(', ') + ') VALUES (' + names.map(() => '?').join(', ') + ')');
               for (const values of saved.tables[table]) {
                 if (!Array.isArray(values) || values.length !== names.length) throw new Error('Invalid snapshot row');
+                if (table === 'prayer_settings') values[1] = JSON.stringify(readStoredPrayer(JSON.parse(values[1])));
                 insert.run(...values);
               }
             }
@@ -83,7 +96,7 @@ export class Store {
     for (const [table, names] of Object.entries(tables)) {
       saved[table] = this.db.prepare('SELECT ' + names.join(', ') + ' FROM ' + table).all().map(row => names.map(name => row[name]));
     }
-    this.snapshot.write({ version: 1, tables: saved });
+    this.snapshot.write({ version: 2, tables: saved });
   }
 
   transaction(fn) {
@@ -144,18 +157,41 @@ export class Store {
     return Boolean(this.db.prepare('SELECT 1 FROM subscriptions WHERE user_id = ? AND guild_id = ?').get(id(userId), id(guildId)));
   }
 
+  unsubscribe(userId, guildId) {
+    return this.transaction(() => {
+      this.db.prepare('DELETE FROM subscriptions WHERE user_id = ? AND guild_id = ?').run(id(userId), id(guildId));
+      if (!this.subscriptions(userId).length && this.getUser(userId).enabled) this.updateUser(userId, { enabled: false });
+    });
+  }
+
   subscriptions(userId) { return this.db.prepare('SELECT guild_id FROM subscriptions WHERE user_id = ?').all(id(userId)).map(row => row.guild_id); }
 
-  favorites(userId) { return this.db.prepare('SELECT card_id FROM favorites WHERE user_id = ? ORDER BY card_id').all(id(userId)).map(row => row.card_id); }
+  bookmarks(userId) { return this.db.prepare('SELECT card_id FROM favorites WHERE user_id = ? ORDER BY card_id').all(id(userId)).map(row => row.card_id); }
+
+  favorites(userId) { return this.bookmarks(userId).filter(cardId => dhikrById(cardId)); }
+
+  // Namespaced bookmarks reuse the v1 encrypted snapshot without a migration.
+  savedIdeas(userId) { return this.bookmarks(userId).filter(key => key.startsWith('idea:') && ideaById(key.slice(5))).map(key => key.slice(5)); }
 
   toggleFavorite(userId, cardId) {
     if (!dhikrById(cardId)) throw new RangeError('Unknown dhikr');
+    this.toggleBookmark(userId, cardId);
+    return this.favorites(userId);
+  }
+
+  toggleIdeaFavorite(userId, ideaId) {
+    if (!ideaById(ideaId)) throw new RangeError('Unknown idea');
+    this.toggleBookmark(userId, `idea:${ideaId}`);
+    return this.savedIdeas(userId);
+  }
+
+  toggleBookmark(userId, cardId) {
+    if (!dhikrById(cardId) && !(cardId.startsWith('idea:') && ideaById(cardId.slice(5)))) throw new RangeError('Unknown bookmark');
     this.transaction(() => {
       this.ensureUser(userId);
       const deleted = this.db.prepare('DELETE FROM favorites WHERE user_id = ? AND card_id = ?').run(userId, cardId);
       if (!deleted.changes) this.db.prepare('INSERT INTO favorites(user_id, card_id) VALUES (?, ?)').run(userId, cardId);
     });
-    return this.favorites(userId);
   }
 
   claimReminder(userId, guildId, now) {
@@ -185,8 +221,45 @@ export class Store {
     });
   }
 
+  getPrayer(userId) {
+    const row = this.db.prepare('SELECT settings FROM prayer_settings WHERE user_id = ?').get(id(userId));
+    return row ? validatePrayer(JSON.parse(row.settings)) : structuredClone(DEFAULT_PRAYER);
+  }
+
+  setPrayer(userId, preferences) {
+    validatePrayer(preferences);
+    return this.transaction(() => {
+      this.ensureUser(userId);
+      this.db.prepare('INSERT INTO prayer_settings VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET settings = excluded.settings').run(id(userId), JSON.stringify(preferences));
+      return this.getPrayer(userId);
+    });
+  }
+
+  disablePrayer(userId) {
+    const p = this.getPrayer(userId);
+    if (p.enabled) this.setPrayer(userId, { ...p, enabled: false });
+  }
+
+  prayerUsers() { return this.db.prepare('SELECT user_id FROM prayer_settings').all().map(row => row.user_id); }
+
+  claimPrayer(userId, expected, event, now) {
+    if (!PRAYERS.some(([key]) => key === event.key) || !/^\d{4}-\d{2}-\d{2}$/.test(event.day) || !Number.isSafeInteger(event.at)) throw new RangeError('Invalid prayer event');
+    return this.transaction(() => {
+      const p = this.getPrayer(userId), user = this.getUser(userId);
+      if (JSON.stringify(p) !== JSON.stringify(expected) || !p.enabled || user.dmBlocked || user.pausedUntil > event.at ||
+          p.activatedAt > event.at || event.at > now || now - event.at > 2 * MINUTE) return null;
+      // The day/prayer key survives edits and restarts; a travel cooldown also prevents rapid repeat sends.
+      if (this.db.prepare('SELECT 1 FROM prayer_attempts WHERE user_id = ? AND prayer = ? AND attempted_at > ?').get(id(userId), event.key, now - 12 * 60 * MINUTE)) return null;
+      const result = this.db.prepare('INSERT OR IGNORE INTO prayer_attempts VALUES (?, ?, ?, ?)').run(id(userId), event.day, event.key, now);
+      return result.changes ? p : null;
+    });
+  }
+
   forget(userId) { this.transaction(() => this.db.prepare('DELETE FROM users WHERE user_id = ?').run(id(userId))); }
-  prune(now) { this.transaction(() => this.db.prepare('DELETE FROM reminder_attempts WHERE attempted_at <= ?').run(now - 2 * DAY)); }
+  prune(now) { this.transaction(() => {
+    this.db.prepare('DELETE FROM reminder_attempts WHERE attempted_at <= ?').run(now - 2 * DAY);
+    this.db.prepare('DELETE FROM prayer_attempts WHERE attempted_at <= ?').run(now - 7 * DAY);
+  }); }
 
   getPanel(guildId) { return this.db.prepare('SELECT channel_id, message_id FROM guild_panels WHERE guild_id = ?').get(id(guildId)); }
 

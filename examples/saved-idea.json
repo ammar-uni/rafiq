@@ -1,0 +1,106 @@
+{
+  "flags": 32832,
+  "allowed_mentions": {
+    "parse": [],
+    "replied_user": false
+  },
+  "components": [
+    {
+      "type": 17,
+      "accent_color": 13283706,
+      "components": [
+        {
+          "type": 10,
+          "content": "-# 🌱 أفكاري المحفوظة · ١ من ١\n## اطمئن على والديك\nاسأل عن حالهما، أو اعرض مساعدة يحتاجانها اليوم."
+        },
+        {
+          "type": 10,
+          "content": "-# صياغة تطبيقية من رفيق؛ الحديث ومصدره في «الدليل والتوضيح»."
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 3,
+              "custom_id": "rafiq:v1:idea_category",
+              "placeholder": "فكرة تناسب موقفك",
+              "min_values": 1,
+              "max_values": 1,
+              "options": [
+                {
+                  "label": "كل الأفكار",
+                  "description": "تصفّح أفكار الخير الست",
+                  "value": "all",
+                  "default": false
+                },
+                {
+                  "label": "مع أهلي",
+                  "description": "برّ الوالدين وصلة الرحم",
+                  "value": "family",
+                  "default": false
+                },
+                {
+                  "label": "مع أصحابي",
+                  "description": "نفع وكلمة طيبة",
+                  "value": "friends",
+                  "default": false
+                },
+                {
+                  "label": "أثناء اللعب",
+                  "description": "هدوء وحسن تعامل",
+                  "value": "play",
+                  "default": false
+                },
+                {
+                  "label": "أفكاري المحفوظة",
+                  "description": "الأفكار التي اخترت حفظها للرجوع إليها",
+                  "value": "saved",
+                  "default": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": 14,
+          "divider": true,
+          "spacing": 1
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "إزالة من المحفوظات",
+              "style": 2,
+              "custom_id": "rafiq:v1:idea_save_parents_saved"
+            },
+            {
+              "type": 2,
+              "label": "محفوظاتي",
+              "style": 2,
+              "custom_id": "rafiq:v1:favorites"
+            }
+          ]
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "الدليل والتوضيح",
+              "style": 2,
+              "custom_id": "rafiq:v1:idea_source_parents_saved"
+            },
+            {
+              "type": 2,
+              "label": "مساحتي",
+              "style": 2,
+              "custom_id": "rafiq:v1:home"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

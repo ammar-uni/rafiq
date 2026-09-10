@@ -4,7 +4,11 @@ import { Store } from './store.mjs';
 import { SerialQueue } from './serial.mjs';
 import { RafiqApp } from './app.mjs';
 import { ReminderEngine } from './reminders.mjs';
-import { noticePayload } from './messages.mjs';
+import { noticePayload, prayerModal } from './messages.mjs';
+import { PRAYERS } from './prayer-config.mjs';
+import { PrayerApp } from './prayer-app.mjs';
+import { PrayerScheduler } from './prayer-scheduler.mjs';
+import { loadPrayerSounds } from './prayer-sounds.mjs';
 import { assertReviewedContent } from './content-review.mjs';
 import { runtimeLog, safeErrorCode } from './runtime-log.mjs';
 import { acknowledgePrivate, makeSendDM, setupPanel, statusPayload, toDiscord } from './discord-adapter.mjs';
@@ -23,14 +27,17 @@ async function main() {
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates], partials: [Partials.Channel],
     allowedMentions: { parse: [], repliedUser: false }, rest: { timeout: 10_000, retries: 0 }
   });
-  const sendDM = makeSendDM(client);
+  const sounds = loadPrayerSounds();
+  const sendDM = makeSendDM(client, { sounds });
   let connected = false;
   let identityVerified = false;
   let stopping = false;
   const engine = new ReminderEngine({ store, queue, sendDM, canSend: () => identityVerified && connected && !stopping && client.isReady(),
     isInVoice: userId => client.guilds.cache.some(guild => Boolean(guild.voiceStates.cache.get(userId)?.channelId)),
     onError: error => safeError('reminder', error) });
-  const app = new RafiqApp({ store, queue, sendDM, privacyURL: config.privacyURL, supportURL: config.supportURL, cancelUser: userId => engine.cancelUser(userId) });
+  engine.prayers = new PrayerScheduler({ store, queue, sounds, canSend: engine.canSend, deliver: (...args) => engine.deliver(...args), onError: error => safeError('prayer-schedule', error) });
+  const prayers = new PrayerApp({ store, sounds, sendDM });
+  const app = new RafiqApp({ store, queue, sendDM, prayers, privacyURL: config.privacyURL, supportURL: config.supportURL, cancelUser: userId => engine.cancelUser(userId), cancelGuild: (userId, guildId) => engine.discard(userId, guildId) });
 
   function observe(state) {
     if (!state.channelId || state.member?.user.bot) return;
@@ -91,8 +98,14 @@ async function main() {
     if (stopping || !identityVerified) return;
     const isCommand = interaction.isChatInputCommand() && ['rafiq', 'rafiq-setup', 'rafiq-status'].includes(interaction.commandName);
     const isComponent = interaction.isMessageComponent() && interaction.customId.startsWith('rafiq:v1:');
-    if (!isCommand && !isComponent) return;
+    const isModal = interaction.isModalSubmit() && ['rafiq:v1:prayer_search', 'rafiq:v1:prayer_adjust'].includes(interaction.customId);
+    if (!isCommand && !isComponent && !isModal) return;
     try {
+      const action = isCommand ? interaction.options.getString('section') || 'home' : interaction.customId.slice('rafiq:v1:'.length);
+      if (isComponent && ['prayer_city_modal', 'prayer_adjust_modal'].includes(action)) {
+        await interaction.showModal(prayerModal(action, store.getPrayer(interaction.user.id)));
+        return;
+      }
       await acknowledgePrivate(interaction);
       let payload;
       if (isCommand && interaction.commandName === 'rafiq-setup') {
@@ -100,8 +113,8 @@ async function main() {
       } else if (isCommand && interaction.commandName === 'rafiq-status') {
         payload = statusPayload(interaction, store);
       } else {
-        const action = isCommand ? interaction.options.getString('section') || 'home' : interaction.customId.slice('rafiq:v1:'.length);
-        payload = await app.handle({ userId: interaction.user.id, guildId: interaction.guildId, action, values: interaction.isStringSelectMenu() ? interaction.values : [] });
+        const values = isModal ? (action === 'prayer_search' ? [interaction.fields.getTextInputValue('city')] : PRAYERS.map(([key]) => interaction.fields.getTextInputValue(key))) : interaction.isStringSelectMenu() ? interaction.values : [];
+        payload = await app.handle({ userId: interaction.user.id, guildId: interaction.guildId, action, values });
         if (['enable', 'resume', 'test_dm'].includes(action)) seedUser(interaction.user.id);
       }
       await interaction.editReply(toDiscord(payload, { forEdit: true }));
@@ -109,11 +122,11 @@ async function main() {
       safeError('interaction', error);
       if (interaction.deferred || interaction.replied) {
         await interaction.editReply(toDiscord(noticePayload('تعذّر إكمال الطلب', 'حاول مجددًا بعد قليل. لم تُنشر إعداداتك في القناة.'), { forEdit: true })).catch(() => {});
-      }
+      } else await interaction.reply(toDiscord(noticePayload('تعذّر فتح الخيار', 'حاول مجددًا بعد قليل.'))).catch(() => {});
     }
   });
   let tickPromise = Promise.resolve();
-  const timer = setInterval(() => { if (!engine.running) tickPromise = engine.tick().catch(error => safeError('scheduler', error)); }, 5000);
+  const timer = setInterval(() => { prayers.prune(); if (!engine.running) tickPromise = engine.tick().catch(error => safeError('scheduler', error)); }, 5000);
   function reportHealth() {
     if (process.connected) process.send({ type: 'rafiq:health', ready: identityVerified && connected && !stopping && client.isReady() }, () => {});
   }
