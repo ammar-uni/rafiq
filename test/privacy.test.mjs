@@ -8,6 +8,7 @@ import { Store, DAY } from '../src/store.mjs';
 import { readConfig } from '../src/config.mjs';
 import { RafiqApp } from '../src/app.mjs';
 import { SerialQueue } from '../src/serial.mjs';
+import { EncryptedSnapshot } from '../src/encrypted-snapshot.mjs';
 
 function storage(t) {
   const folder = mkdtempSync(join(tmpdir(), 'rafiq-private-'));
@@ -22,6 +23,20 @@ function storage(t) {
   });
   return { filename, folder, options, open };
 }
+
+test('rollback bridge reads v3 preferences without losing subscriptions or attempts', t => {
+  const h = storage(t); let store = h.open();
+  store.subscribe('1', '10'); store.toggleFavorite('1', 'guidance');
+  store.claimReminder('1', '10', 1800000000000); store.close();
+  const snapshot = new EncryptedSnapshot(h.filename, h.options.encryptionKey);
+  const saved = snapshot.read(); saved.version = 3; saved.tables.users[0][2] = 'session5';
+  snapshot.write(saved); snapshot.close();
+  store = h.open();
+  assert.equal(store.getUser('1').frequency, 'session');
+  assert.deepEqual(store.subscriptions('1'), ['10']);
+  assert.deepEqual(store.favorites('1'), ['guidance']);
+  assert.equal(store.db.prepare('SELECT count(*) AS n FROM reminder_attempts').get().n, 1);
+});
 
 test('all user and server data is encrypted on disk; the coordination file is empty', t => {
   const h = storage(t); const store = h.open();
