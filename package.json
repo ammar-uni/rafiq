@@ -1,6 +1,6 @@
 {
   "name": "rafiq",
-  "version": "0.5.0",
+  "version": "0.7.0",
   "private": true,
   "type": "module",
   "description": "A gentle, opt-in Discord reminder bot with sourced Arabic content",
@@ -23,6 +23,7 @@
     "preview": "npm run preview:build && node scripts/serve-preview.mjs"
   },
   "dependencies": {
+    "adhan": "4.4.6",
     "discord.js": "14.27.0"
   }
 }

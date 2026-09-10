@@ -9,4 +9,9 @@
 !scripts/run.mjs
 !scripts/healthcheck.mjs
 !assets/
-!assets/rafiq-banner-v2.webp
+!assets/rafiq-banner-v3.webp
+!assets/sounds/
+!assets/sounds/catalog.json
+!assets/sounds/*.mp3
+!assets/sounds/*.ogg
+!assets/sounds/*.wav
