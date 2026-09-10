@@ -1,0 +1,21 @@
+[Unit]
+Description=Register Rafiq Discord commands
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=rafiq
+Group=rafiq
+WorkingDirectory=/opt/rafiq/current
+EnvironmentFile=/etc/rafiq/rafiq.env
+Environment=NODE_ENV=production
+ExecStart=/usr/local/bin/node scripts/register-commands.mjs
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+RestrictSUIDSGID=true
+CapabilityBoundingSet=
+TimeoutStartSec=60
