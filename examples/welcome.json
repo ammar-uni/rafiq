@@ -14,15 +14,15 @@
           "items": [
             {
               "media": {
-                "url": "attachment://rafiq-banner-v2.webp"
+                "url": "attachment://rafiq-banner-v3.webp"
               },
-              "description": "رفيق — خيرٌ يرافقك. رمز محادثة عاجي يحتضن نبتة خضراء، وطريق مضيء بلطف."
+              "description": "رفيق — خيرٌ يرافقك. نبتة في رمز محادثة عاجي، وحديقة هادئة يضيئها الفجر."
             }
           ]
         },
         {
           "type": 10,
-          "content": "## خيرٌ خفيف، في وقته.\nذكرٌ موثّق، وفكرة خير، واستراحة في وقت تختاره. افتح مساحتك واختر ما ينفعك."
+          "content": "## خيرٌ خفيف، في وقته.\nذكرٌ موثّق، وفكرة خير، ومواقيت صلاة، واستراحة في وقت تختاره. افتح مساحتك واختر ما ينفعك."
         },
         {
           "type": 10,
@@ -38,7 +38,7 @@
           "components": [
             {
               "type": 2,
-              "label": "رفيقك للخير",
+              "label": "مساحتي مع رفيق",
               "style": 3,
               "custom_id": "rafiq:v1:home"
             },
@@ -62,7 +62,7 @@
   "attachments": [
     {
       "id": "0",
-      "filename": "rafiq-banner-v2.webp",
+      "filename": "rafiq-banner-v3.webp",
       "description": "غلاف رفيق"
     }
   ]

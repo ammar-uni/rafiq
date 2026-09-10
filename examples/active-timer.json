@@ -11,7 +11,7 @@
       "components": [
         {
           "type": 10,
-          "content": "## وقت لاستراحة\nاختر متى أذكّرك باستراحة من الجلسة."
+          "content": "## وقت لاستراحة\nمؤقّتك مضبوط: <t:1800000000:R>."
         },
         {
           "type": 10,
@@ -43,6 +43,23 @@
               "label": "٩٠ دقيقة",
               "style": 2,
               "custom_id": "rafiq:v1:break_90"
+            }
+          ]
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "أضف ١٥ دقيقة",
+              "style": 2,
+              "custom_id": "rafiq:v1:break_extend_15"
+            },
+            {
+              "type": 2,
+              "label": "إلغاء المؤقّت",
+              "style": 2,
+              "custom_id": "rafiq:v1:break_cancel"
             }
           ]
         },

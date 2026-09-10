@@ -1,0 +1,151 @@
+{
+  "flags": 32832,
+  "allowed_mentions": {
+    "parse": [],
+    "replied_user": false
+  },
+  "components": [
+    {
+      "type": 17,
+      "accent_color": 9088708,
+      "components": [
+        {
+          "type": 10,
+          "content": "## ضبط الحساب\nاختر الطريقة التي تطابق الجدول المعتمد عندك. تغيير الحساب يوقف التذكير حتى تراجع الجدول وتفعّله مجددًا."
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 3,
+              "custom_id": "rafiq:v1:prayer_method",
+              "placeholder": "طريقة الحساب",
+              "min_values": 1,
+              "max_values": 1,
+              "options": [
+                {
+                  "value": "none",
+                  "label": "اختر طريقة الحساب",
+                  "default": false
+                },
+                {
+                  "value": "UmmAlQura",
+                  "label": "أم القرى — مكة",
+                  "default": true
+                },
+                {
+                  "value": "MuslimWorldLeague",
+                  "label": "رابطة العالم الإسلامي",
+                  "default": false
+                },
+                {
+                  "value": "Egyptian",
+                  "label": "الهيئة المصرية للمساحة",
+                  "default": false
+                },
+                {
+                  "value": "Karachi",
+                  "label": "جامعة العلوم الإسلامية — كراتشي",
+                  "default": false
+                },
+                {
+                  "value": "NorthAmerica",
+                  "label": "أمريكا الشمالية — ISNA",
+                  "default": false
+                },
+                {
+                  "value": "Dubai",
+                  "label": "دبي",
+                  "default": false
+                },
+                {
+                  "value": "Kuwait",
+                  "label": "الكويت",
+                  "default": false
+                },
+                {
+                  "value": "Turkey",
+                  "label": "تركيا",
+                  "default": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": 10,
+          "content": "-# حساب العصر معتمد عند بلوغ ظل الشيء مثله، بعد استثناء ظل الزوال."
+        },
+        {
+          "type": 10,
+          "content": "**تقدير الفجر والعشاء عند قِصر الليل**\nاختر التقدير المعتمد محليًا. هذه خيارات حسابية، وليست فتوى في الترجيح بينها. لا نضع جدولًا بديلًا لليل أو نهار قطبي متصل."
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 3,
+              "custom_id": "rafiq:v1:prayer_highLatitude",
+              "placeholder": "تقدير المواقيت عند قِصر الليل",
+              "min_values": 1,
+              "max_values": 1,
+              "options": [
+                {
+                  "value": "MiddleOfTheNight",
+                  "label": "نصف الليل",
+                  "default": true
+                },
+                {
+                  "value": "SeventhOfTheNight",
+                  "label": "سُبع الليل",
+                  "default": false
+                },
+                {
+                  "value": "TwilightAngle",
+                  "label": "بحسب زاوية الشفق",
+                  "default": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": 10,
+          "content": "التعديل بالدقائق: الفجر 0 · الظهر 0 · العصر 0 · المغرب 0 · العشاء 0"
+        },
+        {
+          "type": 10,
+          "content": "العشاء في هذا الحساب: ٩٠ دقيقة بعد الغروب، قبل تعديلك. اختر ١٢٠ في رمضان إذا وافق جدولك المحلي، وأعدها إلى ٩٠ بعده."
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "العشاء: ١٢٠ دقيقة",
+              "style": 2,
+              "custom_id": "rafiq:v1:prayer_ramadan"
+            }
+          ]
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "تعديل الدقائق",
+              "style": 2,
+              "custom_id": "rafiq:v1:prayer_adjust_modal"
+            },
+            {
+              "type": 2,
+              "label": "راجع جدولك",
+              "style": 3,
+              "custom_id": "rafiq:v1:prayer"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

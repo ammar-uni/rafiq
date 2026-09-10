@@ -11,7 +11,7 @@
       "components": [
         {
           "type": 10,
-          "content": "-# 🌱 فكرة لعمل خير · ١ من ٦\n## اطمئن على والديك\nاسأل عن حالهما، أو اعرض مساعدة يحتاجانها اليوم."
+          "content": "-# 🌱 أفكاري المحفوظة · ١ من ١\n## اطمئن على والديك\nاسأل عن حالهما، أو اعرض مساعدة يحتاجانها اليوم."
         },
         {
           "type": 10,
@@ -31,7 +31,7 @@
                   "label": "كل الأفكار",
                   "description": "تصفّح أفكار الخير الست",
                   "value": "all",
-                  "default": true
+                  "default": false
                 },
                 {
                   "label": "مع أهلي",
@@ -55,7 +55,7 @@
                   "label": "أفكاري المحفوظة",
                   "description": "الأفكار التي اخترت حفظها للرجوع إليها",
                   "value": "saved",
-                  "default": false
+                  "default": true
                 }
               ]
             }
@@ -71,26 +71,9 @@
           "components": [
             {
               "type": 2,
-              "label": "الفكرة السابقة",
+              "label": "إزالة من المحفوظات",
               "style": 2,
-              "custom_id": "rafiq:v1:idea_all_5"
-            },
-            {
-              "type": 2,
-              "label": "فكرة أخرى",
-              "style": 3,
-              "custom_id": "rafiq:v1:idea_all_1"
-            }
-          ]
-        },
-        {
-          "type": 1,
-          "components": [
-            {
-              "type": 2,
-              "label": "حفظ الفكرة",
-              "style": 2,
-              "custom_id": "rafiq:v1:idea_save_parents_all"
+              "custom_id": "rafiq:v1:idea_save_parents_saved"
             },
             {
               "type": 2,
@@ -107,7 +90,7 @@
               "type": 2,
               "label": "الدليل والتوضيح",
               "style": 2,
-              "custom_id": "rafiq:v1:idea_source_parents_all"
+              "custom_id": "rafiq:v1:idea_source_parents_saved"
             },
             {
               "type": 2,
