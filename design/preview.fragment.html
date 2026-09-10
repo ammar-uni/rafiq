@@ -6,6 +6,7 @@
       --rn-line:light-dark(#dcdfe4,#44464e); --rn-button:light-dark(#e7e9ed,#45474f);
       --rn-success:light-dark(#248046,#248046); --rn-link:light-dark(#24715a,#90caaa);
       font:16px/1.7 "Segoe UI",Tahoma,Arial,sans-serif; color:var(--rn-ink);
+      background:light-dark(#f1f2f4,#202225); border-radius:12px;
       container-type:inline-size; container-name:rafiq;
     }
     #rafiq-native-preview * { box-sizing:border-box; }
@@ -60,7 +61,30 @@
     }
     @media(pointer:coarse) { #rafiq-native-preview button,#rafiq-native-preview select { min-height:44px; } }
     @media(prefers-reduced-motion:reduce) { #rafiq-native-preview button { transition:none; } }
+    #rafiq-native-preview .rn-stage { padding:12px 4px 22px; }
+    #rafiq-native-preview .rn-kicker { color:var(--rn-link);font-size:12px;letter-spacing:.02em; }
+    #rafiq-native-preview h1 { font-size:38px;line-height:1.4;margin:8px 0;font-weight:650; }
+    #rafiq-native-preview .rn-stage p { color:var(--rn-muted);margin:0 0 18px; }
+    #rafiq-native-preview .rn-scenarios { display:flex;gap:8px;flex-wrap:wrap; }
+    #rafiq-native-preview .rn-scenarios button { border:1px solid var(--rn-line);border-radius:20px;background:var(--rn-panel);font-size:13px; }
+    #rafiq-native-preview button:focus-visible,#rafiq-native-preview select:focus-visible { outline:3px solid var(--rn-link);outline-offset:3px; }
+    #rafiq-native-preview button[disabled] { opacity:.55;cursor:wait; }
+    #rafiq-native-preview .rn-container { box-shadow:0 8px 28px #0000000a; }
+    #rafiq-native-preview .rn-text strong { font-weight:650; }
+    @container rafiq (max-width:450px) { #rafiq-native-preview .rn-section { gap:8px;flex-wrap:wrap; } #rafiq-native-preview .rn-stage { padding:18px 12px; } }
   </style>
+  <div class="rn-stage">
+    <div class="rn-kicker">رفيق / ٠.٧ · تجربة التصميم</div>
+    <h1>خيرٌ يرافقك.</h1>
+    <p>اختر مدينتك، وجرّب مواقيت الصلاة، والأذكار، وأفكار الخير.</p>
+    <div class="rn-scenarios" aria-label="التنقل في المعاينة">
+      <button type="button" data-action="welcome">الترحيب</button>
+      <button type="button" data-action="home">مساحتي</button>
+      <button type="button" data-action="favorites">محفوظاتي</button>
+      <button type="button" data-action="break">المؤقّت</button>
+      <button type="button" data-demo="theme" aria-pressed="false">المظهر الفاتح</button>
+    </div>
+  </div>
   <div class="rn-window">
     <div class="rn-top"><span class="rn-channel" id="rn-channel">رفيق</span><span class="rn-preview-label">معاينة تفاعلية</span></div>
     <div class="rn-message">
@@ -70,7 +94,7 @@
         <div id="rn-view" aria-live="polite" aria-atomic="true"></div>
       </div>
     </div>
-    <div class="rn-demo-footer"><span>تجربة محلية · لا ترسل رسائل</span><button type="button" data-action="welcome" aria-label="العودة إلى بطاقة الترحيب في المعاينة">بطاقة الترحيب ↶</button></div>
+    <div class="rn-demo-footer"><span id="rn-simulation">تجربة محلية · لا تُرسل رسائل ولا تُحفظ بيانات</span><button type="button" data-demo="reset">بدء تجربة جديدة ↶</button></div>
   </div>
   <script>
   (() => {
@@ -78,99 +102,82 @@
     const root=document.getElementById('rafiq-native-preview');
     const view=root.querySelector('#rn-view');
     const banner='__BANNER_WEBP__';
-    const state={screen:'welcome',enabled:false,paused:false,frequency:'daily',delivery:'silent',idea:0,notice:'',theme:'system',favorites:[],selectedId:'majlis',onlyFavorites:false,breakAt:null};
+    const store=new PreviewStore();
+    const queue={run:(_id,task)=>Promise.resolve().then(task)};
+    let simulatedMessages=0, theme=getComputedStyle(root).colorScheme==='light'?'light':'dark', busy=false, currentAction='welcome';
+    const demoCities=[{label:'برلين، ألمانيا',latitude:52.524,longitude:13.411,timezone:'Europe/Berlin'},{label:'مكة المكرمة، السعودية',latitude:21.426,longitude:39.826,timezone:'Asia/Riyadh'},{label:'نيويورك، الولايات المتحدة',latitude:40.714,longitude:-74.006,timezone:'America/New_York'}];
+    const prayers=new PrayerApp({store,lookup:async()=>demoCities,sendDM:async()=>{simulatedMessages++;}});
+    const app=new RafiqApp({store,queue,prayers,sendDM:async()=>{simulatedMessages++;}});
     const escapeHtml=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const markdown=value=>value.split('\n').map(line=>{
-      const safe=escapeHtml(line).replace(/\[([^\]]+)\]\((https:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>').replace(/&lt;t:(\d+):R&gt;/g,(_,seconds)=>`بعد نحو ${Math.max(1,Math.ceil((Number(seconds)*1000-Date.now())/60000)).toLocaleString('ar')} دقيقة`);
-      if(safe.startsWith('### '))return `<h3>${safe.slice(4)}</h3>`;
-      if(safe.startsWith('## '))return `<h2>${safe.slice(3)}</h2>`;
-      if(safe.startsWith('-# '))return `<div class="rn-small">${safe.slice(3)}</div>`;
-      if(safe.startsWith('&gt; '))return `<blockquote>${safe.slice(5)}</blockquote>`;
-      return `<div class="rn-line">${safe}</div>`;
+      const safe=escapeHtml(line).replace(/\[([^\]]+)\]\((https:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/&lt;t:(\d+):R&gt;/g,(_,seconds)=>{const minutes=Math.ceil((Number(seconds)*1000-Date.now())/60000);return minutes>0?'بعد نحو '+minutes.toLocaleString('ar')+' دقيقة':'حان الموعد';});
+      if(safe.startsWith('### '))return '<h3>'+safe.slice(4)+'</h3>';
+      if(safe.startsWith('## '))return '<h2>'+safe.slice(3)+'</h2>';
+      if(safe.startsWith('-# '))return '<div class="rn-small">'+safe.slice(3)+'</div>';
+      if(safe.startsWith('&gt; '))return '<blockquote>'+safe.slice(5)+'</blockquote>';
+      return '<div class="rn-line">'+safe+'</div>';
     }).join('');
     function component(item) {
-      if(item.type===17)return `<div class="rn-container" style="border-inline-start-color:#${item.accent_color.toString(16).padStart(6,'0')}">${item.components.map(component).join('')}</div>`;
-      if(item.type===9)return `<div class="rn-section"><div>${item.components.map(component).join('')}</div>${component(item.accessory)}</div>`;
-      if(item.type===10)return `<div class="rn-text">${markdown(item.content)}</div>`;
-      if(item.type===12)return `<figure class="rn-gallery"><img src="${banner}" alt="${escapeHtml(item.items[0].description)}" width="1536" height="512"></figure>`;
+      if(item.type===17)return '<div class="rn-container" style="border-inline-start-color:#'+item.accent_color.toString(16).padStart(6,'0')+'">'+item.components.map(component).join('')+'</div>';
+      if(item.type===9)return '<div class="rn-section"><div>'+item.components.map(component).join('')+'</div>'+component(item.accessory)+'</div>';
+      if(item.type===10)return '<div class="rn-text">'+markdown(item.content)+'</div>';
+      if(item.type===12)return '<figure class="rn-gallery"><img src="'+banner+'" alt="'+escapeHtml(item.items[0].description)+'" width="1536" height="512"></figure>';
       if(item.type===14)return '<hr class="rn-rule">';
-      if(item.type===1)return `<div class="${item.components[0].type===3?'rn-select-row':'rn-row'}">${item.components.map(component).join('')}</div>`;
+      if(item.type===1)return '<div class="rn-row">'+item.components.map(component).join('')+'</div>';
       if(item.type===2){
-        if(item.style===5)return `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.label)}</a>`;
-        return `<button type="button" data-action="${item.custom_id.replace('rafiq:v1:','')}" class="${item.style===3?'rn-positive':''}">${escapeHtml(item.label)}</button>`;
+        if(item.style===5)return '<a href="'+escapeHtml(item.url)+'" target="_blank" rel="noopener noreferrer">'+escapeHtml(item.label)+'</a>';
+        return '<button type="button" '+(item.disabled?'disabled ':'')+'data-action="'+item.custom_id.slice(9)+'" class="'+(item.style===3?'rn-positive':'')+'">'+escapeHtml(item.label)+'</button>';
       }
       if(item.type===3){
-        const key=item.custom_id.replace('rafiq:v1:','');
-        const selected=item.options.find(option=>option.default);
-        return `<label class="rn-select-label" for="rn-${key}">${escapeHtml(item.placeholder)}</label><select id="rn-${key}" data-preference="${key}" aria-describedby="rn-${key}-help">${item.options.map(option=>`<option value="${option.value}" ${option.default?'selected':''}>${escapeHtml(option.label)}</option>`).join('')}</select><div class="rn-help" id="rn-${key}-help">${escapeHtml(selected.description)}</div>`;
+        const key=item.custom_id.slice(9), selected=item.options.find(option=>option.default)||item.options[0];
+        return '<div style="width:100%"><label class="rn-select-label" for="rn-'+key+'">'+escapeHtml(item.placeholder)+'</label><select id="rn-'+key+'" data-preference="'+key+'" aria-describedby="rn-'+key+'-help">'+(!item.options.some(option=>option.default)?'<option disabled selected value="">اختر نتيجة</option>':'')+item.options.map(option=>'<option value="'+escapeHtml(option.value)+'" '+(option.default?'selected':'')+'>'+escapeHtml(option.label)+'</option>').join('')+'</select><div class="rn-help" id="rn-'+key+'-help">'+escapeHtml(selected.description||'')+'</div></div>';
       }
       return '';
     }
-    function render(focus=false) {
-      root.dataset.screen=state.screen;
-      if(state.theme==='system')root.style.removeProperty('color-scheme');else root.style.setProperty('color-scheme',state.theme);
-      root.querySelector('#rn-channel').textContent=state.screen==='reminder'?'رفيق · معاينة الخاص':'رفيق';
-      root.querySelector('#rn-context').textContent=state.screen==='welcome'?'بطاقة الترحيب':state.screen==='reminder'?'ما يصلك بعد المجلس':'يظهر لك وحدك';
-      let payload;
-      if(state.screen==='welcome')payload=welcomePayload();
-      if(state.screen==='home')payload=homePayload({...state,favoriteCount:state.favorites.length});
-      if(state.screen==='reminder_intro')payload=reminderIntroPayload(state);
-      if(state.screen==='ready')payload=enabledPayload(state);
-      if(state.screen==='reminder')payload=reminderPayload({preview:true,enabled:state.enabled,paused:state.paused});
-      if(state.screen==='settings')payload=settingsPayload(state);
-      if(state.screen==='paused')payload=pausedPayload();
-      if(state.screen==='off')payload=disabledPayload();
-      if(state.screen==='idea')payload=ideaPayload(state.idea,{category:state.ideaCategory||'all'});
-      if(state.screen==='idea-source')payload=ideaSourcePayload(state.ideaId,{category:state.ideaCategory||'all'});
-      if(state.screen==='library')payload=libraryPayload(state);
-      if(state.screen==='source')payload=sourcePayload(state.selectedId,{onlyFavorites:state.onlyFavorites});
-      if(state.screen==='methodology')payload=methodologyPayload();
-      if(state.screen==='break')payload=breakPayload(state);
-      if(state.screen==='break-reminder')payload=breakReminderPayload();
-      if(state.screen==='privacy')payload=privacyPayload();
-      if(state.screen==='support')payload=supportPayload({reportCard:dhikrById(state.reportId)||ideaById(state.reportId)});
-      if(state.screen==='forget')payload=forgetPromptPayload();
-      if(state.screen==='forgotten')payload=noticePayload('حُذفت بياناتك التجريبية','توقفت التنبيهات، وأُلغي المؤقّت، وأُزيلت محفوظاتك في هذه المعاينة.');
+    function render(payload, focus) {
+      root.dataset.screen=currentAction;
+      root.style.setProperty('color-scheme',theme);
+      const themeButton=root.querySelector('[data-demo="theme"]');
+      themeButton.textContent=theme==='dark'?'المظهر الفاتح':'المظهر الداكن';
+      themeButton.setAttribute('aria-pressed',String(theme==='light'));
+      root.querySelector('#rn-context').textContent=currentAction==='welcome'?'بطاقة الترحيب':'يظهر لك وحدك';
       view.innerHTML=payload.components.map(component).join('');
+      root.querySelector('#rn-simulation').textContent='تجربة محلية · لا تُرسل رسائل ولا تُحفظ بيانات'+(simulatedMessages?' · جُرّب إرسال الخاص محليًا':'');
       if(focus)view.querySelector('button,select')?.focus({preventScroll:true});
     }
-    root.addEventListener('click',event=>{
-      const target=event.target.closest('button[data-action]');if(!target||!root.contains(target))return;
-      const action=target.dataset.action;state.notice='';
-      if(['home','welcome','settings','methodology','privacy','support','forget','reminder_intro'].includes(action))state.screen=action;
-      else if(action==='enable'){state.enabled=true;state.paused=false;state.screen='ready';}
-      else if(action==='resume'){state.paused=false;state.screen='settings';}
-      else if(action==='preview')state.screen='reminder';
-      else if(action==='test_dm'){state.screen='reminder';}
-      else if(action==='pause_today'){state.paused=true;state.breakAt=null;state.screen='paused';}
-      else if(action==='disable'){state.enabled=false;state.paused=false;state.breakAt=null;state.screen='off';}
-      else if(action==='cancel')state.screen='home';
-      else if(action==='idea'){state.idea=0;state.ideaCategory='all';state.screen='idea';}
-      else if(/^idea_source_/.test(action)){const match=/^idea_source_([a-z-]+)_(all|family|friends|play)$/.exec(action);state.ideaId=match[1];state.ideaCategory=match[2];state.screen='idea-source';}
-      else if(/^idea_(all|family|friends|play)_\d+$/.test(action)){const match=/^idea_(all|family|friends|play)_(\d+)$/.exec(action);state.ideaCategory=match[1];state.idea=Number(match[2]);state.screen='idea';}
-      else if(action==='library'||action==='favorites'){state.onlyFavorites=action==='favorites';state.selectedId=state.onlyFavorites?(state.favorites[0]||'majlis'):'majlis';state.screen='library';}
-      else if(/^(source|card|favorite)_/.test(action)){const [,kind,id,saved]=/^(source|card|favorite)_([a-z-]+)(_saved)?$/.exec(action);state.selectedId=id;state.onlyFavorites=Boolean(saved);if(kind==='favorite')state.favorites=state.favorites.includes(id)?state.favorites.filter(item=>item!==id):[...state.favorites,id];state.screen=kind==='source'?'source':'library';}
-      else if(action.startsWith('report_')){state.reportId=action.slice(7);state.screen='support';}
-      else if(action==='break'){state.screen='break';}
-      else if(action==='break_cancel'){state.breakAt=null;state.notice='أُلغي المؤقّت.';state.screen='break';}
-      else if(/^break_\d+$/.test(action)){state.screen='break';if(state.paused)state.notice='استأنف التنبيهات من الإعدادات أولًا.';else{state.breakAt=Date.now()+Number(action.slice(6))*60000;state.notice='✓ ضُبط مؤقّت واحد لك';}}
-      else if(action==='forget_confirm'){Object.assign(state,{enabled:false,paused:false,frequency:'daily',delivery:'silent',favorites:[],breakAt:null,screen:'forgotten'});}
-      render(true);
-    });
-    root.addEventListener('change',event=>{
-      const preference=event.target.dataset.preference;
-      if(!preference)return;
-      if(['frequency','delivery'].includes(preference)){state[preference]=event.target.value;state.notice='✓ حُفظ اختيارك';}
-      else if(['dhikr_select','favorite_select'].includes(preference))state.selectedId=event.target.value;
-      else if(preference==='idea_category'){state.ideaCategory=event.target.value;state.idea=0;}
-      render();root.querySelector(`[data-preference="${preference}"]`)?.focus({preventScroll:true});
-    });
-    render();
-    if(globalThis.Tweak){
-      const tweak=new Tweak({container:root,onChange:()=>render()});
-      tweak.addSelect(state,'theme',{label:'مظهر ديسكورد',options:[{label:'حسب جهازك',value:'system'},{label:'داكن',value:'dark'},{label:'فاتح',value:'light'}]});
-      tweak.addSelect(state,'screen',{label:'الشاشة',options:[{label:'بطاقة الترحيب',value:'welcome'},{label:'مساحتي',value:'home'},{label:'التذكير بعد المجلس',value:'reminder'},{label:'تذكير الاستراحة',value:'break-reminder'}]});
+    let payload=welcomePayload();
+    async function navigate(action, values=[], focus=true) {
+      if(busy)return;
+      if(['prayer_city_modal','prayer_adjust_modal'].includes(action)) {
+        const modal=prayerModal(action,store.getPrayer());
+        view.innerHTML='<div class="rn-container"><h2>'+escapeHtml(modal.title)+'</h2>'+(action==='prayer_city_modal'?'<p>المعاينة تستخدم ثلاث مدن تجريبية فقط، ولا تتصل بخدمة البحث.</p>':'')+'<form id="rn-prayer-form">'+modal.components.map(row=>{const f=row.component;return '<label style="display:block;margin:16px 0">'+escapeHtml(row.label)+'<input style="display:block;width:100%;box-sizing:border-box;padding:12px;margin-top:8px;background:transparent;color:inherit;border:1px solid #8aaec4;border-radius:8px" name="'+f.custom_id+'" value="'+escapeHtml(f.value||'')+'" placeholder="'+escapeHtml(f.placeholder)+'" maxlength="'+f.max_length+'" required></label>';}).join('')+'<button type="submit" class="rn-positive">'+(action==='prayer_city_modal'?'ابحث':'احفظ التعديل')+'</button> <button type="button" data-action="prayer">رجوع</button></form></div>';
+        view.querySelector('input').focus();
+        view.querySelector('form').addEventListener('submit',event=>{event.preventDefault();const data=new FormData(event.target);void navigate(modal.custom_id.slice(9),modal.components.map(row=>data.get(row.component.custom_id)));});
+        return;
+      }
+      busy=true;view.setAttribute('aria-busy','true');
+      try{
+        currentAction=action;
+        payload=action==='welcome'?welcomePayload():await app.handle({userId:'1',guildId:'10',action,values});
+        render(payload,focus);
+      }catch{
+        payload=noticePayload('تعذّر عرض المعاينة','ابدأ تجربة جديدة ثم حاول مرة أخرى.');
+        render(payload,focus);
+      }finally{busy=false;view.removeAttribute('aria-busy');}
     }
+    root.addEventListener('click',event=>{
+      const target=event.target.closest('button');if(!target||!root.contains(target))return;
+      if(target.dataset.demo==='theme'){theme=theme==='dark'?'light':'dark';target.textContent=theme==='dark'?'المظهر الفاتح':'المظهر الداكن';target.setAttribute('aria-pressed',String(theme==='light'));render(payload,false);return;}
+      if(target.dataset.demo==='reset'){store.reset();prayers.forget('1');simulatedMessages=0;void navigate('welcome');return;}
+      if(target.dataset.action)void navigate(target.dataset.action);
+    });
+    root.addEventListener('change',async event=>{
+      const key=event.target.dataset.preference;
+      if(!key)return;
+      await navigate(key,[event.target.value],false);
+      root.querySelector('[data-preference="'+key+'"]')?.focus({preventScroll:true});
+    });
+    render(payload,false);
   })();
   </script>
 </div>
