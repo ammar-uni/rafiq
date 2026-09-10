@@ -71,7 +71,7 @@ export class Store {
         const saved = this.snapshot.read();
         if (saved) {
           const sourceTables = Object.entries(tables).filter(([name]) => saved.version !== 1 || !name.startsWith('prayer_'));
-          if (![1, 2].includes(saved.version) || !saved.tables || Object.keys(saved.tables).length !== sourceTables.length) throw new Error('Unsupported snapshot structure');
+          if (![1, 2, 3].includes(saved.version) || !saved.tables || Object.keys(saved.tables).length !== sourceTables.length) throw new Error('Unsupported snapshot structure');
           this.db.exec('BEGIN IMMEDIATE');
           try {
             for (const [table, names] of sourceTables) {
@@ -79,6 +79,9 @@ export class Store {
               const insert = this.db.prepare('INSERT INTO ' + table + ' (' + names.join(', ') + ') VALUES (' + names.map(() => '?').join(', ') + ')');
               for (const values of saved.tables[table]) {
                 if (!Array.isArray(values) || values.length !== names.length) throw new Error('Invalid snapshot row');
+                // Rollback bridge: preserve v3 data and conservatively use the older
+                // three-per-day option until the five-per-day release is active.
+                if (saved.version === 3 && table === 'users' && values[2] === 'session5') values[2] = 'session';
                 if (table === 'prayer_settings') values[1] = JSON.stringify(readStoredPrayer(JSON.parse(values[1])));
                 insert.run(...values);
               }
