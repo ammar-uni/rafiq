@@ -10,6 +10,7 @@ export const COMMANDS = [
         { name: 'مساحتي', value: 'home' }, { name: 'أذكار موثّقة', value: 'library' },
         { name: 'فكرة خير', value: 'idea' }, { name: 'محفوظاتي', value: 'favorites' },
         { name: 'وقت لاستراحة', value: 'break' }, { name: 'إعداداتي', value: 'settings' },
+        { name: 'مواقيت الصلاة', value: 'prayer' },
         { name: 'بياناتي', value: 'privacy' }, { name: 'مصادرنا', value: 'methodology' },
         { name: 'مساعدة وإبلاغ', value: 'support' }
       ] }]

@@ -5,11 +5,12 @@ export const SESSION_MINIMUM = 5 * MINUTE;
 export const LEAVE_GRACE = 45_000;
 
 export class ReminderEngine {
-  constructor({ store, queue, sendDM, now = Date.now, canSend = () => true, isInVoice = () => false, onError = () => {} }) {
+  constructor({ store, queue, sendDM, now = Date.now, canSend = () => true, isInVoice = () => false, onError = () => {}, prayers = null }) {
     Object.assign(this, { store, queue, sendDM, now, canSend, isInVoice, onError });
     this.sessions = new Map();
     this.pending = new Map();
     this.running = false;
+    this.prayers = prayers;
   }
   key(userId, guildId) { return `${guildId}:${userId}`; }
   tracks(userId, guildId) {
@@ -40,6 +41,7 @@ export class ReminderEngine {
     this.pending.delete(key);
   }
   cancelUser(userId) {
+    this.prayers?.forget(userId);
     for (const [key, session] of this.sessions) if (session.userId === userId) this.sessions.delete(key);
     for (const [key, entry] of this.pending) if (entry.session.userId === userId) this.pending.delete(key);
   }
@@ -83,6 +85,7 @@ export class ReminderEngine {
           if (user) await this.deliver(due.user_id, breakReminderPayload({ silent: user.delivery === 'silent' }), `break:${due.user_id}:${due.break_at}`);
         });
       }
+      await this.prayers?.tick();
       this.store.prune(this.now());
     } finally { this.running = false; }
   }
