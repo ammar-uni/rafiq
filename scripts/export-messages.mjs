@@ -1,8 +1,17 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { welcomePayload, reminderPayload, enabledPayload, settingsPayload, ideaPayload, homePayload, libraryPayload, breakPayload, methodologyPayload, privacyPayload, supportPayload } from '../src/messages.mjs';
-import { reminderIntroPayload, sourcePayload, ideaSourcePayload } from '../src/messages.mjs';
+import { reminderIntroPayload, sourcePayload, ideaSourcePayload, favoritesPayload } from '../src/messages.mjs';
+import { prayerPayload, prayerCalculationPayload, prayerAudioPayload, prayerLocationPayload, prayerReminderPayload } from '../src/messages.mjs';
+import { DEFAULT_PRAYER } from '../src/prayer-config.mjs';
+import { prayerSchedule } from '../src/prayer-times.mjs';
 const destination = new URL('../examples/', import.meta.url);
 await mkdir(destination, { recursive:true });
 const payloads = {welcome:welcomePayload(),reminder:reminderPayload(),enabled:enabledPayload(),settings:settingsPayload(),idea:ideaPayload(),home:homePayload(),library:libraryPayload(),break:breakPayload(),methodology:methodologyPayload(),privacy:privacyPayload(),support:supportPayload(),'reminder-intro':reminderIntroPayload(),source:sourcePayload('majlis'),'idea-source':ideaSourcePayload('parents')};
+payloads.favorites = favoritesPayload({dhikrCount:1,ideaCount:1});
+payloads['saved-idea'] = ideaPayload(0,{category:'saved',favorites:['parents']});
+payloads['active-timer'] = breakPayload({breakAt:1800000000000});
+const p = { ...DEFAULT_PRAYER, city: { label: 'مكة المكرمة، السعودية', latitude: 21.426, longitude: 39.826, timezone: 'Asia/Riyadh' }, method: 'UmmAlQura' };
+const today = prayerSchedule(p, '2026-09-09');
+Object.assign(payloads, { prayer: prayerPayload({ preferences: p, today, day: '2026-09-09', next: today[0] }), 'prayer-calculation': prayerCalculationPayload(p), 'prayer-audio': prayerAudioPayload(p), 'prayer-location': prayerLocationPayload(), 'prayer-reminder': prayerReminderPayload(p, today[0]) });
 for (const [name,payload] of Object.entries(payloads)) await writeFile(new URL(`${name}.json`,destination),JSON.stringify(payload,null,2)+'\n');
 console.log(`${Object.keys(payloads).length} Discord message payloads exported to examples/.`);
