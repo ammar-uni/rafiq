@@ -100,12 +100,51 @@ test('an existing subscriber can opt in from a second server without disabling t
 test('a shared session delivers one silent DM after the grace period', async t => {
   const h = harness(t);
   await h.act('enable'); h.enter(); h.advance(5 * MINUTE); h.leave();
-  h.advance(LEAVE_GRACE - 1); await h.engine.tick(); assert.equal(h.sent.length, 0);
+  h.advance(45_000); await h.engine.tick(); assert.equal(h.sent.length, 0);
+  h.advance(14_999); await h.engine.tick(); assert.equal(h.sent.length, 0);
   h.advance(1); await Promise.all([h.engine.tick(), h.engine.tick()]);
   assert.equal(h.sent.length, 1);
   assert.ok(h.sent[0].payload.flags & FLAGS.silent);
   assert.ok(!(h.sent[0].payload.flags & FLAGS.ephemeral));
   assert.deepEqual(h.sent[0].payload.allowed_mentions.parse, []);
+});
+
+test('returning during the added fifteen seconds cancels the farewell', async t => {
+  const h = harness(t); await h.act('enable'); h.enter(); h.advance(5 * MINUTE); h.leave();
+  h.advance(50_000); await h.engine.tick(); assert.equal(h.sent.length, 0);
+  h.enter(); h.advance(10_000); await h.engine.tick(); assert.equal(h.sent.length, 0);
+});
+
+test('five-per-day is opt-in and capped across servers and frequency changes', async t => {
+  const h = harness(t);
+  const menu = await h.act('frequency', ['session5']);
+  assert.equal(h.store.getUser('1').enabled, false);
+  assert.match(JSON.stringify(menu), /حتى ٥ مرات/);
+  await h.act('enable'); await h.act('enable', [], '1', '20');
+  const start = h.now();
+  for (let n = 0; n < 5; n++) {
+    assert.ok(h.store.claimReminder('1', n % 2 ? '20' : '10', h.now()));
+    assert.equal(h.store.claimReminder('1', '20', h.now()), null);
+    h.advance(120 * MINUTE);
+  }
+  assert.equal(h.store.claimReminder('1', '10', h.now()), null);
+  await h.act('frequency', ['daily']); await h.act('frequency', ['session']); await h.act('frequency', ['session5']);
+  assert.equal(h.store.claimReminder('1', '20', h.now()), null);
+  h.advance(start + DAY - 1 - h.now());
+  assert.equal(h.store.claimReminder('1', '20', h.now()), null);
+  h.advance(1); assert.ok(h.store.claimReminder('1', '20', h.now()));
+});
+
+test('five-per-day keeps the two-hour gap and counts ambiguous delivery failures', async t => {
+  let attempts = 0;
+  const h = harness(t, async () => { attempts++; throw new Error('network unavailable'); });
+  await h.act('enable'); await h.act('frequency', ['session5']);
+  for (let n = 0; n < 6; n++) {
+    h.enter(); h.advance(5 * MINUTE); h.leave(); h.advance(MINUTE); await h.engine.tick();
+    assert.equal(h.store.claimReminder('1', '10', h.now() + 120 * MINUTE - 1), null);
+    h.advance(120 * MINUTE);
+  }
+  assert.equal(attempts, 5);
 });
 
 test('channel moves, mute-like repeated joins and reconnects preserve one session', async t => {

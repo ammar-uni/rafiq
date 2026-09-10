@@ -13,7 +13,7 @@ test('the browser preview and persisted app return identical payloads for the ma
     ['home'], ['favorites'], ['saved_ideas'], ['idea_save_parents_family'], ['idea_save_calm_play'],
     ['favorites'], ['saved_ideas'], ['idea_source_parents_saved'], ['idea_save_parents_saved'], ['idea_save_calm_saved'],
     ['favorite_guidance'], ['favorite_majlis'], ['saved_dhikr'], ['source_majlis_saved'], ['favorite_majlis_saved'],
-    ['reminder_intro'], ['enable'], ['settings'], ['frequency', ['session']], ['delivery', ['normal']],
+    ['reminder_intro'], ['enable'], ['settings'], ['frequency', ['session']], ['frequency', ['session5']], ['reminder_intro'], ['delivery', ['normal']],
     ['break_15'], ['break_extend_15'], ['home'], ['unsubscribe_here'], ['home'], ['enable'],
     ['pause_today'], ['break'], ['resume'], ['break_90'], ['break_cancel'], ['disable'],
     ['test_dm'], ['test_dm'], ['privacy'], ['forget_confirm'], ['home'], ['favorites']

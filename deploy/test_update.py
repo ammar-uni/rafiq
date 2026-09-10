@@ -80,7 +80,7 @@ class UpdateTests(unittest.TestCase):
                             status='completed', conclusion='success')
             def extract(_archive, code):
                 (code / 'deploy').mkdir()
-                (code / 'deploy/schema-version').write_text('2')
+                (code / 'deploy/schema-version').write_text(updater.SCHEMA)
             with patch.multiple(updater, BASE=base, RELEASES=releases, META=meta), \
                  patch.object(updater, 'api', side_effect=[{'sha':commit}, {'workflow_runs':[run_info]}]), \
                  patch.object(updater, 'request', return_value=io.BytesIO(b'archive')), \

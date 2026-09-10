@@ -2,7 +2,7 @@ import { MINUTE } from './store.mjs';
 import { reminderPayload, breakReminderPayload } from './messages.mjs';
 
 export const SESSION_MINIMUM = 5 * MINUTE;
-export const LEAVE_GRACE = 45_000;
+export const LEAVE_GRACE = MINUTE;
 
 export class ReminderEngine {
   constructor({ store, queue, sendDM, now = Date.now, canSend = () => true, isInVoice = () => false, onError = () => {}, prayers = null }) {

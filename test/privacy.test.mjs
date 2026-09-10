@@ -24,7 +24,7 @@ function storage(t) {
   return { filename, folder, options, open };
 }
 
-test('rollback bridge reads v3 preferences without losing subscriptions or attempts', t => {
+test('v3 preferences preserve the five-per-day choice, subscriptions and attempts', t => {
   const h = storage(t); let store = h.open();
   store.subscribe('1', '10'); store.toggleFavorite('1', 'guidance');
   store.claimReminder('1', '10', 1800000000000); store.close();
@@ -32,9 +32,23 @@ test('rollback bridge reads v3 preferences without losing subscriptions or attem
   const saved = snapshot.read(); saved.version = 3; saved.tables.users[0][2] = 'session5';
   snapshot.write(saved); snapshot.close();
   store = h.open();
-  assert.equal(store.getUser('1').frequency, 'session');
+  assert.equal(store.getUser('1').frequency, 'session5');
   assert.deepEqual(store.subscriptions('1'), ['10']);
   assert.deepEqual(store.favorites('1'), ['guidance']);
+  assert.equal(store.db.prepare('SELECT count(*) AS n FROM reminder_attempts').get().n, 1);
+});
+
+test('v2 preferences migrate without changing the existing frequency or history', t => {
+  const h = storage(t); let store = h.open();
+  store.subscribe('1', '10'); store.updateUser('1', { frequency: 'session' });
+  store.toggleFavorite('1', 'guidance'); store.claimReminder('1', '10', 1800000000000); store.close();
+  const snapshot = new EncryptedSnapshot(h.filename, h.options.encryptionKey);
+  const saved = snapshot.read(); saved.version = 2; snapshot.write(saved); snapshot.close();
+  store = h.open(); assert.equal(store.getUser('1').frequency, 'session');
+  store.updateUser('1', { frequency: 'session5' }); store.close(); store = h.open();
+  assert.equal(store.getUser('1').frequency, 'session5');
+  assert.deepEqual(store.favorites('1'), ['guidance']);
+  assert.deepEqual(store.subscriptions('1'), ['10']);
   assert.equal(store.db.prepare('SELECT count(*) AS n FROM reminder_attempts').get().n, 1);
 });
 

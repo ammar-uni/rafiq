@@ -31,8 +31,14 @@
                 },
                 {
                   "value": "session",
-                  "label": "بعد المجالس",
+                  "label": "بعد المجالس — حتى ٣ مرات",
                   "description": "فاصل ساعتين؛ حتى ٣ مرات خلال ٢٤ ساعة",
+                  "default": false
+                },
+                {
+                  "value": "session5",
+                  "label": "بعد المجالس — حتى ٥ مرات",
+                  "description": "فاصل ساعتين؛ حتى ٥ مرات خلال ٢٤ ساعة",
                   "default": false
                 }
               ]

@@ -69,7 +69,7 @@ export class RafiqApp {
       return settings('استُؤنفت التنبيهات التي فعّلتها.');
     }
     if (action === 'frequency' || action === 'delivery') {
-      const allowed = action === 'frequency' ? ['daily', 'session'] : ['normal', 'silent'];
+      const allowed = action === 'frequency' ? ['daily', 'session', 'session5'] : ['normal', 'silent'];
       if (values.length !== 1 || !allowed.includes(values[0])) return ui.noticePayload('اختيار غير صالح', 'افتح الإعدادات واختر من القائمة.');
       this.store.updateUser(userId, { [action]: values[0] });
       return settings('✓ حُفظ اختيارك');
