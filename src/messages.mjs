@@ -141,11 +141,14 @@ export function reminderPayload({ silent = true, preview = false, enabled = true
       : row(button('تذكيري', 'settings'), button(paused ? 'استئناف التذكير' : 'إيقاف ٢٤ ساعة', paused ? 'resume' : 'pause_today'))
   ], { silent, ephemeral: preview });
 }
+const frequencyDescription = frequency => frequency === 'daily'
+  ? 'مرة كل ٢٤ ساعة كحد أقصى'
+  : `بفاصل ساعتين على الأقل، وحتى ${frequency === 'session5' ? '٥' : '٣'} مرات خلال ٢٤ ساعة`;
 export function reminderIntroPayload({ enabled = false, subscribedHere = true, frequency = 'daily', delivery = 'silent' } = {}) {
   return envelope([
     text('## تذكير المجلس، باختيارك 🌿\nشاهد شكل الرسالة أولًا، ثم قرّر إن كنت تريد وصولها في الخاص.'),
-    text('بعد مجلس صوتي مشترك مدته ٥ دقائق أو أكثر، ينتظر رفيق نحو ٤٥ ثانية بعد خروجك لاحتمال عودتك.'),
-    text(`اختيارك الحالي: ${frequency === 'session' ? 'بفاصل ساعتين، وحتى ٣ مرات خلال ٢٤ ساعة' : 'مرة كل ٢٤ ساعة كحد أقصى'} · ${delivery === 'normal' ? 'بتنبيه عادي حسب إعدادات ديسكورد' : 'في الخاص بلا تنبيه دفع أو سطح مكتب'}.`),
+    text('بعد مجلس صوتي مشترك مدته ٥ دقائق أو أكثر، ينتظر رفيق دقيقة بعد خروجك لاحتمال عودتك.'),
+    text(`اختيارك الحالي: ${frequencyDescription(frequency)} · ${delivery === 'normal' ? 'بتنبيه عادي حسب إعدادات ديسكورد' : 'في الخاص بلا تنبيه دفع أو سطح مكتب'}.`),
     text('-# الذكر عند القيام من المجلس؛ مهلة الإرسال لتنظيم التنبيه. يمكنك إيقاف التذكير متى شئت.'),
     separator(), row(button('شاهد نموذج الرسالة', 'preview'), button(enabled && subscribedHere ? 'ضبط تذكيري' : 'فعّل تذكير المجلس', enabled && subscribedHere ? 'settings' : 'enable', 3)),
     row(button('الآن أتصفّح فقط', 'home'))
@@ -154,13 +157,13 @@ export function reminderIntroPayload({ enabled = false, subscribedHere = true, f
 export function enabledPayload({ frequency = 'daily' } = {}) {
   return envelope([
     text('## تذكيرك جاهز 🌿\nأذكّرك في الخاص بعد خروجك من الصوت، إذا استمرت جلستك ٥ دقائق على الأقل وحضر معك شخص آخر.'),
-    text(`-# ${frequency === 'daily' ? 'مرة كل ٢٤ ساعة كحد أقصى' : 'بفاصل ساعتين على الأقل، وبحد أقصى ٣ مرات خلال ٢٤ ساعة'} · ننتظر نحو ٤٥ ثانية لاحتمال عودتك`),
+    text(`-# ${frequencyDescription(frequency)} · ننتظر دقيقة لاحتمال عودتك`),
     separator(),
     row(button('اختبر الخاص', 'test_dm'), button('ضبط التذكير', 'settings'), button('مساحتي', 'home'))
   ], { ephemeral: true });
 }
 export function settingsPayload({ frequency = 'daily', delivery = 'silent', enabled = false, subscribedHere = true, inGuild = false, paused = false, pausedUntil = 0, dmBlocked = false, notice = '' } = {}) {
-  if (!['daily', 'session'].includes(frequency) || !['normal', 'silent'].includes(delivery)) throw new RangeError('Invalid reminder preference');
+  if (!['daily', 'session', 'session5'].includes(frequency) || !['normal', 'silent'].includes(delivery)) throw new RangeError('Invalid reminder preference');
   const select = (id, placeholder, options, selected) => row({
     type: 3, custom_id: `rafiq:v1:${id}`, placeholder, min_values: 1, max_values: 1,
     options: options.map(([value, label, description]) => ({ value, label, description, default: value === selected }))
@@ -170,7 +173,8 @@ export function settingsPayload({ frequency = 'daily', delivery = 'silent', enab
     ...(paused && pausedUntil ? [text(`ينتهي الإيقاف <t:${Math.floor(pausedUntil / 1000)}:R>.`)] : []),
     select('frequency', 'كم مرة؟', [
       ['daily', 'مرة كل ٢٤ ساعة كحد أقصى', 'بداية خفيفة لتقليل تكرار الرسائل'],
-      ['session', 'بعد المجالس', 'فاصل ساعتين؛ حتى ٣ مرات خلال ٢٤ ساعة']
+      ['session', 'بعد المجالس — حتى ٣ مرات', 'فاصل ساعتين؛ حتى ٣ مرات خلال ٢٤ ساعة'],
+      ['session5', 'بعد المجالس — حتى ٥ مرات', 'فاصل ساعتين؛ حتى ٥ مرات خلال ٢٤ ساعة']
     ], frequency),
     select('delivery', 'كيف تصلك الرسالة؟', [
       ['normal', 'تنبيه عادي', 'حسب إعدادات الإشعارات في ديسكورد'],

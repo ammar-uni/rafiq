@@ -27,7 +27,7 @@ export class Store {
       CREATE TABLE IF NOT EXISTS users (
         user_id TEXT PRIMARY KEY,
         enabled INTEGER NOT NULL DEFAULT 0 CHECK(enabled IN (0,1)),
-        frequency TEXT NOT NULL DEFAULT 'daily' CHECK(frequency IN ('daily','session')),
+        frequency TEXT NOT NULL DEFAULT 'daily' CHECK(frequency IN ('daily','session','session5')),
         delivery TEXT NOT NULL DEFAULT 'silent' CHECK(delivery IN ('normal','silent')),
         paused_until INTEGER NOT NULL DEFAULT 0,
         dm_blocked INTEGER NOT NULL DEFAULT 0 CHECK(dm_blocked IN (0,1)),
@@ -63,7 +63,7 @@ export class Store {
         local_day TEXT NOT NULL, prayer TEXT NOT NULL, attempted_at INTEGER NOT NULL,
         PRIMARY KEY(user_id, local_day, prayer)
       );
-      PRAGMA user_version = 2;
+      PRAGMA user_version = 3;
     `);
     try {
       if (filename !== ':memory:') {
@@ -79,9 +79,6 @@ export class Store {
               const insert = this.db.prepare('INSERT INTO ' + table + ' (' + names.join(', ') + ') VALUES (' + names.map(() => '?').join(', ') + ')');
               for (const values of saved.tables[table]) {
                 if (!Array.isArray(values) || values.length !== names.length) throw new Error('Invalid snapshot row');
-                // Rollback bridge: preserve v3 data and conservatively use the older
-                // three-per-day option until the five-per-day release is active.
-                if (saved.version === 3 && table === 'users' && values[2] === 'session5') values[2] = 'session';
                 if (table === 'prayer_settings') values[1] = JSON.stringify(readStoredPrayer(JSON.parse(values[1])));
                 insert.run(...values);
               }
@@ -99,7 +96,7 @@ export class Store {
     for (const [table, names] of Object.entries(tables)) {
       saved[table] = this.db.prepare('SELECT ' + names.join(', ') + ' FROM ' + table).all().map(row => names.map(name => row[name]));
     }
-    this.snapshot.write({ version: 2, tables: saved });
+    this.snapshot.write({ version: 3, tables: saved });
   }
 
   transaction(fn) {
@@ -134,7 +131,7 @@ export class Store {
     for (const [key, value] of entries) {
       if (!Object.hasOwn(columns, key)) throw new TypeError('Unknown preference');
       if (['enabled', 'dmBlocked'].includes(key) && typeof value !== 'boolean') throw new TypeError('Expected boolean');
-      if (key === 'frequency' && !['daily', 'session'].includes(value)) throw new RangeError('Invalid frequency');
+      if (key === 'frequency' && !['daily', 'session', 'session5'].includes(value)) throw new RangeError('Invalid frequency');
       if (key === 'delivery' && !['normal', 'silent'].includes(value)) throw new RangeError('Invalid delivery');
       if (['pausedUntil', 'breakAt', 'lastTestAt'].includes(key) && !(value === null && key !== 'pausedUntil') && (!Number.isSafeInteger(value) || value < 0)) throw new RangeError('Invalid timestamp');
     }
@@ -204,7 +201,8 @@ export class Store {
       const attempts = this.db.prepare('SELECT attempted_at FROM reminder_attempts WHERE user_id = ? AND attempted_at > ? ORDER BY attempted_at DESC')
         .all(userId, now - DAY);
       const interval = user.frequency === 'daily' ? DAY : 120 * MINUTE;
-      if (attempts.length >= 3 || (attempts.length && now - attempts[0].attempted_at < interval)) return null;
+      const limit = user.frequency === 'session5' ? 5 : user.frequency === 'session' ? 3 : 1;
+      if (attempts.length >= limit || (attempts.length && now - attempts[0].attempted_at < interval)) return null;
       // Reserve before the network call. Ambiguous failures must not cause repeated DMs.
       this.db.prepare('INSERT INTO reminder_attempts(user_id, attempted_at) VALUES (?, ?)').run(userId, now);
       return user;

@@ -71,7 +71,7 @@ export function statusPayload(interaction, store) {
   const panel = store.getPanel(interaction.guildId);
   return noticePayload('رفيق في هذا السيرفر', [
     panel ? `[بطاقة الترحيب](https://discord.com/channels/${interaction.guildId}/${panel.channel_id}/${panel.message_id})` : 'لم تُنشر بطاقة بعد. استخدم /rafiq-setup.',
-    'التفعيل اختياري. المجالس المشتركة من ٥ دقائق؛ مهلة خروج نحو ٤٥ ثانية. البداية: رسالة صامتة كل ٢٤ ساعة كحد أقصى.',
+    'التفعيل اختياري. المجالس المشتركة من ٥ دقائق؛ مهلة خروج دقيقة. البداية: رسالة صامتة كل ٢٤ ساعة كحد أقصى.',
     'لا توجد رسائل عامة مجدولة أو قراءة لمحتوى المحادثات. يجب أن يستطيع البوت رؤية القناة الصوتية حتى تصله أحداثها.'
   ].join('\n'));
 }
