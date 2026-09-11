@@ -10,11 +10,11 @@ Type=simple
 User=rafiq
 Group=rafiq
 WorkingDirectory=/opt/rafiq/current
-EnvironmentFile=/etc/rafiq/rafiq.env
+EnvironmentFile=/etc/opt/rafiq/rafiq.env
 Environment=NODE_ENV=production
-Environment=RAFIQ_DATABASE_PATH=/var/lib/rafiq/rafiq.enc
+Environment=RAFIQ_DATABASE_PATH=/var/opt/rafiq/rafiq.enc
 Environment=RAFIQ_STATUS_PATH=/run/rafiq/status.json
-Environment=HOME=/var/lib/rafiq
+Environment=HOME=/var/opt/rafiq
 ExecStart=/usr/local/bin/node scripts/run.mjs
 Restart=on-failure
 RestartSec=10
@@ -23,8 +23,7 @@ TimeoutStopSec=30
 KillMode=mixed
 RuntimeDirectory=rafiq
 RuntimeDirectoryMode=0700
-StateDirectory=rafiq
-StateDirectoryMode=0700
+ReadWritePaths=/var/opt/rafiq
 UMask=0077
 NoNewPrivileges=true
 PrivateTmp=true

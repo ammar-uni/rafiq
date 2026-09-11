@@ -8,7 +8,7 @@ Type=oneshot
 User=rafiq
 Group=rafiq
 WorkingDirectory=/opt/rafiq/current
-EnvironmentFile=/etc/rafiq/rafiq.env
+EnvironmentFile=/etc/opt/rafiq/rafiq.env
 Environment=NODE_ENV=production
 ExecStart=/usr/local/bin/node scripts/register-commands.mjs
 UMask=0077
