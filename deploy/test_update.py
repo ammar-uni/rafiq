@@ -23,7 +23,7 @@ class UpdateTests(unittest.TestCase):
                 item.size = 2
                 out.addfile(item, io.BytesIO(b'{}'))
             else:
-                item.linkname = '/etc/rafiq/rafiq.env'
+                item.linkname = '/etc/opt/rafiq/rafiq.env'
                 out.addfile(item)
         data.seek(0)
         return data

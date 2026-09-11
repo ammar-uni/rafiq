@@ -21,7 +21,7 @@ import urllib.request
 REPO = 'ammar-uni/rafiq'
 BASE = Path('/opt/rafiq')
 RELEASES = BASE / 'releases'
-META = Path('/var/lib/rafiq-deploy')
+META = Path('/var/opt/rafiq-deploy')
 STATUS = Path('/run/rafiq/status.json')
 SCHEMA = '3'
 
@@ -89,7 +89,7 @@ def build(directory):
         '--uid=rafiq-build', '--gid=rafiq-build', '--working-directory=' + str(directory),
         '--property=ProtectSystem=strict', '--property=ProtectHome=yes',
         '--property=PrivateTmp=yes', '--property=NoNewPrivileges=yes',
-        '--property=InaccessiblePaths=/etc/rafiq /var/lib/rafiq',
+        '--property=InaccessiblePaths=/etc/opt/rafiq /var/opt/rafiq',
         '--property=ReadWritePaths=' + str(directory) + ' /var/cache/rafiq-build',
         '--property=MemoryMax=2G', '--property=TasksMax=128',
         '--property=RuntimeMaxSec=600', '--setenv=HOME=/var/cache/rafiq-build',
