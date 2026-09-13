@@ -75,8 +75,8 @@ export class PrayerApp {
       this.searches.set(userId, entry);
       this.globalSearches.push(now);
       try { entry.cities = await this.lookup(values[0]); }
-      catch { return this.page(userId, 'خدمة البحث غير متاحة الآن. بقي اختيارك السابق؛ يمكنك المحاولة لاحقًا.'); }
-      if (!entry.cities.length) return this.page(userId, 'لم نجد مدينة مطابقة. جرّب اسمها بالإنجليزية مع الدولة.');
+      catch { return ui.prayerLocationPayload('تعذّر البحث الآن. لم نغيّر مدينتك المحفوظة؛ حاول مجددًا بعد قليل.'); }
+      if (!entry.cities.length) return ui.prayerLocationPayload('لم نجد مدينة مطابقة. جرّب الاسم الكامل مع الدولة، أو تهجئة أخرى بالعربية أو الإنجليزية.');
       return ui.prayerCitiesPayload(entry.cities, entry.token);
     }
     if (action.startsWith('prayer_city_')) {
