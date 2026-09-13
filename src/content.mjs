@@ -41,6 +41,29 @@ export const DHIKR_CARDS = Object.freeze([
       [citation('muslim', '2721a', 'عبد الله بن مسعود')])
   }
 ]);
+export const OCCASION_CARDS = Object.freeze({
+  fridayPrayer: {
+    id: 'friday-prayer', title: 'استعدّ لصلاة الجمعة',
+    body: 'تذكير للاستعداد لصلاة الجمعة. راجع موعد الخطبة والصلاة في مسجدك.',
+    source: { ...source('https://sunnah.com/bukhari:881', 'رواه البخاري',
+      'الحديث أصل فضل التبكير إلى الجمعة. نص التذكير صياغة من رفيق؛ مهلة ٤٥ دقيقة تنظيم للإشعار، وليست تحديدًا شرعيًا ولا معرفة بموعد خطبة مسجدك.',
+      [citation('bukhari', '881', 'أبو هريرة')]), checkedOn: '2026-09-13' }
+  },
+  fridayDua: {
+    id: 'friday-dua', title: 'وقت للدعاء يوم الجمعة',
+    body: 'خصّص وقتًا للدعاء. آخر يوم الجمعة بعد العصر من أرجى أوقات الإجابة.',
+    source: { ...source('https://binbaz.org.sa/fatwas/21354/متى-ساعة-الاجابة-يوم-الجمعة-وكيفية-الدعاء', 'رواه أبو داود',
+      'حديث جابر في التماسها آخر ساعة بعد العصر، صححه الألباني. بيّن ابن باز أن ما بعد العصر إلى الغروب من أرجى أوقاتها. نص التذكير صياغة من رفيق؛ الساعة ذات الستين دقيقة موعد تنبيه تقني، ولا نجزم بتعيين ساعة الإجابة.',
+      [citation('abudawud', '1048', 'جابر بن عبد الله')]), checkedOn: '2026-09-13' }
+  },
+  qada: {
+    id: 'ramadan-qada', title: 'تذكير بقضاء رمضان',
+    body: 'إن بقي عليك قضاء من رمضان، فرتّب له أيامًا قبل رمضان القادم بحسب استطاعتك. يمكنك إيقاف هذا التذكير متى لم تعد تحتاجه.',
+    source: { ...source('https://binbaz.org.sa/fatwas/12340/جاء-رمضان-وعليه-ايام-من-رمضان-سابق-هل-يكون-اثما', 'أثر عائشة في صحيح البخاري',
+      'أثر عائشة في قضاء الصيام في شعبان، وبيان ابن باز للقضاء قبل رمضان القادم مع التفريق في العذر. نص التذكير صياغة من رفيق؛ موعدا ٣٠ و١٥ يومًا لتنظيم الإشعارات، ولا يدعوان إلى تأخير القضاء إلى شعبان.',
+      [citation('bukhari', '1950', 'عائشة')]), checkedOn: '2026-09-13' }
+  }
+});
 const speech = source('https://sunnah.com/bukhari:6018', 'رواه البخاري ومسلم',
   'أصل الفكرة في الأمر بالقول الطيب. صياغة الرسالة أو طريقة مساعدة صاحبك اقتراح من رفيق، وليست لفظ الحديث.',
   [citation('bukhari', '6018', 'أبو هريرة'), citation('muslim', '47a', 'أبو هريرة')]);
@@ -93,4 +116,4 @@ export function ideaById(id) { return GOOD_DEEDS.find(card => card.id === id); }
 function freezeContent(value) {
   if (value && typeof value === 'object') { Object.values(value).forEach(freezeContent); Object.freeze(value); }
 }
-freezeContent(DHIKR_CARDS); freezeContent(GOOD_DEEDS); freezeContent(IDEA_CATEGORIES);
+freezeContent(DHIKR_CARDS); freezeContent(GOOD_DEEDS); freezeContent(IDEA_CATEGORIES); freezeContent(OCCASION_CARDS);

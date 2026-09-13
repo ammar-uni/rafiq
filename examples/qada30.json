@@ -1,0 +1,46 @@
+{
+  "flags": 36864,
+  "allowed_mentions": {
+    "parse": [],
+    "replied_user": false
+  },
+  "components": [
+    {
+      "type": 17,
+      "accent_color": 9088708,
+      "components": [
+        {
+          "type": 10,
+          "content": "## تذكير بقضاء رمضان\nإن بقي عليك قضاء من رمضان، فرتّب له أيامًا قبل رمضان القادم بحسب استطاعتك. يمكنك إيقاف هذا التذكير متى لم تعد تحتاجه."
+        },
+        {
+          "type": 10,
+          "content": "بقي نحو **٣٠ يومًا** على رمضان المتوقع بتقويم أم القرى. ثبوت الشهر بإعلان بلدك.\n-# مكة المكرمة، السعودية"
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "تذكيراتي",
+              "style": 2,
+              "custom_id": "rafiq:v1:prayer_occasions"
+            },
+            {
+              "type": 2,
+              "label": "المصدر",
+              "style": 2,
+              "custom_id": "rafiq:v1:prayer_occasion_sources"
+            },
+            {
+              "type": 2,
+              "label": "إيقاف هذا التذكير",
+              "style": 2,
+              "custom_id": "rafiq:v1:prayer_occasion_off_qada"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

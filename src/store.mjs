@@ -1,7 +1,7 @@
 import { DatabaseSync } from 'node:sqlite';
 import { dhikrById, ideaById } from './content.mjs';
 import { EncryptedSnapshot } from './encrypted-snapshot.mjs';
-import { DEFAULT_PRAYER, PRAYERS, validatePrayer, readStoredPrayer } from './prayer-config.mjs';
+import { DEFAULT_PRAYER, DEFAULT_OCCASIONS, PRAYERS, validatePrayer, readStoredPrayer } from './prayer-config.mjs';
 
 export const MINUTE = 60_000;
 export const DAY = 24 * 60 * MINUTE;
@@ -63,7 +63,7 @@ export class Store {
         local_day TEXT NOT NULL, prayer TEXT NOT NULL, attempted_at INTEGER NOT NULL,
         PRIMARY KEY(user_id, local_day, prayer)
       );
-      PRAGMA user_version = 3;
+      PRAGMA user_version = 4;
     `);
     try {
       if (filename !== ':memory:') {
@@ -71,7 +71,7 @@ export class Store {
         const saved = this.snapshot.read();
         if (saved) {
           const sourceTables = Object.entries(tables).filter(([name]) => saved.version !== 1 || !name.startsWith('prayer_'));
-          if (![1, 2, 3].includes(saved.version) || !saved.tables || Object.keys(saved.tables).length !== sourceTables.length) throw new Error('Unsupported snapshot structure');
+          if (![1, 2, 3, 4].includes(saved.version) || !saved.tables || Object.keys(saved.tables).length !== sourceTables.length) throw new Error('Unsupported snapshot structure');
           this.db.exec('BEGIN IMMEDIATE');
           try {
             for (const [table, names] of sourceTables) {
@@ -96,7 +96,7 @@ export class Store {
     for (const [table, names] of Object.entries(tables)) {
       saved[table] = this.db.prepare('SELECT ' + names.join(', ') + ' FROM ' + table).all().map(row => names.map(name => row[name]));
     }
-    this.snapshot.write({ version: 3, tables: saved });
+    this.snapshot.write({ version: 4, tables: saved });
   }
 
   transaction(fn) {
@@ -236,19 +236,21 @@ export class Store {
     });
   }
 
-  disablePrayer(userId) {
+  disablePrayer(userId, all = false) {
     const p = this.getPrayer(userId);
-    if (p.enabled) this.setPrayer(userId, { ...p, enabled: false });
+    if (p.enabled || (all && Object.values(p.occasions).some(Boolean))) this.setPrayer(userId, { ...p, enabled: false, ...(all ? { occasions: { ...DEFAULT_OCCASIONS } } : {}) });
   }
 
   prayerUsers() { return this.db.prepare('SELECT user_id FROM prayer_settings').all().map(row => row.user_id); }
 
   claimPrayer(userId, expected, event, now) {
-    if (!PRAYERS.some(([key]) => key === event.key) || !/^\d{4}-\d{2}-\d{2}$/.test(event.day) || !Number.isSafeInteger(event.at)) throw new RangeError('Invalid prayer event');
+    const occasion = ['qada30', 'qada15'].includes(event.key) ? 'qada' : ['fridayPrayer', 'fridayDua'].includes(event.key) ? event.key : null;
+    if ((!occasion && !PRAYERS.some(([key]) => key === event.key)) || !/^\d{4}-\d{2}-\d{2}$/.test(event.day) || !Number.isSafeInteger(event.at)) throw new RangeError('Invalid prayer event');
     return this.transaction(() => {
       const p = this.getPrayer(userId), user = this.getUser(userId);
-      if (JSON.stringify(p) !== JSON.stringify(expected) || !p.enabled || user.dmBlocked || user.pausedUntil > event.at ||
-          p.activatedAt > event.at || event.at > now || now - event.at > 2 * MINUTE) return null;
+      const activation = occasion ? p.occasions[occasion] : p.activatedAt;
+      if (JSON.stringify(p) !== JSON.stringify(expected) || !(occasion ? activation > 0 : p.enabled) || user.dmBlocked || user.pausedUntil > event.at ||
+          activation > event.at || event.at > now || now - event.at > 2 * MINUTE) return null;
       // The day/prayer key survives edits and restarts; a travel cooldown also prevents rapid repeat sends.
       if (this.db.prepare('SELECT 1 FROM prayer_attempts WHERE user_id = ? AND prayer = ? AND attempted_at > ?').get(id(userId), event.key, now - 12 * 60 * MINUTE)) return null;
       const result = this.db.prepare('INSERT OR IGNORE INTO prayer_attempts VALUES (?, ?, ?, ?)').run(id(userId), event.day, event.key, now);

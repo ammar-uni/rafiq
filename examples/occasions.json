@@ -1,0 +1,120 @@
+{
+  "flags": 32832,
+  "allowed_mentions": {
+    "parse": [],
+    "replied_user": false
+  },
+  "components": [
+    {
+      "type": 17,
+      "accent_color": 9088708,
+      "components": [
+        {
+          "type": 10,
+          "content": "## الجمعة وقضاء رمضان\nاختر ما تحتاجه؛ كل زر يفعّل تذكيرًا واحدًا أو يوقفه فورًا."
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "**مدينتك: مكة المكرمة، السعودية**"
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "مواقيت مدينتي",
+            "style": 3,
+            "custom_id": "rafiq:v1:prayer"
+          }
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "### صلاة الجمعة · مفعّل\nقبل موعد الظهر يوم الجمعة بـ٤٥ دقيقة؛ موعد خطبة مسجدك قد يختلف.\nالتنبيه القادم: **11:45** بتوقيت مدينتك · <t:1800002700:R>."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "إيقاف صلاة الجمعة",
+            "style": 2,
+            "custom_id": "rafiq:v1:prayer_occasion_fridayPrayer",
+            "disabled": false
+          }
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "### دعاء الجمعة · مفعّل\nفي الساعة الأخيرة قبل المغرب يوم الجمعة، بعد العصر.\nالتنبيه القادم: **16:59** بتوقيت مدينتك · <t:1800021540:R>."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "إيقاف دعاء الجمعة",
+            "style": 2,
+            "custom_id": "rafiq:v1:prayer_occasion_fridayDua",
+            "disabled": false
+          }
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "### قضاء قبل رمضان · مفعّل\nلمن عليه قضاء: تنبيهان فقط كل سنة، قبل رمضان المتوقع بـ٣٠ يومًا ثم بـ١٥ يومًا، وقت الظهر."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "إيقاف قضاء قبل رمضان",
+            "style": 2,
+            "custom_id": "rafiq:v1:prayer_occasion_qada",
+            "disabled": false
+          }
+        },
+        {
+          "type": 10,
+          "content": "-# مواعيد الجمعة بحسب جدول مدينتك. رمضان متوقع بتقويم أم القرى؛ ثبوته بإعلان بلدك. ساعة الدعاء وقت تُرجى فيه الإجابة، وليست وعدًا بإجابة محددة."
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "الإشعار",
+              "style": 2,
+              "custom_id": "rafiq:v1:prayer_audio"
+            },
+            {
+              "type": 2,
+              "label": "المصادر",
+              "style": 2,
+              "custom_id": "rafiq:v1:prayer_occasion_sources"
+            }
+          ]
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "إعداداتي العامة",
+              "style": 2,
+              "custom_id": "rafiq:v1:settings"
+            },
+            {
+              "type": 2,
+              "label": "مساحتي",
+              "style": 2,
+              "custom_id": "rafiq:v1:home"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

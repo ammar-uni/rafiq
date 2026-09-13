@@ -4,6 +4,8 @@ import { reminderIntroPayload, sourcePayload, ideaSourcePayload, favoritesPayloa
 import { prayerPayload, prayerCalculationPayload, prayerAudioPayload, prayerLocationPayload, prayerReminderPayload } from '../src/messages.mjs';
 import { DEFAULT_PRAYER } from '../src/prayer-config.mjs';
 import { prayerSchedule } from '../src/prayer-times.mjs';
+import { occasionsPayload, occasionSourcesPayload, occasionReminderPayload } from '../src/messages.mjs';
+import { occasionEvents, nextFridayReminders } from '../src/occasion-times.mjs';
 const destination = new URL('../examples/', import.meta.url);
 await mkdir(destination, { recursive:true });
 const payloads = {welcome:welcomePayload(),reminder:reminderPayload(),enabled:enabledPayload(),settings:settingsPayload(),idea:ideaPayload(),home:homePayload(),library:libraryPayload(),break:breakPayload(),methodology:methodologyPayload(),privacy:privacyPayload(),support:supportPayload(),'reminder-intro':reminderIntroPayload(),source:sourcePayload('majlis'),'idea-source':ideaSourcePayload('parents')};
@@ -13,5 +15,9 @@ payloads['active-timer'] = breakPayload({breakAt:1800000000000});
 const p = { ...DEFAULT_PRAYER, city: { label: 'مكة المكرمة، السعودية', latitude: 21.426, longitude: 39.826, timezone: 'Asia/Riyadh' }, method: 'UmmAlQura' };
 const today = prayerSchedule(p, '2026-09-09');
 Object.assign(payloads, { prayer: prayerPayload({ preferences: p, today, day: '2026-09-09', next: today[0] }), 'prayer-calculation': prayerCalculationPayload(p), 'prayer-audio': prayerAudioPayload(p), 'prayer-location': prayerLocationPayload(), 'prayer-reminder': prayerReminderPayload(p, today[0]) });
+const occasions = { fridayPrayer: 1800000000000, fridayDua: 1800000000000, qada: 1800000000000 };
+payloads.occasions = occasionsPayload({ preferences: { ...p, occasions }, ready: true, next: nextFridayReminders(p, 1800000000000) });
+payloads['occasion-sources'] = occasionSourcesPayload();
+for (const day of ['2026-09-18', '2027-01-09', '2027-01-24']) for (const event of occasionEvents({ ...p, occasions }, prayerSchedule(p, day))) payloads[event.key] = occasionReminderPayload(p, event);
 for (const [name,payload] of Object.entries(payloads)) await writeFile(new URL(`${name}.json`,destination),JSON.stringify(payload,null,2)+'\n');
 console.log(`${Object.keys(payloads).length} Discord message payloads exported to examples/.`);
