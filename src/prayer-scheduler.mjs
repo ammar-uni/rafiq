@@ -1,8 +1,10 @@
-import { prayerDate, prayerWindow } from './prayer-times.mjs';
-import { prayerReminderPayload } from './messages.mjs';
+import { prayerDate } from './prayer-times.mjs';
+import { reminderWindow } from './occasion-times.mjs';
+import { hasPrayerReminders } from './prayer-config.mjs';
+import { prayerReminderPayload, occasionReminderPayload } from './messages.mjs';
 
 export class PrayerScheduler {
-  constructor({ store, queue, deliver, canSend = () => true, now = Date.now, calculate = prayerWindow, sounds = [], onError = () => {} }) {
+  constructor({ store, queue, deliver, canSend = () => true, now = Date.now, calculate = reminderWindow, sounds = [], onError = () => {} }) {
     Object.assign(this, { store, queue, deliver, canSend, now, calculate, sounds, onError });
     this.cache = new Map();
   }
@@ -16,7 +18,7 @@ export class PrayerScheduler {
       await this.queue.run(userId, async () => {
         if (!this.canSend()) return;
         const p = this.store.getPrayer(userId), user = this.store.getUser(userId), now = this.now();
-        if (!p.enabled || user.dmBlocked || user.pausedUntil > now) { this.forget(userId); return; }
+        if (!hasPrayerReminders(p) || user.dmBlocked || user.pausedUntil > now) { this.forget(userId); return; }
         const signature = prayerDate(now, p.city.timezone) + JSON.stringify(p);
         let entry = this.cache.get(userId);
         if (entry?.signature !== signature) {
@@ -31,7 +33,9 @@ export class PrayerScheduler {
           const claimed = this.store.claimPrayer(userId, p, event, at);
           if (claimed) {
             const sound = this.sounds.find(sound => sound.id === claimed.soundId) || null;
-            await this.deliver(userId, prayerReminderPayload(claimed, event, sound), `prayer:${userId}:${event.day}:${event.key}`);
+            const payload = ['fridayPrayer', 'fridayDua', 'qada30', 'qada15'].includes(event.key)
+              ? occasionReminderPayload(claimed, event) : prayerReminderPayload(claimed, event, sound);
+            await this.deliver(userId, payload, `prayer:${userId}:${event.day}:${event.key}`);
           }
         }
       });

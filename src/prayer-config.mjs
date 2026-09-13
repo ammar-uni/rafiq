@@ -5,8 +5,14 @@ export const PRAYER_METHODS = Object.freeze([
   ['NorthAmerica', 'أمريكا الشمالية — ISNA'], ['Dubai', 'دبي'], ['Kuwait', 'الكويت'], ['Turkey', 'تركيا']
 ]);
 export const PRAYER_HIGH_LATITUDE = Object.freeze([['MiddleOfTheNight', 'نصف الليل'], ['SeventhOfTheNight', 'سُبع الليل'], ['TwilightAngle', 'بحسب زاوية الشفق']]);
+export const OCCASIONS = Object.freeze([['fridayPrayer', 'صلاة الجمعة'], ['fridayDua', 'دعاء الجمعة'], ['qada', 'قضاء قبل رمضان']]);
+export const DEFAULT_OCCASIONS = Object.freeze({ fridayPrayer: 0, fridayDua: 0, qada: 0 });
 export const DEFAULT_PRAYER = Object.freeze({ city: null, method: 'UmmAlQura', asr: 'Shafi', highLatitude: 'MiddleOfTheNight',
-  adjustments: Object.freeze([0, 0, 0, 0, 0]), ramadanIsha: false, enabled: false, activatedAt: 0, delivery: 'silent', soundId: null });
+  adjustments: Object.freeze([0, 0, 0, 0, 0]), ramadanIsha: false, enabled: false, activatedAt: 0, delivery: 'silent', soundId: null,
+  occasions: DEFAULT_OCCASIONS });
+export const hasPrayerReminders = p => p.enabled || Object.values(p.occasions).some(at => at > 0);
+export const renewPrayerActivation = (p, now) => ({ ...p, activatedAt: p.enabled ? now : p.activatedAt,
+  occasions: Object.fromEntries(Object.entries(p.occasions).map(([key, at]) => [key, at ? now : 0])) });
 
 export function validatePrayer(p) {
   if (!p || Object.keys(p).sort().join() !== Object.keys(DEFAULT_PRAYER).sort().join()) throw new TypeError('Invalid prayer settings');
@@ -15,6 +21,8 @@ export function validatePrayer(p) {
   if (p.asr !== 'Shafi' || !choice(PRAYER_HIGH_LATITUDE, p.highLatitude)) throw new RangeError('Invalid calculation setting');
   if (!['silent', 'normal'].includes(p.delivery) || typeof p.enabled !== 'boolean' || typeof p.ramadanIsha !== 'boolean') throw new TypeError('Invalid prayer preference');
   if (!Number.isSafeInteger(p.activatedAt) || p.activatedAt < 0) throw new RangeError('Invalid activation time');
+  if (!p.occasions || Object.keys(p.occasions).sort().join() !== Object.keys(DEFAULT_OCCASIONS).sort().join() ||
+      Object.values(p.occasions).some(at => !Number.isSafeInteger(at) || at < 0)) throw new RangeError('Invalid occasion settings');
   if (!Array.isArray(p.adjustments) || p.adjustments.length !== 5 || p.adjustments.some(n => !Number.isInteger(n) || Math.abs(n) > 60)) throw new RangeError('Invalid prayer adjustment');
   if (p.soundId !== null && (typeof p.soundId !== 'string' || !/^[a-z][a-z0-9-]{0,31}$/.test(p.soundId))) throw new RangeError('Invalid sound');
   if (p.city !== null) {
@@ -25,13 +33,14 @@ export function validatePrayer(p) {
         typeof c.timezone !== 'string' || c.timezone.length > 64) throw new RangeError('Invalid city');
     new Intl.DateTimeFormat('en', { timeZone: c.timezone }).format();
   }
-  if (p.enabled && (!p.city || !p.method)) throw new RangeError('Incomplete prayer setup');
+  if (hasPrayerReminders(p) && (!p.city || !p.method)) throw new RangeError('Incomplete prayer setup');
   return p;
 }
 
 export function readStoredPrayer(p) {
+  if (p && !Object.hasOwn(p, 'occasions')) p = { ...p, occasions: { ...DEFAULT_OCCASIONS } };
   // Earlier previews allowed a later Asr calculation. Require a new schedule
   // review when loading that setting, rather than silently sending at a new time.
-  if (p?.asr === 'Hanafi') p = { ...p, asr: 'Shafi', enabled: false, activatedAt: 0 };
+  if (p?.asr === 'Hanafi') p = { ...p, asr: 'Shafi', enabled: false, activatedAt: 0, occasions: { ...DEFAULT_OCCASIONS } };
   return validatePrayer(p);
 }

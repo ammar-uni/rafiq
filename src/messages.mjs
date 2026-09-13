@@ -1,5 +1,5 @@
-import { DHIKR_CARDS, GOOD_DEEDS, IDEA_CATEGORIES, dhikrById, ideaById } from './content.mjs';
-import { DEFAULT_PRAYER, PRAYERS, PRAYER_METHODS, PRAYER_HIGH_LATITUDE } from './prayer-config.mjs';
+import { DHIKR_CARDS, GOOD_DEEDS, OCCASION_CARDS, IDEA_CATEGORIES, dhikrById, ideaById } from './content.mjs';
+import { DEFAULT_PRAYER, OCCASIONS, PRAYERS, PRAYER_METHODS, PRAYER_HIGH_LATITUDE } from './prayer-config.mjs';
 import { prayerClock } from './prayer-times.mjs';
 /** Native Discord REST payloads. Rendering only; these functions never send messages. */
 export const FLAGS = Object.freeze({ componentsV2: 32768, ephemeral: 64, silent: 4096 });
@@ -21,7 +21,7 @@ const row = (...components) => ({ type: 1, components });
 const section = (content, accessory) => ({ type: 9, components: [text(content)], accessory });
 const arabicNumber = number => String(number).replace(/\d/g, digit => '٠١٢٣٤٥٦٧٨٩'[Number(digit)]);
 const quotation = value => value.split('\n').map(line => `> ${line}`).join('\n');
-const sourceDetails = source => source.citations.map(ref => `[${ref.book} (${arabicNumber(ref.number.replace(/[a-z]$/, ''))})](${ref.url}) · الصحابي: ${ref.narrator} رضي الله عنه.`).join('\n');
+const sourceDetails = source => source.citations.map(ref => `[${ref.book} (${arabicNumber(ref.number.replace(/[a-z]$/, ''))})](${ref.url}) · ${ref.narrator} رضي الله ${ref.narrator === 'عائشة' ? 'عنها' : 'عنه'}.`).join('\n');
 const container = (components, accent = BRAND.accent) => ({ type: 17, accent_color: accent, components });
 const envelope = (components, { ephemeral = false, silent = false, accent = BRAND.accent } = {}) => ({
   flags: FLAGS.componentsV2 | (ephemeral ? FLAGS.ephemeral : 0) | (silent ? FLAGS.silent : 0),
@@ -53,12 +53,54 @@ export function prayerPayload({ preferences: p = DEFAULT_PRAYER, today = [], nex
     ...(next ? [text(`الصلاة القادمة: **${next.label}** <t:${Math.floor(next.at / 1000)}:R>.`)] : []),
     text(`-# ${p.method ? PRAYER_METHODS.find(([id]) => id === p.method)[1] : 'اختر طريقة الحساب'} · ${p.enabled ? 'التذكير مفعّل' : 'التذكير غير مفعّل'}${paused ? ' · متوقف مؤقتًا' : ''}${dmBlocked ? ' · الخاص مغلق؛ اختبره من الإعدادات' : ''}`),
     ...(p.city && p.method && !today.length ? [text('تعذّر حساب جدول كامل لهذا اليوم. لن يُرسل تذكير لهذا الجدول. راجع مواقيت الجهة المعتمدة محليًا، خاصة في المناطق القطبية.')] : []),
-    text('المواقيت محسوبة لمركز المدينة؛ طابقها مع جدول مسجدك قبل التفعيل. التذكير لخمس صلوات يوميًا في الخاص، مستقل عن تذكير المجلس. حدّث المدينة عند السفر.'),
+    text('١. اختر مدينتك. ٢. طابق الجدول مع مسجدك. ٣. فعّل التذكير الذي تريده.\nتذكير الصلوات الخمس مستقل عن تذكير الجمعة والقضاء؛ حدّث المدينة عند السفر.'),
     separator(),
     row(button(p.city ? 'تغيير المدينة' : 'اختر مدينتي', 'prayer_location'), button('ضبط الحساب', 'prayer_calculation')),
     row({ ...button(p.enabled ? 'إيقاف تذكير الصلاة' : 'راجعت الجدول؛ فعّل التذكير', p.enabled ? 'prayer_disable' : 'prayer_enable', p.enabled ? 2 : 3), disabled: !p.enabled && !ready }, button('الإشعار والصوت', 'prayer_audio')),
+    row(button('تذكيرات الجمعة والقضاء', 'prayer_occasions')),
     row(button('إعداداتي العامة', 'settings'), button('مساحتي', 'home'))
   ], { ephemeral: true, accent: BRAND.blue });
+}
+
+export function occasionsPayload({ preferences: p = DEFAULT_PRAYER, next = [], ready = false, notice = '', paused = false, dmBlocked = false } = {}) {
+  const descriptions = {
+    fridayPrayer: 'قبل موعد الظهر يوم الجمعة بـ٤٥ دقيقة؛ موعد خطبة مسجدك قد يختلف.',
+    fridayDua: 'في الساعة الأخيرة قبل المغرب يوم الجمعة، بعد العصر.',
+    qada: 'لمن عليه قضاء: تنبيهان فقط كل سنة، قبل رمضان المتوقع بـ٣٠ يومًا ثم بـ١٥ يومًا، وقت الظهر.'
+  };
+  return envelope([
+    text(`## الجمعة وقضاء رمضان${notice ? `\n${notice}` : ''}\nاختر ما تحتاجه؛ كل زر يفعّل تذكيرًا واحدًا أو يوقفه فورًا.`),
+    section(p.city ? `**مدينتك: ${p.city.label}**${!ready ? '\nتعذّر حساب جدول كامل؛ راجع مواقيت مدينتك.' : ''}${paused ? '\nالتنبيهات متوقفة مؤقتًا من إعداداتك العامة.' : ''}${dmBlocked ? '\nوصول الخاص معلّق؛ اختبره من إعداداتك العامة.' : ''}` : 'ابدأ باختيار مدينتك. لا تحتاج إلى تفعيل الصلوات الخمس لاستخدام هذه التذكيرات.', button(p.city ? 'مواقيت مدينتي' : 'اختر مدينتي', p.city ? 'prayer' : 'prayer_location', 3)),
+    ...OCCASIONS.map(([key, label]) => {
+      const event = next.find(item => item.key === key);
+      return section(`### ${label} · ${p.occasions[key] ? 'مفعّل' : 'متوقف'}\n${descriptions[key]}${event ? `\n${p.occasions[key] ? 'التنبيه القادم' : 'الموعد عند التفعيل'}: **${prayerClock(event.at, p.city.timezone)}** بتوقيت مدينتك · <t:${Math.floor(event.at / 1000)}:R>.` : ''}`,
+        { ...button(p.occasions[key] ? `إيقاف ${label}` : `تفعيل ${label}`, `prayer_occasion_${key}`, p.occasions[key] ? 2 : 3), disabled: !p.occasions[key] && (!ready || paused || dmBlocked) });
+    }),
+    text('-# مواعيد الجمعة بحسب جدول مدينتك. رمضان متوقع بتقويم أم القرى؛ ثبوته بإعلان بلدك. ساعة الدعاء وقت تُرجى فيه الإجابة، وليست وعدًا بإجابة محددة.'),
+    row(button('الإشعار', 'prayer_audio'), button('المصادر', 'prayer_occasion_sources')),
+    row(button('إعداداتي العامة', 'settings'), button('مساحتي', 'home'))
+  ], { ephemeral: true, accent: BRAND.blue });
+}
+
+export function occasionSourcesPayload() {
+  return envelope([
+    text('## مصادر تذكيراتك\nرسائل التذكير من صياغة رفيق، وليست نقلًا لألفاظ الأحاديث.'),
+    ...Object.values(OCCASION_CARDS).flatMap(card => [text(`### ${card.title}\n${sourceDetails(card.source)}\n${card.source.note}`), row(linkButton('افتح المصدر', card.source.url))]),
+    row(button('رجوع للتذكيرات', 'prayer_occasions'))
+  ], { ephemeral: true, accent: BRAND.blue });
+}
+
+export function occasionReminderPayload(p, event) {
+  const key = event.key.startsWith('qada') ? 'qada' : event.key;
+  const card = OCCASION_CARDS[key];
+  const timing = key === 'qada' ? `بقي نحو **${arabicNumber(event.days)} يومًا** على رمضان المتوقع بتقويم أم القرى. ثبوت الشهر بإعلان بلدك.`
+    : key === 'fridayPrayer' ? `موعد الظهر المحسوب: **${prayerClock(event.referenceAt, p.city.timezone)}**؛ يأتي هذا التذكير قبله بـ٤٥ دقيقة.`
+    : `موعد المغرب المحسوب: **${prayerClock(event.referenceAt, p.city.timezone)}**.`;
+  return envelope([
+    text(`## ${card.title}\n${card.body}`),
+    text(`${timing}\n-# ${p.city.label}`),
+    row(button('تذكيراتي', 'prayer_occasions'), button('المصدر', 'prayer_occasion_sources'), button('إيقاف هذا التذكير', `prayer_occasion_off_${key}`))
+  ], { silent: p.delivery === 'silent', accent: BRAND.blue });
 }
 
 export function prayerLocationPayload() {
@@ -72,7 +114,7 @@ export function prayerLocationPayload() {
 
 export function prayerCitiesPayload(cities, token) {
   return envelope([
-    text('## اختر المدينة الصحيحة\nراجع الدولة والمنطقة. اختيار مدينة جديدة يوقف تذكير الصلاة حتى تراجع جدولها وتفعّله مجددًا.'),
+    text('## اختر المدينة الصحيحة\nراجع الدولة والمنطقة. تغيير المدينة يوقف تذكيرات الصلاة والجمعة والقضاء؛ راجع الجدول ثم أعد تفعيل ما تحتاجه.'),
     prayerSelect(`prayer_city_${token}`, 'نتائج البحث — اختر مدينتك', cities.map((city, i) => [String(i), city.label]), null),
     text('-# بيانات المدن: [GeoNames عبر Open-Meteo](https://open-meteo.com/en/docs/geocoding-api). تنتهي هذه النتائج بعد ١٠ دقائق.'),
     row(button('بحث جديد', 'prayer_city_modal'), button('رجوع', 'prayer'))
@@ -81,7 +123,7 @@ export function prayerCitiesPayload(cities, token) {
 
 export function prayerCalculationPayload(p = DEFAULT_PRAYER, notice = '') {
   return envelope([
-    text(`## ضبط الحساب${notice ? `\n${notice}` : ''}\nاختر الطريقة التي تطابق الجدول المعتمد عندك. تغيير الحساب يوقف التذكير حتى تراجع الجدول وتفعّله مجددًا.`),
+    text(`## ضبط الحساب${notice ? `\n${notice}` : ''}\nاختر الطريقة التي تطابق الجدول المعتمد عندك. تغيير الحساب يوقف تذكيرات الصلاة والجمعة والقضاء؛ راجع الجدول ثم أعد تفعيل ما تحتاجه.`),
     prayerSelect('prayer_method', 'طريقة الحساب', [['none', 'اختر طريقة الحساب'], ...PRAYER_METHODS], p.method || 'none'),
     text('-# حساب العصر معتمد عند بلوغ ظل الشيء مثله، بعد استثناء ظل الزوال.'),
     text('**تقدير الفجر والعشاء عند قِصر الليل**\nاختر التقدير المعتمد محليًا. هذه خيارات حسابية، وليست فتوى في الترجيح بينها. لا نضع جدولًا بديلًا لليل أو نهار قطبي متصل.'),
@@ -94,11 +136,11 @@ export function prayerCalculationPayload(p = DEFAULT_PRAYER, notice = '') {
 
 export function prayerAudioPayload(p = DEFAULT_PRAYER, sounds = []) {
   return envelope([
-    text('## الإشعار والصوت\nاختر كيف تصلك تذكيرات الصلاة. إعدادات ديسكورد وجهازك تتحكم في سماع الإشعار أثناء اللعب أو المكالمة.'),
+    text('## الإشعار والصوت\nاختر كيف تصلك تذكيرات الصلاة والجمعة والقضاء. إعدادات ديسكورد وجهازك تتحكم في سماع الإشعار أثناء اللعب أو المكالمة.'),
     prayerSelect('prayer_delivery', 'طريقة إشعار الصلاة', [['silent', 'رسالة صامتة'], ['normal', 'إشعار ديسكورد المعتاد']], p.delivery),
-    text('**الصوت المخصص**\nيمكن إضافة ملفات صوتية هنا لاحقًا. اختيار ملف يرفقه بالتذكير لتشغيله بيدك؛ لا يبدأ تلقائيًا ولا يُسمع لبقية القناة. تشغيل صوت خاص تلقائيًا أثناء اللعب يحتاج تطبيقًا مرافقًا على جهازك؛ هذه الإمكانية لم تُضف بعد.'),
+    text('**الصوت المخصص للصلوات الخمس**\nيمكن إضافة ملفات صوتية هنا لاحقًا. اختيار ملف يرفقه بتذكير الصلاة لتشغيله بيدك؛ لا يبدأ تلقائيًا ولا يُسمع لبقية القناة. تشغيل صوت خاص تلقائيًا أثناء اللعب يحتاج تطبيقًا مرافقًا على جهازك؛ هذه الإمكانية لم تُضف بعد.'),
     ...(sounds.length ? [prayerSelect('prayer_sound', 'ملف صوتي اختياري', [['none', 'دون ملف صوتي'], ...sounds.map(sound => [sound.id, sound.label])], sounds.some(s => s.id === p.soundId) ? p.soundId : 'none')] : [text('-# لم تُضف ملفات صوتية بعد. الإشعار المعتاد متاح الآن، ولا يتجاوز الكتم أو وضع عدم الإزعاج.')]),
-    row(button('اختبر إشعار الصلاة', 'prayer_test'), button('مواقيت صلاتي', 'prayer', 3))
+    row(button('اختبر الإشعار', 'prayer_test'), button('مواقيت صلاتي', 'prayer'), button('الجمعة والقضاء', 'prayer_occasions'))
   ], { ephemeral: true, accent: BRAND.blue });
 }
 
@@ -169,7 +211,7 @@ export function settingsPayload({ frequency = 'daily', delivery = 'silent', enab
     options: options.map(([value, label, description]) => ({ value, label, description, default: value === selected }))
   });
   return envelope([
-    text(`${notice ? `${notice}\n` : ''}## تذكيرك على راحتك\n-# ${dmBlocked ? 'تعذّر الوصول إلى الخاص؛ اختبره لاستئناف الإرسال' : paused ? 'التذكير متوقف مؤقتًا' : !enabled ? 'التذكير غير مفعّل' : !subscribedHere ? 'التذكير غير مفعّل في هذا السيرفر' : 'تذكيرك مفعّل'} · اختياراتك تُحفظ فورًا`),
+    text(`${notice ? `${notice}\n` : ''}## إعداداتك\n**تذكير كفارة المجلس**\n-# ${dmBlocked ? 'تعذّر الوصول إلى الخاص؛ اختبره لاستئناف الإرسال' : paused ? 'جميع التنبيهات متوقفة مؤقتًا' : !enabled ? 'تذكير المجلس غير مفعّل' : !subscribedHere ? 'تذكير المجلس غير مفعّل في هذا السيرفر' : 'تذكير المجلس مفعّل'} · اختياراتك تُحفظ فورًا`),
     ...(paused && pausedUntil ? [text(`ينتهي الإيقاف <t:${Math.floor(pausedUntil / 1000)}:R>.`)] : []),
     select('frequency', 'كم مرة؟', [
       ['daily', 'مرة كل ٢٤ ساعة كحد أقصى', 'بداية خفيفة لتقليل تكرار الرسائل'],
@@ -181,9 +223,10 @@ export function settingsPayload({ frequency = 'daily', delivery = 'silent', enab
       ['silent', 'في الخاص، بلا تنبيه', 'دون إشعار دفع أو تنبيه سطح المكتب']
     ], delivery),
     separator(),
-    text('-# التكرار وطريقة التنبيه هنا لتذكير المجلس والمؤقّت. للصلاة إعداد إشعار مستقل؛ الإيقاف العام يشمل الجميع.'),
+    text('-# التكرار وطريقة التنبيه هنا لتذكير المجلس والمؤقّت. للصلاة والجمعة والقضاء إعداد إشعار مستقل؛ الإيقاف العام يشمل الجميع.'),
     row(button(paused ? 'استئناف التنبيهات' : !subscribedHere ? 'فعّل في هذا السيرفر' : enabled ? 'إيقاف ٢٤ ساعة' : 'فعّل تذكيري', paused ? 'resume' : !enabled || !subscribedHere ? 'enable' : 'pause_today'), button('اختبر الخاص', 'test_dm')),
     ...(inGuild && subscribedHere ? [row(button('إلغاء تذكير هذا السيرفر', 'unsubscribe_here'))] : []),
+    row(button('الصلاة', 'prayer'), button('الجمعة والقضاء', 'prayer_occasions'), ...(!paused && (!enabled || !subscribedHere) ? [button('إيقاف ٢٤ ساعة', 'pause_today')] : [])),
     row(button('إيقاف كل التنبيهات', 'disable'), button('مساحتي', 'home'))
   ], { ephemeral: true });
 }
@@ -236,6 +279,7 @@ export function homePayload({ enabled = false, subscribedHere = true, paused = f
     section('### 🌿 أذكار موثّقة\nذكر ودعاء، مع المصدر متى أردت.', button('أذكار موثّقة', 'library', 3)),
     section('### 🌱 فكرة خير\nمع أهلك، مع أصحابك، أو أثناء اللعب.', button('فكرة خير', 'idea')),
     section('### 🕰️ مواقيت صلاتك\nتذكير خاص بحسب مدينتك، حين تختاره.', button('مواقيت الصلاة', 'prayer')),
+    section('### الجمعة وقضاء رمضان\nتذكيرات تختارها، في وقت مدينتك.', button('اختيار التذكيرات', 'prayer_occasions')),
     section(`### ⏳ وقت لاستراحة\n${breakAt ? `استراحتك <t:${Math.floor(breakAt / 1000)}:R>.` : 'حدّد وقتًا لرسالة واحدة تذكّرك باستراحتك.'}`, button(breakAt ? 'إدارة المؤقّت' : 'وقت لاستراحة', 'break')),
     separator(),
     text(`-# ${status}${favoriteCount ? ` · ${arabicNumber(favoriteCount)} في محفوظاتك` : ''}`),
@@ -314,9 +358,9 @@ export function breakReminderPayload({ silent = true } = {}) {
 
 export function privacyPayload({ privacyURL, supportURL } = {}) {
   return envelope([
-    text('## بياناتك واختياراتك\nنحفظ معرّفك في ديسكورد، واختياراتك، والسيرفرات التي فعّلت فيها التذكير، ومحفوظاتك ومؤقّتك. عند إعداد الصلاة نحفظ المدينة التي تختارها وإحداثيات مركزها ومنطقتها الزمنية وطريقة الحساب والتعديلات واختيار الإشعار والصوت.'),
+    text('## بياناتك واختياراتك\nنحفظ معرّفك في ديسكورد، واختياراتك، والسيرفرات التي فعّلت فيها التذكير، ومحفوظاتك ومؤقّتك. عند إعداد الصلاة نحفظ المدينة التي تختارها وإحداثيات مركزها ومنطقتها الزمنية وطريقة الحساب والتعديلات واختيار الإشعار والصوت. نحفظ أيضًا التذكيرات الاختيارية للجمعة والقضاء ووقت تفعيلها؛ لا نسأل عن عدد أيام القضاء أو سببه، ولا نسجّل أداء عبادتك.'),
     text('لا نقرأ محتوى المحادثات ولا نسجّل الصوت. توقيت المجلس يبقى في الذاكرة أثناء التشغيل، وتُحفظ أوقات محاولات التذكير مؤقتًا لمنع التكرار. حذف بياناتك يوقف التنبيهات ويمحو سجلك من قاعدة البوت؛ الرسائل الموجودة في ديسكورد تبقى عندك.'),
-    text('-# بيانات التشغيل المحفوظة مشفّرة. ننظّف أوقات المحاولات بعد ٤٨ ساعة، ونزيل اشتراك السيرفر إذا أُزيل منه البوت.'),
+    text('-# بيانات التشغيل المحفوظة مشفّرة. ننظّف محاولات المجلس والمؤقّت بعد ٤٨ ساعة، ومحاولات الصلاة والجمعة والقضاء بعد ٧ أيام، ونزيل اشتراك السيرفر إذا أُزيل منه البوت.'),
     ...(privacyURL ? [row(linkButton('سياسة الخصوصية', privacyURL), ...(supportURL ? [linkButton('المساعدة والإبلاغ', supportURL)] : []))] : []),
     separator(), row(button('حذف بياناتي', 'forget'), button('مساحتي', 'home'))
   ], { ephemeral: true });

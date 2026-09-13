@@ -56,6 +56,21 @@
       "id": "no-insult",
       "checkedOn": "2026-09-08",
       "sha256": "ecc2dcbb3ca38c5c422e99e590ab5950db580818e7332ca40d4dba744ab94725"
+    },
+    {
+      "id": "friday-prayer",
+      "checkedOn": "2026-09-13",
+      "sha256": "657a4b4d57b732c3fab8326b2e85848d863b53e8bda62b99e3cb8a50d6054557"
+    },
+    {
+      "id": "friday-dua",
+      "checkedOn": "2026-09-13",
+      "sha256": "be605bca033ab6bb8882467fcef3ff2c9ec9860ae13d2137ae6baaeaf32982e4"
+    },
+    {
+      "id": "ramadan-qada",
+      "checkedOn": "2026-09-13",
+      "sha256": "27c3854be99052595c34db6c07e9de9e645ebcce1c2b9bdef6cfe373da3759e8"
     }
   ]
 }

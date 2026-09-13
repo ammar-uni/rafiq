@@ -1,6 +1,7 @@
 import { DHIKR_CARDS, GOOD_DEEDS, IDEA_CATEGORIES, dhikrById, ideaById } from './content.mjs';
 import { DAY, MINUTE } from './store.mjs';
 import * as ui from './messages.mjs';
+import { hasPrayerReminders, renewPrayerActivation } from './prayer-config.mjs';
 
 export class RafiqApp {
   constructor({ store, queue, sendDM, privacyURL, supportURL, prayers = null, now = Date.now, cancelUser = () => {}, cancelGuild = () => {} }) {
@@ -47,7 +48,7 @@ export class RafiqApp {
       this.cancelUser(userId);
       this.store.transaction(() => {
         this.store.updateUser(userId, { enabled: false, pausedUntil: 0, breakAt: null });
-        this.store.disablePrayer(userId);
+        this.store.disablePrayer(userId, true);
       });
       return ui.disabledPayload();
     }
@@ -65,7 +66,7 @@ export class RafiqApp {
     if (action === 'resume') {
       this.store.updateUser(userId, { pausedUntil: 0 });
       const p = this.store.getPrayer(userId);
-      if (p.enabled) this.store.setPrayer(userId, { ...p, activatedAt: this.now() });
+      if (hasPrayerReminders(p)) this.store.setPrayer(userId, renewPrayerActivation(p, this.now()));
       return settings('استُؤنفت التنبيهات التي فعّلتها.');
     }
     if (action === 'frequency' || action === 'delivery') {
@@ -135,7 +136,7 @@ export class RafiqApp {
         await this.sendDM(userId, ui.reminderPayload({ silent: user.delivery === 'silent' }), `test:${userId}:${now}`);
         this.store.updateUser(userId, { dmBlocked: false });
         const p = this.store.getPrayer(userId);
-        if (user.dmBlocked && p.enabled) this.store.setPrayer(userId, { ...p, activatedAt: this.now() });
+        if (user.dmBlocked && hasPrayerReminders(p)) this.store.setPrayer(userId, renewPrayerActivation(p, this.now()));
         return settings('✓ أُرسلت رسالة تجريبية إلى الخاص');
       } catch (error) {
         if (Number(error.code) === 50007) this.store.updateUser(userId, { dmBlocked: true });
