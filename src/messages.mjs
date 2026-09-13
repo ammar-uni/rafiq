@@ -103,11 +103,11 @@ export function occasionReminderPayload(p, event) {
   ], { silent: p.delivery === 'silent', accent: BRAND.blue });
 }
 
-export function prayerLocationPayload() {
+export function prayerLocationPayload(notice = '') {
   return envelope([
-    text('## أي مدينة تريد مواقيتها؟\nاكتب اسم المدينة والدولة، ثم اختر النتيجة الصحيحة بنفسك.'),
-    text('يُرسل نص البحث فقط إلى Open-Meteo للعثور على المدينة، دون معرّف حسابك في ديسكورد. نحفظ المدينة المختارة ومنطقتها الزمنية وإحداثيات مركزها ضمن بيانات البوت المشفّرة.'),
-    text('-# لا نحتاج موقعك الدقيق. يمكنك حذف اختيارك وبياناتك من الخصوصية. بيانات المدن: [GeoNames عبر Open-Meteo](https://open-meteo.com/en/docs/geocoding-api).'),
+    text(`## أي مدينة تريد مواقيتها؟${notice ? `\n${notice}` : ''}\nاكتب المدينة بالعربية أو بلغتها، وأضف الدولة لتمييز المدن المتشابهة. مثال: **مكة المكرمة، السعودية**. ثم اختر النتيجة الصحيحة بنفسك.`),
+    text('عند الحاجة للبحث عبر الإنترنت، يُرسل اسم المدينة والدولة إلى Open-Meteo، دون معرّف حسابك في ديسكورد. نحفظ المدينة المختارة ومنطقتها الزمنية وإحداثيات مركزها ضمن بيانات البوت المشفّرة.'),
+    text('-# لا نحتاج عنوانك أو موقعك الدقيق. يمكنك حذف اختيارك من الخصوصية. بيانات المدن: [GeoNames](https://www.geonames.org/) و[Open-Meteo](https://open-meteo.com/en/docs/geocoding-api).'),
     row(button('ابحث عن مدينة', 'prayer_city_modal', 3), button('رجوع', 'prayer'))
   ], { ephemeral: true, accent: BRAND.blue });
 }
@@ -116,7 +116,7 @@ export function prayerCitiesPayload(cities, token) {
   return envelope([
     text('## اختر المدينة الصحيحة\nراجع الدولة والمنطقة. تغيير المدينة يوقف تذكيرات الصلاة والجمعة والقضاء؛ راجع الجدول ثم أعد تفعيل ما تحتاجه.'),
     prayerSelect(`prayer_city_${token}`, 'نتائج البحث — اختر مدينتك', cities.map((city, i) => [String(i), city.label]), null),
-    text('-# بيانات المدن: [GeoNames عبر Open-Meteo](https://open-meteo.com/en/docs/geocoding-api). تنتهي هذه النتائج بعد ١٠ دقائق.'),
+    text('-# بيانات المدن: [GeoNames](https://www.geonames.org/) و[Open-Meteo](https://open-meteo.com/en/docs/geocoding-api). تنتهي هذه النتائج بعد ١٠ دقائق.'),
     row(button('بحث جديد', 'prayer_city_modal'), button('رجوع', 'prayer'))
   ], { ephemeral: true, accent: BRAND.blue });
 }
@@ -168,7 +168,7 @@ export function prayerTestPayload(p = DEFAULT_PRAYER, sound = null) {
 
 export function prayerModal(action, p = DEFAULT_PRAYER) {
   const field = (id, label, value, placeholder, maxLength) => ({ type: 18, label, component: { type: 4, custom_id: id, style: 1, required: true, max_length: maxLength, ...(value !== null ? { value } : {}), placeholder } });
-  if (action === 'prayer_city_modal') return { custom_id: 'rafiq:v1:prayer_search', title: 'اختر مدينتك', components: [field('city', 'اسم المدينة، الدولة', null, 'مثال: Berlin, Germany — دون عنوان منزلك', 80)] };
+  if (action === 'prayer_city_modal') return { custom_id: 'rafiq:v1:prayer_search', title: 'اختر مدينتك', components: [field('city', 'اسم المدينة، الدولة', null, 'مثال: مكة المكرمة، السعودية', 80)] };
   if (action === 'prayer_adjust_modal') return { custom_id: 'rafiq:v1:prayer_adjust', title: 'تعديل المواقيت بالدقائق', components: PRAYERS.map(([id, label], i) => field(id, label, String(p.adjustments[i]), 'بين -60 و60؛ مثل +2 أو -3', 3)) };
   throw new RangeError('Unknown modal');
 }
