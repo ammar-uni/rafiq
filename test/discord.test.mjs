@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Client, MessagePayload, MessageFlags, PermissionFlagsBits } from 'discord.js';
 import { acknowledgePrivate, toDiscord, canManageGuild, setupPanel } from '../src/discord-adapter.mjs';
-import { welcomePayload, libraryPayload, homePayload, BRAND } from '../src/messages.mjs';
+import { welcomePayload, libraryPayload, homePayload, occasionsPayload, occasionSourcesPayload, BRAND } from '../src/messages.mjs';
 import { readConfig } from '../src/config.mjs';
 import { COMMANDS, INSTALL_PERMISSIONS, inviteURL } from '../src/commands.mjs';
 
@@ -21,8 +21,15 @@ test('discord.js serializes the native components and suppresses mentions', asyn
   assert.equal(welcome.body.attachments[0].id, '0');
   const home = MessagePayload.create(target, toDiscord(homePayload())).resolveBody().body;
   const sections = home.components[0].components.filter(component => component.type === 9);
-  assert.equal(sections.length, 4);
+  assert.equal(sections.length, 5);
   assert.equal(sections[0].accessory.custom_id, 'rafiq:v1:library');
+  assert.ok(sections.some(section => section.accessory.custom_id === 'rafiq:v1:prayer_occasions'));
+  for (const page of [occasionsPayload(), occasionSourcesPayload()]) {
+    const serialized = MessagePayload.create(target, toDiscord(page)).resolveBody().body;
+    assert.equal(serialized.components[0].type, 17);
+    assert.deepEqual(serialized.allowed_mentions.parse, []);
+    assert.ok(serialized.flags & MessageFlags.Ephemeral);
+  }
   await client.destroy();
 });
 
