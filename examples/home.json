@@ -68,6 +68,21 @@
           "components": [
             {
               "type": 10,
+              "content": "### الجمعة وقضاء رمضان\nتذكيرات تختارها، في وقت مدينتك."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "اختيار التذكيرات",
+            "style": 2,
+            "custom_id": "rafiq:v1:prayer_occasions"
+          }
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
               "content": "### ⏳ وقت لاستراحة\nحدّد وقتًا لرسالة واحدة تذكّرك باستراحتك."
             }
           ],
