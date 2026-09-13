@@ -105,8 +105,12 @@
     const store=new PreviewStore();
     const queue={run:(_id,task)=>Promise.resolve().then(task)};
     let simulatedMessages=0, theme=getComputedStyle(root).colorScheme==='light'?'light':'dark', busy=false, currentAction='welcome';
-    const demoCities=[{label:'برلين، ألمانيا',latitude:52.524,longitude:13.411,timezone:'Europe/Berlin'},{label:'مكة المكرمة، السعودية',latitude:21.426,longitude:39.826,timezone:'Asia/Riyadh'},{label:'نيويورك، الولايات المتحدة',latitude:40.714,longitude:-74.006,timezone:'America/New_York'}];
-    const prayers=new PrayerApp({store,lookup:async()=>demoCities,sendDM:async()=>{simulatedMessages++;}});
+    async function findPrayerCities(query) {
+      const response=await fetch('/api/cities?'+new URLSearchParams({q:query}),{signal:AbortSignal.timeout(10000)});
+      if(!response.ok)throw new Error('City search unavailable');
+      return response.json();
+    }
+    const prayers=new PrayerApp({store,lookup:findPrayerCities,sendDM:async()=>{simulatedMessages++;}});
     const app=new RafiqApp({store,queue,prayers,sendDM:async()=>{simulatedMessages++;}});
     const escapeHtml=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const markdown=value=>value.split('\n').map(line=>{
@@ -150,12 +154,16 @@
       if(busy)return;
       if(['prayer_city_modal','prayer_adjust_modal'].includes(action)) {
         const modal=prayerModal(action,store.getPrayer());
-        view.innerHTML='<div class="rn-container"><h2>'+escapeHtml(modal.title)+'</h2>'+(action==='prayer_city_modal'?'<p>المعاينة تستخدم ثلاث مدن تجريبية فقط، ولا تتصل بخدمة البحث.</p>':'')+'<form id="rn-prayer-form">'+modal.components.map(row=>{const f=row.component;return '<label style="display:block;margin:16px 0">'+escapeHtml(row.label)+'<input style="display:block;width:100%;box-sizing:border-box;padding:12px;margin-top:8px;background:transparent;color:inherit;border:1px solid #8aaec4;border-radius:8px" name="'+f.custom_id+'" value="'+escapeHtml(f.value||'')+'" placeholder="'+escapeHtml(f.placeholder)+'" maxlength="'+f.max_length+'" required></label>';}).join('')+'<button type="submit" class="rn-positive">'+(action==='prayer_city_modal'?'ابحث':'احفظ التعديل')+'</button> <button type="button" data-action="prayer">رجوع</button></form></div>';
+        view.innerHTML='<div class="rn-container"><h2>'+escapeHtml(modal.title)+'</h2>'+(action==='prayer_city_modal'?'<p>بحث حقيقي مثل البوت. مثال: مكة المكرمة، السعودية. قد يُرسل نص البحث إلى Open-Meteo عند الحاجة. اختيارك في المعاينة مؤقت ولا يغيّر إعداداتك في ديسكورد.</p>':'')+'<form id="rn-prayer-form">'+modal.components.map(row=>{const f=row.component;return '<label style="display:block;margin:16px 0">'+escapeHtml(row.label)+'<input style="display:block;width:100%;box-sizing:border-box;padding:12px;margin-top:8px;background:transparent;color:inherit;border:1px solid #8aaec4;border-radius:8px" name="'+f.custom_id+'" value="'+escapeHtml(f.value||'')+'" placeholder="'+escapeHtml(f.placeholder)+'" maxlength="'+f.max_length+'" required></label>';}).join('')+'<button type="submit" class="rn-positive">'+(action==='prayer_city_modal'?'ابحث':'احفظ التعديل')+'</button> <button type="button" data-action="prayer">رجوع</button></form></div>';
         view.querySelector('input').focus();
         view.querySelector('form').addEventListener('submit',event=>{event.preventDefault();const data=new FormData(event.target);void navigate(modal.custom_id.slice(9),modal.components.map(row=>data.get(row.component.custom_id)));});
         return;
       }
       busy=true;view.setAttribute('aria-busy','true');
+      if(action==='prayer_search') {
+        const submit=view.querySelector('button[type="submit"]');
+        if(submit){submit.disabled=true;submit.textContent='جارٍ البحث…';submit.setAttribute('role','status');}
+      }
       try{
         currentAction=action;
         payload=action==='welcome'?welcomePayload():await app.handle({userId:'1',guildId:'10',action,values});
@@ -166,6 +174,7 @@
       }finally{busy=false;view.removeAttribute('aria-busy');}
     }
     root.addEventListener('click',event=>{
+      if(busy)return;
       const target=event.target.closest('button');if(!target||!root.contains(target))return;
       if(target.dataset.demo==='theme'){theme=theme==='dark'?'light':'dark';target.textContent=theme==='dark'?'المظهر الفاتح':'المظهر الداكن';target.setAttribute('aria-pressed',String(theme==='light'));render(payload,false);return;}
       if(target.dataset.demo==='reset'){store.reset();prayers.forget('1');simulatedMessages=0;void navigate('welcome');return;}
