@@ -243,15 +243,17 @@ test('city lookup uses only public query parameters and filters invalid geograph
   const fetchImpl = async (url, options) => {
     requested = { url, options };
     return { ok: true, text: async () => JSON.stringify({ results: [
-      { name: 'Berlin', country: 'Germany', latitude: 52.52437, longitude: 13.41053, timezone: 'Europe/Berlin', feature_code: 'PPLC' },
+      { name: 'Berlin', country: 'Germany', country_code: 'DE', latitude: 52.52437, longitude: 13.41053, timezone: 'Europe/Berlin', feature_code: 'PPLC' },
       { name: 'invalid', latitude: 999, longitude: 2, timezone: 'UTC', feature_code: 'PPL' },
       { name: 'region', latitude: 2, longitude: 2, timezone: 'UTC', feature_code: 'ADM1' }
     ] }) };
   };
-  const cities = await findPrayerCities('Berlin, Germany', { fetchImpl }); assert.equal(cities.length, 1);
+  const cities = await findPrayerCities('Lookup test, Germany', { fetchImpl }); assert.equal(cities.length, 1);
   assert.equal(cities[0].latitude, 52.524);
   assert.equal(requested.url.origin, 'https://geocoding-api.open-meteo.com');
-  assert.deepEqual([...requested.url.searchParams.keys()].sort(), ['count', 'format', 'language', 'name']);
+  assert.deepEqual([...requested.url.searchParams.keys()].sort(), ['count', 'countryCode', 'format', 'language', 'name']);
+  assert.equal(requested.url.searchParams.get('name'), 'Lookup test');
+  assert.equal(requested.url.searchParams.get('countryCode'), 'DE');
   assert.deepEqual(requested.options.headers, { Accept: 'application/json' }); assert.equal(requested.options.redirect, 'error');
   await assert.rejects(findPrayerCities('x', { fetchImpl }), /Invalid city query/);
 });
