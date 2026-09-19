@@ -1,6 +1,6 @@
 {
   "name": "rafiq",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "private": true,
   "type": "module",
   "description": "A gentle, opt-in Discord reminder bot with sourced Arabic content",

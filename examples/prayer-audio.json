@@ -24,13 +24,13 @@
               "max_values": 1,
               "options": [
                 {
-                  "value": "silent",
-                  "label": "في الخاص، بلا تنبيه",
+                  "value": "normal",
+                  "label": "إشعار الجوال وسطح المكتب",
                   "default": true
                 },
                 {
-                  "value": "normal",
-                  "label": "إشعار الجوال وسطح المكتب",
+                  "value": "silent",
+                  "label": "في الخاص، بلا تنبيه",
                   "default": false
                 }
               ]

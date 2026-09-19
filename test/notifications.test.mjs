@@ -4,8 +4,9 @@ import { Client, MessagePayload, MessageFlags } from 'discord.js';
 import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { randomBytes } from 'node:crypto';
 import { makeSendDM, toDiscord } from '../src/discord-adapter.mjs';
-import { reminderPayload, breakReminderPayload, prayerReminderPayload, prayerTestPayload, occasionReminderPayload, FLAGS } from '../src/messages.mjs';
+import { reminderPayload, breakReminderPayload, prayerReminderPayload, prayerTestPayload, occasionReminderPayload, settingsPayload, FLAGS } from '../src/messages.mjs';
 import { DHIKR_CARDS, OCCASION_CARDS } from '../src/content.mjs';
 import { DEFAULT_PRAYER } from '../src/prayer-config.mjs';
 import { Store, DEFAULT_USER } from '../src/store.mjs';
@@ -15,6 +16,39 @@ import { SerialQueue } from '../src/serial.mjs';
 
 const p = { ...DEFAULT_PRAYER, city: { label: 'مكة المكرمة، السعودية', timezone: 'Asia/Riyadh' } };
 const event = { label: 'الظهر', at: Date.UTC(2026, 8, 18, 9, 20) };
+
+test('new subscribers default to three reminders with notifications; saved quiet choices survive restart', t => {
+  const directory = mkdtempSync(join(tmpdir(), 'rafiq-defaults-'));
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  const path = join(directory, 'state.enc'), options = { encryptionKey: randomBytes(32).toString('hex') };
+  let store = new Store(path, options);
+  try {
+    assert.equal(store.getUser('1').enabled, false);
+    assert.equal(store.getPrayer('1').enabled, false);
+    store.subscribe('1', '10');
+    assert.equal(store.getUser('1').delivery, 'normal');
+    assert.equal(store.getUser('1').frequency, 'session');
+    assert.equal(store.getPrayer('1').delivery, 'normal');
+    const start = 1_800_000_000_000;
+    for (let i = 0; i < 3; i++) {
+      assert.ok(store.claimReminder('1', '10', start + i * 7_200_000));
+      assert.equal(store.claimReminder('1', '10', start + (i + 1) * 7_200_000 - 1), null);
+    }
+    assert.equal(store.claimReminder('1', '10', start + 3 * 7_200_000), null);
+    store.updateUser('1', { delivery: 'silent', frequency: 'daily' });
+    store.setPrayer('1', { ...structuredClone(DEFAULT_PRAYER), delivery: 'silent' });
+    store.close(); store = new Store(path, options);
+    assert.equal(store.getUser('1').delivery, 'silent');
+    assert.equal(store.getUser('1').frequency, 'daily');
+    assert.equal(store.getPrayer('1').delivery, 'silent');
+    store.subscribe('2', '10');
+    assert.equal(store.getUser('2').delivery, 'normal');
+    assert.equal(store.getUser('2').frequency, 'session');
+    const select = settingsPayload().components[0].components.flatMap(item => item.components || []).find(item => item.custom_id === 'rafiq:v1:frequency');
+    assert.equal(select.options[0].value, 'session');
+    assert.equal(select.options[0].default, true);
+  } finally { store.close(); }
+});
 
 test('all reminder DMs deliver readable content through discord.js with working classic buttons and no mentions', async t => {
   const client = new Client({ intents: [] }); t.after(() => client.destroy());
@@ -76,6 +110,7 @@ test('notification help never subscribes or sends, and enabling phone notificati
   assert.deepEqual(store.getUser('1'), DEFAULT_USER);
   assert.deepEqual(store.getPrayer('1'), DEFAULT_PRAYER);
   assert.equal(store.db.prepare('SELECT count(*) AS n FROM users').get().n, 0);
+  await act('prayer_delivery', ['silent']);
   await act('delivery', ['normal']);
   assert.equal(store.getPrayer('1').delivery, 'silent');
   await act('prayer_delivery', ['normal']);

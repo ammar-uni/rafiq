@@ -97,14 +97,14 @@ test('an existing subscriber can opt in from a second server without disabling t
   assert.equal(h.store.isSubscribed('1', '20'), true);
 });
 
-test('a shared session delivers one silent DM after the grace period', async t => {
+test('a new subscriber receives one DM with notifications after the grace period', async t => {
   const h = harness(t);
   await h.act('enable'); h.enter(); h.advance(5 * MINUTE); h.leave();
   h.advance(45_000); await h.engine.tick(); assert.equal(h.sent.length, 0);
   h.advance(14_999); await h.engine.tick(); assert.equal(h.sent.length, 0);
   h.advance(1); await Promise.all([h.engine.tick(), h.engine.tick()]);
   assert.equal(h.sent.length, 1);
-  assert.ok(h.sent[0].payload.flags & FLAGS.silent);
+  assert.ok(!(h.sent[0].payload.flags & FLAGS.silent));
   assert.ok(!(h.sent[0].payload.flags & FLAGS.ephemeral));
   assert.deepEqual(h.sent[0].payload.allowed_mentions.parse, []);
 });
@@ -173,6 +173,7 @@ test('joining another server cancels a pending reminder even without a subscript
 test('daily and session limits apply across all subscribed servers and count failed attempts', t => {
   const h = harness(t);
   h.store.subscribe('1', '10'); h.store.subscribe('1', '20');
+  h.store.updateUser('1', { frequency: 'daily' });
   assert.ok(h.store.claimReminder('1', '10', h.now()));
   assert.equal(h.store.claimReminder('1', '20', h.now()), null);
   h.advance(DAY - 1); assert.equal(h.store.claimReminder('1', '20', h.now()), null);
@@ -257,7 +258,7 @@ test('favorites and selection changes belong only to the acting user', async t =
   const h = harness(t);
   await h.act('favorite_guidance'); await h.act('frequency', ['session']);
   assert.deepEqual(h.store.favorites('1'), ['guidance']); assert.deepEqual(h.store.favorites('2'), []);
-  assert.equal(h.store.getUser('2').frequency, 'daily');
+  assert.equal(h.store.getUser('2').frequency, 'session');
   await h.act('frequency', ['injected']); assert.equal(h.store.getUser('1').frequency, 'session');
   await h.act('favorite_guidance'); assert.deepEqual(h.store.favorites('1'), []);
 });

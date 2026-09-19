@@ -3,7 +3,7 @@ import { DEFAULT_PRAYER, DEFAULT_OCCASIONS } from '../src/prayer-config.mjs';
 export class PreviewStore {
   constructor() { this.reset(); }
   reset() {
-    this.user = { enabled: false, frequency: 'daily', delivery: 'silent', pausedUntil: 0, dmBlocked: false, breakAt: null, lastTestAt: null };
+    this.user = { enabled: false, frequency: 'session', delivery: 'normal', pausedUntil: 0, dmBlocked: false, breakAt: null, lastTestAt: null };
     this.guilds = new Set(); this.cards = new Set(); this.ideas = new Set();
     this.prayer = null;
   }
