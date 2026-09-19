@@ -191,7 +191,7 @@ test('preview matches the real menus, uses explicit switches and distinguishes c
   for (const action of ['prayer_occasions', 'prayer_occasion_sources', 'prayer_occasion_fridayPrayer', 'prayer_occasion_fridayDua', 'prayer_occasion_qada', 'prayer_occasion_off_qada', 'prayer_disable', 'pause_today', 'resume', 'disable']) {
     assert.deepEqual(await a.act(action), await b.act(action), action);
   }
-  const qada = occasionReminderPayload(active(), events(active(), '2027-01-09')[0]);
+  const qada = occasionReminderPayload(active({ delivery: 'silent' }), events(active(), '2027-01-09')[0]);
   assert.match(JSON.stringify(qada), /المتوقع بتقويم أم القرى/); assert.match(JSON.stringify(qada), /prayer_occasion_off_qada/);
   assert.ok(qada.flags & FLAGS.silent); assert.ok(!(qada.flags & FLAGS.ephemeral));
   assert.match(JSON.stringify(occasionsPayload()), /ابدأ باختيار مدينتك/);
