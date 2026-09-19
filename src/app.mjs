@@ -23,6 +23,7 @@ export class RafiqApp {
     if (action === 'preview') return ui.reminderPayload({ ...user, preview: true });
     if (action === 'reminder_intro') return ui.reminderIntroPayload(user);
     if (action === 'settings' || action === 'save') return settings('');
+    if (action === 'notification_help') return ui.notificationHelpPayload();
     if (action === 'library') return library(DHIKR_CARDS[0].id);
     if (action === 'favorites') return ui.favoritesPayload({ dhikrCount: this.store.favorites(userId).length, ideaCount: this.store.savedIdeas(userId).length });
     if (action === 'saved_dhikr') return library(null, true);
