@@ -24,15 +24,15 @@
               "max_values": 1,
               "options": [
                 {
-                  "value": "daily",
-                  "label": "مرة كل ٢٤ ساعة كحد أقصى",
-                  "description": "بداية خفيفة لتقليل تكرار الرسائل",
-                  "default": true
-                },
-                {
                   "value": "session",
                   "label": "بعد المجالس — حتى ٣ مرات",
                   "description": "فاصل ساعتين؛ حتى ٣ مرات خلال ٢٤ ساعة",
+                  "default": true
+                },
+                {
+                  "value": "daily",
+                  "label": "مرة كل ٢٤ ساعة كحد أقصى",
+                  "description": "خيار أخف لتقليل تكرار الرسائل",
                   "default": false
                 },
                 {
@@ -59,13 +59,13 @@
                   "value": "normal",
                   "label": "إشعار الجوال وسطح المكتب",
                   "description": "نص التذكير في الإشعار، حسب إعدادات جهازك",
-                  "default": false
+                  "default": true
                 },
                 {
                   "value": "silent",
                   "label": "في الخاص، بلا تنبيه",
                   "description": "دون إشعار دفع أو تنبيه سطح المكتب",
-                  "default": true
+                  "default": false
                 }
               ]
             }
