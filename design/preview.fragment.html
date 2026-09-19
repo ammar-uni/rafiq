@@ -82,6 +82,7 @@
       <button type="button" data-action="home">مساحتي</button>
       <button type="button" data-action="favorites">محفوظاتي</button>
       <button type="button" data-action="break">المؤقّت</button>
+      <button type="button" data-demo="notification">رسالة التذكير</button>
       <button type="button" data-demo="theme" aria-pressed="false">المظهر الفاتح</button>
     </div>
   </div>
@@ -144,8 +145,8 @@
       const themeButton=root.querySelector('[data-demo="theme"]');
       themeButton.textContent=theme==='dark'?'المظهر الفاتح':'المظهر الداكن';
       themeButton.setAttribute('aria-pressed',String(theme==='light'));
-      root.querySelector('#rn-context').textContent=currentAction==='welcome'?'بطاقة الترحيب':'يظهر لك وحدك';
-      view.innerHTML=payload.components.map(component).join('');
+      root.querySelector('#rn-context').textContent=currentAction==='welcome'?'بطاقة الترحيب':currentAction==='notification'?'نموذج رسالة الخاص · لا يُرسل':'يظهر لك وحدك';
+      view.innerHTML=(payload.content?'<div class="rn-text">'+markdown(payload.content)+'</div>':'')+payload.components.map(component).join('');
       root.querySelector('#rn-simulation').textContent='تجربة محلية · لا تُرسل رسائل ولا تُحفظ بيانات'+(simulatedMessages?' · جُرّب إرسال الخاص محليًا':'');
       if(focus)view.querySelector('button,select')?.focus({preventScroll:true});
     }
@@ -176,6 +177,7 @@
     root.addEventListener('click',event=>{
       if(busy)return;
       const target=event.target.closest('button');if(!target||!root.contains(target))return;
+      if(target.dataset.demo==='notification'){currentAction='notification';payload=reminderPayload({silent:false});render(payload,true);return;}
       if(target.dataset.demo==='theme'){theme=theme==='dark'?'light':'dark';target.textContent=theme==='dark'?'المظهر الفاتح':'المظهر الداكن';target.setAttribute('aria-pressed',String(theme==='light'));render(payload,false);return;}
       if(target.dataset.demo==='reset'){store.reset();prayers.forget('1');simulatedMessages=0;void navigate('welcome');return;}
       if(target.dataset.action)void navigate(target.dataset.action);
