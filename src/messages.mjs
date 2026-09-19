@@ -28,6 +28,13 @@ const envelope = (components, { ephemeral = false, silent = false, accent = BRAN
   allowed_mentions: { parse: [], replied_user: false },
   components: [container(components, accent)]
 });
+// Keep reminder text in content for notification previews; V2 disables content.
+const notification = (content, components, { silent = true } = {}) => ({
+  content,
+  flags: silent ? FLAGS.silent : 0,
+  allowed_mentions: { parse: [], replied_user: false },
+  components
+});
 export function welcomePayload() {
   return {
     ...envelope([
@@ -96,11 +103,9 @@ export function occasionReminderPayload(p, event) {
   const timing = key === 'qada' ? `بقي نحو **${arabicNumber(event.days)} يومًا** على رمضان المتوقع بتقويم أم القرى. ثبوت الشهر بإعلان بلدك.`
     : key === 'fridayPrayer' ? `موعد الظهر المحسوب: **${prayerClock(event.referenceAt, p.city.timezone)}**؛ يأتي هذا التذكير قبله بـ٤٥ دقيقة.`
     : `موعد المغرب المحسوب: **${prayerClock(event.referenceAt, p.city.timezone)}**.`;
-  return envelope([
-    text(`## ${card.title}\n${card.body}`),
-    text(`${timing}\n-# ${p.city.label}`),
+  return notification(`${card.title}\n${card.body}\n\n${timing.replaceAll('**', '')}\n${p.city.label}`, [
     row(button('تذكيراتي', 'prayer_occasions'), button('المصدر', 'prayer_occasion_sources'), button('إيقاف هذا التذكير', `prayer_occasion_off_${key}`))
-  ], { silent: p.delivery === 'silent', accent: BRAND.blue });
+  ], { silent: p.delivery === 'silent' });
 }
 
 export function prayerLocationPayload(notice = '') {
@@ -136,32 +141,36 @@ export function prayerCalculationPayload(p = DEFAULT_PRAYER, notice = '') {
 
 export function prayerAudioPayload(p = DEFAULT_PRAYER, sounds = []) {
   return envelope([
-    text('## الإشعار والصوت\nاختر كيف تصلك تذكيرات الصلاة والجمعة والقضاء. إعدادات ديسكورد وجهازك تتحكم في سماع الإشعار أثناء اللعب أو المكالمة.'),
-    prayerSelect('prayer_delivery', 'طريقة إشعار الصلاة', [['silent', 'رسالة صامتة'], ['normal', 'إشعار ديسكورد المعتاد']], p.delivery),
+    text('## الإشعار والصوت\nاختر كيف تصلك تذكيرات الصلاة والجمعة والقضاء. لقراءة التذكير من إشعار الهاتف، اختر «إشعار الجوال وسطح المكتب» واسمح بمعاينة الرسائل في إعدادات جهازك.'),
+    prayerSelect('prayer_delivery', 'كيف يصلك التذكير؟', [['silent', 'في الخاص، بلا تنبيه'], ['normal', 'إشعار الجوال وسطح المكتب']], p.delivery),
+    text('-# «بلا تنبيه» يمنع إشعار الدفع، ولا يعني إشعارًا بلا صوت. ظهور الإشعار وطول المعاينة والصوت تتبع إعدادات ديسكورد وجهازك.'),
     text('**الصوت المخصص للصلوات الخمس**\nيمكن إضافة ملفات صوتية هنا لاحقًا. اختيار ملف يرفقه بتذكير الصلاة لتشغيله بيدك؛ لا يبدأ تلقائيًا ولا يُسمع لبقية القناة. تشغيل صوت خاص تلقائيًا أثناء اللعب يحتاج تطبيقًا مرافقًا على جهازك؛ هذه الإمكانية لم تُضف بعد.'),
     ...(sounds.length ? [prayerSelect('prayer_sound', 'ملف صوتي اختياري', [['none', 'دون ملف صوتي'], ...sounds.map(sound => [sound.id, sound.label])], sounds.some(s => s.id === p.soundId) ? p.soundId : 'none')] : [text('-# لم تُضف ملفات صوتية بعد. الإشعار المعتاد متاح الآن، ولا يتجاوز الكتم أو وضع عدم الإزعاج.')]),
-    row(button('اختبر الإشعار', 'prayer_test'), button('مواقيت صلاتي', 'prayer'), button('الجمعة والقضاء', 'prayer_occasions'))
+    row(button('اختبر الإشعار', 'prayer_test'), button('مساعدة إشعار الجوال', 'notification_help')),
+    row(button('مواقيت صلاتي', 'prayer'), button('الجمعة والقضاء', 'prayer_occasions'))
   ], { ephemeral: true, accent: BRAND.blue });
 }
 
 export function prayerReminderPayload(p, event, sound = null) {
-  const payload = envelope([
-    text(`## 🕰️ موعد ${event.label}\nحان موعد ${event.label} بحسب جدولك المحسوب.`),
-    text(`**${p.city.label}** · ${prayerClock(event.at, p.city.timezone)}\n-# ${PRAYER_METHODS.find(([id]) => id === p.method)[1]} · ${p.city.timezone}`),
-    ...(sound ? [text(`ملف اختياري: ${sound.label} — اضغط لتنزيله أو تشغيله، ولا يبدأ تلقائيًا.`), { type: 13, file: { url: `attachment://${sound.filename}` } }] : []),
+  const payload = notification([
+    `حان موعد ${event.label} بحسب جدولك المحسوب — ${p.city.label} · ${prayerClock(event.at, p.city.timezone)}`,
+    `${PRAYER_METHODS.find(([id]) => id === p.method)[1]} · ${p.city.timezone}`,
+    ...(sound ? [`ملف اختياري: ${sound.label} — اضغط لتنزيله أو تشغيله، ولا يبدأ تلقائيًا.`] : [])
+  ].join('\n'), [
     row(button('مواقيتي وإعداداتي', 'prayer'), button('إيقاف تذكير الصلاة', 'prayer_disable'))
-  ], { silent: p.delivery === 'silent', accent: BRAND.blue });
+  ], { silent: p.delivery === 'silent' });
   if (sound) payload.attachments = [{ id: '0', filename: sound.filename, soundId: sound.id }];
   return payload;
 }
 
 export function prayerTestPayload(p = DEFAULT_PRAYER, sound = null) {
-  const payload = envelope([
-    text('## تجربة إشعار الصلاة\nهذه رسالة اختبار طلبتها الآن، وليست إعلانًا عن دخول وقت صلاة.'),
-    text(p.delivery === 'silent' ? 'اخترت رسالة صامتة. يمكنك تغيير ذلك من إعدادات إشعار الصلاة.' : 'اخترت إشعار ديسكورد المعتاد. سماعه يعتمد على إعدادات ديسكورد وجهازك.'),
-    ...(sound ? [{ type: 13, file: { url: `attachment://${sound.filename}` } }] : []),
-    row(button('إعدادات إشعاري', 'prayer_audio'))
-  ], { silent: p.delivery === 'silent', accent: BRAND.blue });
+  const payload = notification([
+    'تجربة إشعار رفيق — هذه رسالة اختبار طلبتها الآن، وليست إعلانًا عن دخول وقت صلاة.',
+    p.delivery === 'silent' ? 'اخترت «في الخاص، بلا تنبيه»؛ لا يُطلب إشعار دفع لهذه الرسالة.' : 'اخترت إشعار الجوال وسطح المكتب. ظهوره ومعاينة النص يعتمدان على إعدادات ديسكورد وجهازك.',
+    ...(sound ? [`ملف اختياري: ${sound.label} — لا يبدأ تلقائيًا.`] : [])
+  ].join('\n'), [
+    row(button('إعدادات إشعاري', 'prayer_audio'), button('مساعدة إشعار الجوال', 'notification_help'))
+  ], { silent: p.delivery === 'silent' });
   if (sound) payload.attachments = [{ id: '0', filename: sound.filename, soundId: sound.id }];
   return payload;
 }
@@ -173,6 +182,9 @@ export function prayerModal(action, p = DEFAULT_PRAYER) {
   throw new RangeError('Unknown modal');
 }
 export function reminderPayload({ silent = true, preview = false, enabled = true, paused = false } = {}) {
+  if (!preview) return notification(`كفارة المجلس: ${COPY.dhikr.replaceAll('\n', ' ')}\n${DHIKR_CARDS[0].source.reference}`, [
+    row(button('المصدر والتوضيح', 'source_majlis'), button('تذكيري', 'settings'), button(paused ? 'استئناف التذكير' : 'إيقاف ٢٤ ساعة', paused ? 'resume' : 'pause_today'))
+  ], { silent });
   return envelope([
     text(`### 🌿 ${COPY.reminderTitle}\n${quotation(COPY.dhikr)}`),
     text(`-# ${DHIKR_CARDS[0].source.reference}`),
@@ -219,14 +231,16 @@ export function settingsPayload({ frequency = 'daily', delivery = 'silent', enab
       ['session5', 'بعد المجالس — حتى ٥ مرات', 'فاصل ساعتين؛ حتى ٥ مرات خلال ٢٤ ساعة']
     ], frequency),
     select('delivery', 'كيف تصلك الرسالة؟', [
-      ['normal', 'تنبيه عادي', 'حسب إعدادات الإشعارات في ديسكورد'],
+      ['normal', 'إشعار الجوال وسطح المكتب', 'نص التذكير في الإشعار، حسب إعدادات جهازك'],
       ['silent', 'في الخاص، بلا تنبيه', 'دون إشعار دفع أو تنبيه سطح المكتب']
     ], delivery),
+    text('-# لقراءة التذكير من إشعار الهاتف، فعّل الإشعار ومعاينة الرسائل في جهازك. «بلا تنبيه» يمنع إشعار الدفع، ولا يعني إشعارًا بلا صوت.'),
     separator(),
     text('-# التكرار وطريقة التنبيه هنا لتذكير المجلس والمؤقّت. للصلاة والجمعة والقضاء إعداد إشعار مستقل؛ الإيقاف العام يشمل الجميع.'),
     row(button(paused ? 'استئناف التنبيهات' : !subscribedHere ? 'فعّل في هذا السيرفر' : enabled ? 'إيقاف ٢٤ ساعة' : 'فعّل تذكيري', paused ? 'resume' : !enabled || !subscribedHere ? 'enable' : 'pause_today'), button('اختبر الخاص', 'test_dm')),
     ...(inGuild && subscribedHere ? [row(button('إلغاء تذكير هذا السيرفر', 'unsubscribe_here'))] : []),
     row(button('الصلاة', 'prayer'), button('الجمعة والقضاء', 'prayer_occasions'), ...(!paused && (!enabled || !subscribedHere) ? [button('إيقاف ٢٤ ساعة', 'pause_today')] : [])),
+    row(button('مساعدة إشعار الجوال', 'notification_help')),
     row(button('إيقاف كل التنبيهات', 'disable'), button('مساحتي', 'home'))
   ], { ephemeral: true });
 }
@@ -349,11 +363,18 @@ export function breakPayload({ breakAt = null, notice = '', paused = false, dmBl
 }
 
 export function breakReminderPayload({ silent = true } = {}) {
-  return envelope([
-    text('## حان وقت الاستراحة 🌱\nهذا هو التذكير الذي طلبته. خذ استراحتك، وراجع ما تحتاج أن تفرغ له الآن.'),
-    text('-# انتهى المؤقّت. لن يتكرر تلقائيًا.'),
-    separator(), row(button('ذكّرني بعد ١٥ دقيقة', 'break_15'), button('فكرة خير', 'idea'), button('مساحتي', 'home'))
+  return notification('حان وقت الاستراحة 🌱\nهذا هو التذكير الذي طلبته. خذ استراحتك، وراجع ما تحتاج أن تفرغ له الآن.\nانتهى المؤقّت. لن يتكرر تلقائيًا.', [
+    row(button('ذكّرني بعد ١٥ دقيقة', 'break_15'), button('فكرة خير', 'idea'), button('مساحتي', 'home'))
   ], { silent });
+}
+
+export function notificationHelpPayload() {
+  return envelope([
+    text('## اقرأ التذكير من إشعار جوالك\n١. في إعدادات التذكير، اختر «إشعار الجوال وسطح المكتب». للصلاة والجمعة والقضاء اختيار مستقل عن المجلس والمؤقّت.\n٢. في إعدادات هاتفك ← الإشعارات ← Discord، اسمح بالإشعارات ومعاينة النص في الموضع الذي يناسب خصوصيتك. تأكد من السماح بإشعارات الرسائل الخاصة ومن عدم كتم محادثة رفيق.\n٣. جرّب «اختبر الخاص» للمجلس أو «اختبر الإشعار» للصلاة.'),
+    text('يرسل رفيق النص داخل الرسالة، لتتمكن من قراءته من الإشعار عندما يسمح جهازك. قد تختصر الشاشة النص أو تخفيه، وقد يمنع الكتم أو عدم الإزعاج التنبيه. وصول الرسالة للخاص لا يثبت ظهور إشعار على الهاتف.'),
+    row(linkButton('إعدادات إشعارات ديسكورد', 'https://support.discord.com/hc/en-us/articles/218892547--Mobile-Notifications-Settings-101')),
+    row(button('إعدادات المجلس', 'settings'), button('إشعار الصلاة والجمعة', 'prayer_audio'), button('مساحتي', 'home'))
+  ], { ephemeral: true });
 }
 
 export function privacyPayload({ privacyURL, supportURL } = {}) {

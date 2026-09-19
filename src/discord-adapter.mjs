@@ -6,6 +6,7 @@ import { INSTALL_PERMISSIONS } from './commands.mjs';
 
 export function toDiscord(payload, { forEdit = false, sounds = [] } = {}) {
   const result = {
+    ...(payload.content !== undefined ? { content: payload.content } : {}),
     flags: forEdit ? payload.flags & ~FLAGS.ephemeral & ~FLAGS.silent : payload.flags,
     components: structuredClone(payload.components),
     allowedMentions: { parse: [], repliedUser: false }
