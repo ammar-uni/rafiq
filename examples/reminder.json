@@ -1,54 +1,31 @@
 {
-  "flags": 36864,
+  "content": "كفارة المجلس: سبحانك اللهم وبحمدك، أشهد أن لا إله إلا أنت، أستغفرك وأتوب إليك.\nرواه أبو داود والترمذي",
+  "flags": 4096,
   "allowed_mentions": {
     "parse": [],
     "replied_user": false
   },
   "components": [
     {
-      "type": 17,
-      "accent_color": 6663305,
+      "type": 1,
       "components": [
         {
-          "type": 10,
-          "content": "### 🌿 كفارة المجلس\n> سبحانك اللهم وبحمدك،\n> أشهد أن لا إله إلا أنت،\n> أستغفرك وأتوب إليك."
+          "type": 2,
+          "label": "المصدر والتوضيح",
+          "style": 2,
+          "custom_id": "rafiq:v1:source_majlis"
         },
         {
-          "type": 10,
-          "content": "-# رواه أبو داود والترمذي"
+          "type": 2,
+          "label": "تذكيري",
+          "style": 2,
+          "custom_id": "rafiq:v1:settings"
         },
         {
-          "type": 14,
-          "divider": true,
-          "spacing": 1
-        },
-        {
-          "type": 1,
-          "components": [
-            {
-              "type": 2,
-              "label": "المصدر والتوضيح",
-              "style": 2,
-              "custom_id": "rafiq:v1:source_majlis"
-            }
-          ]
-        },
-        {
-          "type": 1,
-          "components": [
-            {
-              "type": 2,
-              "label": "تذكيري",
-              "style": 2,
-              "custom_id": "rafiq:v1:settings"
-            },
-            {
-              "type": 2,
-              "label": "إيقاف ٢٤ ساعة",
-              "style": 2,
-              "custom_id": "rafiq:v1:pause_today"
-            }
-          ]
+          "type": 2,
+          "label": "إيقاف ٢٤ ساعة",
+          "style": 2,
+          "custom_id": "rafiq:v1:pause_today"
         }
       ]
     }

@@ -1,38 +1,25 @@
 {
-  "flags": 36864,
+  "content": "حان موعد الفجر بحسب جدولك المحسوب — مكة المكرمة، السعودية · 04:49\nأم القرى — مكة · Asia/Riyadh",
+  "flags": 4096,
   "allowed_mentions": {
     "parse": [],
     "replied_user": false
   },
   "components": [
     {
-      "type": 17,
-      "accent_color": 9088708,
+      "type": 1,
       "components": [
         {
-          "type": 10,
-          "content": "## 🕰️ موعد الفجر\nحان موعد الفجر بحسب جدولك المحسوب."
+          "type": 2,
+          "label": "مواقيتي وإعداداتي",
+          "style": 2,
+          "custom_id": "rafiq:v1:prayer"
         },
         {
-          "type": 10,
-          "content": "**مكة المكرمة، السعودية** · 04:49\n-# أم القرى — مكة · Asia/Riyadh"
-        },
-        {
-          "type": 1,
-          "components": [
-            {
-              "type": 2,
-              "label": "مواقيتي وإعداداتي",
-              "style": 2,
-              "custom_id": "rafiq:v1:prayer"
-            },
-            {
-              "type": 2,
-              "label": "إيقاف تذكير الصلاة",
-              "style": 2,
-              "custom_id": "rafiq:v1:prayer_disable"
-            }
-          ]
+          "type": 2,
+          "label": "إيقاف تذكير الصلاة",
+          "style": 2,
+          "custom_id": "rafiq:v1:prayer_disable"
         }
       ]
     }
