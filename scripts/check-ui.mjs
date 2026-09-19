@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { welcomePayload, reminderPayload, enabledPayload, settingsPayload, ideaPayload, pausedPayload, disabledPayload, homePayload, libraryPayload, sourcePayload, methodologyPayload, privacyPayload, supportPayload, forgetPromptPayload, breakPayload, breakReminderPayload, FLAGS } from '../src/messages.mjs';
 import { DHIKR_CARDS, GOOD_DEEDS, IDEA_CATEGORIES } from '../src/content.mjs';
-import { reminderIntroPayload, ideaSourcePayload, favoritesPayload } from '../src/messages.mjs';
+import { reminderIntroPayload, ideaSourcePayload, favoritesPayload, notificationHelpPayload } from '../src/messages.mjs';
 import { prayerPayload, prayerLocationPayload, prayerCitiesPayload, prayerCalculationPayload, prayerAudioPayload, prayerReminderPayload, prayerTestPayload } from '../src/messages.mjs';
 import { DEFAULT_PRAYER, PRAYER_METHODS } from '../src/prayer-config.mjs';
 import { prayerSchedule } from '../src/prayer-times.mjs';
@@ -19,20 +19,27 @@ const p = { ...DEFAULT_PRAYER, city: { label: 'مكة المكرمة، السع�
 const today = prayerSchedule(p, '2026-09-09');
 const sound = { id: 'soft', label: 'تنبيه هادئ', filename: 'soft.mp3' };
 samples.push(prayerPayload(), prayerPayload({ preferences: p, today, next: today[0] }), prayerPayload({ preferences: { ...p, enabled: true }, today, paused: true, dmBlocked: true }), prayerPayload({ preferences: p }), prayerLocationPayload(), prayerCitiesPayload([p.city], 'test'), prayerAudioPayload(p), prayerAudioPayload({ ...p, soundId: sound.id }, [sound]), prayerReminderPayload(p, today[0]), prayerReminderPayload({ ...p, delivery: 'normal' }, today[0], sound), prayerTestPayload(p, sound), ...PRAYER_METHODS.map(([method]) => prayerCalculationPayload({ ...p, method })), prayerCalculationPayload({ ...p, ramadanIsha: true }));
-samples.push(...fivePerDaySamples);
+samples.push(...fivePerDaySamples, notificationHelpPayload());
 const occasions = { fridayPrayer: 1800000000000, fridayDua: 1800000000000, qada: 1800000000000 };
 for (const preferences of [p, { ...p, occasions }]) {
   for (const state of [{}, { paused: true }, { dmBlocked: true }]) samples.push(occasionsPayload({ preferences, ready: true, next: nextFridayReminders(preferences, 1800000000000), ...state }));
 }
 samples.push(occasionsPayload(), occasionSourcesPayload(), ...['2026-09-18', '2027-01-09', '2027-01-24'].flatMap(day => occasionEvents({ ...p, occasions }, prayerSchedule(p, day)).map(event => occasionReminderPayload(p, event))));
 for (const payload of samples) {
-  assert.ok(payload.flags & FLAGS.componentsV2);
-  assert.equal(payload.content, undefined);
+  const isV2 = Boolean(payload.flags & FLAGS.componentsV2);
+  if (isV2) assert.equal(payload.content, undefined);
+  else {
+    assert.equal(typeof payload.content, 'string');
+    assert.ok(payload.content.length > 0 && payload.content.length <= 2000);
+    assert.ok(payload.components.length <= 5);
+    assert.ok(!(payload.flags & FLAGS.ephemeral));
+  }
   assert.equal(payload.embeds, undefined);
   assert.deepEqual(payload.allowed_mentions.parse, []);
   const ids = new Set(); let count = 0; let characters = 0;
   function visit(component, parent = 0) {
     count++;
+    if (!isV2) assert.ok(parent === 0 ? component.type === 1 : parent === 1 && [2, 3].includes(component.type));
     if (component.custom_id) {
       assert.ok(component.custom_id.length <= 100);
       assert.ok(!ids.has(component.custom_id), 'Duplicate custom_id');
