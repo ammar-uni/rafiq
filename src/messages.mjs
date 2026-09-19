@@ -29,7 +29,7 @@ const envelope = (components, { ephemeral = false, silent = false, accent = BRAN
   components: [container(components, accent)]
 });
 // Keep reminder text in content for notification previews; V2 disables content.
-const notification = (content, components, { silent = true } = {}) => ({
+const notification = (content, components, { silent = false } = {}) => ({
   content,
   flags: silent ? FLAGS.silent : 0,
   allowed_mentions: { parse: [], replied_user: false },
@@ -142,7 +142,7 @@ export function prayerCalculationPayload(p = DEFAULT_PRAYER, notice = '') {
 export function prayerAudioPayload(p = DEFAULT_PRAYER, sounds = []) {
   return envelope([
     text('## الإشعار والصوت\nاختر كيف تصلك تذكيرات الصلاة والجمعة والقضاء. لقراءة التذكير من إشعار الهاتف، اختر «إشعار الجوال وسطح المكتب» واسمح بمعاينة الرسائل في إعدادات جهازك.'),
-    prayerSelect('prayer_delivery', 'كيف يصلك التذكير؟', [['silent', 'في الخاص، بلا تنبيه'], ['normal', 'إشعار الجوال وسطح المكتب']], p.delivery),
+    prayerSelect('prayer_delivery', 'كيف يصلك التذكير؟', [['normal', 'إشعار الجوال وسطح المكتب'], ['silent', 'في الخاص، بلا تنبيه']], p.delivery),
     text('-# «بلا تنبيه» يمنع إشعار الدفع، ولا يعني إشعارًا بلا صوت. ظهور الإشعار وطول المعاينة والصوت تتبع إعدادات ديسكورد وجهازك.'),
     text('**الصوت المخصص للصلوات الخمس**\nيمكن إضافة ملفات صوتية هنا لاحقًا. اختيار ملف يرفقه بتذكير الصلاة لتشغيله بيدك؛ لا يبدأ تلقائيًا ولا يُسمع لبقية القناة. تشغيل صوت خاص تلقائيًا أثناء اللعب يحتاج تطبيقًا مرافقًا على جهازك؛ هذه الإمكانية لم تُضف بعد.'),
     ...(sounds.length ? [prayerSelect('prayer_sound', 'ملف صوتي اختياري', [['none', 'دون ملف صوتي'], ...sounds.map(sound => [sound.id, sound.label])], sounds.some(s => s.id === p.soundId) ? p.soundId : 'none')] : [text('-# لم تُضف ملفات صوتية بعد. الإشعار المعتاد متاح الآن، ولا يتجاوز الكتم أو وضع عدم الإزعاج.')]),
@@ -181,7 +181,7 @@ export function prayerModal(action, p = DEFAULT_PRAYER) {
   if (action === 'prayer_adjust_modal') return { custom_id: 'rafiq:v1:prayer_adjust', title: 'تعديل المواقيت بالدقائق', components: PRAYERS.map(([id, label], i) => field(id, label, String(p.adjustments[i]), 'بين -60 و60؛ مثل +2 أو -3', 3)) };
   throw new RangeError('Unknown modal');
 }
-export function reminderPayload({ silent = true, preview = false, enabled = true, paused = false } = {}) {
+export function reminderPayload({ silent = false, preview = false, enabled = true, paused = false } = {}) {
   if (!preview) return notification(`كفارة المجلس: ${COPY.dhikr.replaceAll('\n', ' ')}\n${DHIKR_CARDS[0].source.reference}`, [
     row(button('المصدر والتوضيح', 'source_majlis'), button('تذكيري', 'settings'), button(paused ? 'استئناف التذكير' : 'إيقاف ٢٤ ساعة', paused ? 'resume' : 'pause_today'))
   ], { silent });
@@ -198,7 +198,7 @@ export function reminderPayload({ silent = true, preview = false, enabled = true
 const frequencyDescription = frequency => frequency === 'daily'
   ? 'مرة كل ٢٤ ساعة كحد أقصى'
   : `بفاصل ساعتين على الأقل، وحتى ${frequency === 'session5' ? '٥' : '٣'} مرات خلال ٢٤ ساعة`;
-export function reminderIntroPayload({ enabled = false, subscribedHere = true, frequency = 'daily', delivery = 'silent' } = {}) {
+export function reminderIntroPayload({ enabled = false, subscribedHere = true, frequency = 'session', delivery = 'normal' } = {}) {
   return envelope([
     text('## تذكير المجلس، باختيارك 🌿\nشاهد شكل الرسالة أولًا، ثم قرّر إن كنت تريد وصولها في الخاص.'),
     text('بعد مجلس صوتي مشترك مدته ٥ دقائق أو أكثر، ينتظر رفيق دقيقة بعد خروجك لاحتمال عودتك.'),
@@ -208,7 +208,7 @@ export function reminderIntroPayload({ enabled = false, subscribedHere = true, f
     row(button('الآن أتصفّح فقط', 'home'))
   ], { ephemeral: true });
 }
-export function enabledPayload({ frequency = 'daily' } = {}) {
+export function enabledPayload({ frequency = 'session' } = {}) {
   return envelope([
     text('## تذكيرك جاهز 🌿\nأذكّرك في الخاص بعد خروجك من الصوت، إذا استمرت جلستك ٥ دقائق على الأقل وحضر معك شخص آخر.'),
     text(`-# ${frequencyDescription(frequency)} · ننتظر دقيقة لاحتمال عودتك`),
@@ -216,7 +216,7 @@ export function enabledPayload({ frequency = 'daily' } = {}) {
     row(button('اختبر الخاص', 'test_dm'), button('ضبط التذكير', 'settings'), button('مساحتي', 'home'))
   ], { ephemeral: true });
 }
-export function settingsPayload({ frequency = 'daily', delivery = 'silent', enabled = false, subscribedHere = true, inGuild = false, paused = false, pausedUntil = 0, dmBlocked = false, notice = '' } = {}) {
+export function settingsPayload({ frequency = 'session', delivery = 'normal', enabled = false, subscribedHere = true, inGuild = false, paused = false, pausedUntil = 0, dmBlocked = false, notice = '' } = {}) {
   if (!['daily', 'session', 'session5'].includes(frequency) || !['normal', 'silent'].includes(delivery)) throw new RangeError('Invalid reminder preference');
   const select = (id, placeholder, options, selected) => row({
     type: 3, custom_id: `rafiq:v1:${id}`, placeholder, min_values: 1, max_values: 1,
@@ -226,8 +226,8 @@ export function settingsPayload({ frequency = 'daily', delivery = 'silent', enab
     text(`${notice ? `${notice}\n` : ''}## إعداداتك\n**تذكير كفارة المجلس**\n-# ${dmBlocked ? 'تعذّر الوصول إلى الخاص؛ اختبره لاستئناف الإرسال' : paused ? 'جميع التنبيهات متوقفة مؤقتًا' : !enabled ? 'تذكير المجلس غير مفعّل' : !subscribedHere ? 'تذكير المجلس غير مفعّل في هذا السيرفر' : 'تذكير المجلس مفعّل'} · اختياراتك تُحفظ فورًا`),
     ...(paused && pausedUntil ? [text(`ينتهي الإيقاف <t:${Math.floor(pausedUntil / 1000)}:R>.`)] : []),
     select('frequency', 'كم مرة؟', [
-      ['daily', 'مرة كل ٢٤ ساعة كحد أقصى', 'بداية خفيفة لتقليل تكرار الرسائل'],
       ['session', 'بعد المجالس — حتى ٣ مرات', 'فاصل ساعتين؛ حتى ٣ مرات خلال ٢٤ ساعة'],
+      ['daily', 'مرة كل ٢٤ ساعة كحد أقصى', 'خيار أخف لتقليل تكرار الرسائل'],
       ['session5', 'بعد المجالس — حتى ٥ مرات', 'فاصل ساعتين؛ حتى ٥ مرات خلال ٢٤ ساعة']
     ], frequency),
     select('delivery', 'كيف تصلك الرسالة؟', [
@@ -351,7 +351,7 @@ export function methodologyPayload() {
   ], { ephemeral: true });
 }
 
-export function breakPayload({ breakAt = null, notice = '', paused = false, dmBlocked = false, delivery = 'silent' } = {}) {
+export function breakPayload({ breakAt = null, notice = '', paused = false, dmBlocked = false, delivery = 'normal' } = {}) {
   return envelope([
     text(`${notice ? `${notice}\n` : ''}## وقت لاستراحة\n${breakAt ? `مؤقّتك مضبوط: <t:${Math.floor(breakAt / 1000)}:R>.` : 'اختر متى أذكّرك باستراحة من الجلسة.'}`),
     ...(paused || dmBlocked ? [text(paused ? 'التنبيهات متوقفة مؤقتًا. استأنفها من إعداداتك قبل ضبط المؤقّت.' : 'وصول الخاص معلّق. افتح إعداداتك واختبر الخاص أولًا.'), row(button('إعدادات التنبيه', 'settings'))] : []),
@@ -362,7 +362,7 @@ export function breakPayload({ breakAt = null, notice = '', paused = false, dmBl
   ], { ephemeral: true, accent: BRAND.blue });
 }
 
-export function breakReminderPayload({ silent = true } = {}) {
+export function breakReminderPayload({ silent = false } = {}) {
   return notification('حان وقت الاستراحة 🌱\nهذا هو التذكير الذي طلبته. خذ استراحتك، وراجع ما تحتاج أن تفرغ له الآن.\nانتهى المؤقّت. لن يتكرر تلقائيًا.', [
     row(button('ذكّرني بعد ١٥ دقيقة', 'break_15'), button('فكرة خير', 'idea'), button('مساحتي', 'home'))
   ], { silent });

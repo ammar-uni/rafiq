@@ -8,7 +8,7 @@ export const PRAYER_HIGH_LATITUDE = Object.freeze([['MiddleOfTheNight', 'نصف 
 export const OCCASIONS = Object.freeze([['fridayPrayer', 'صلاة الجمعة'], ['fridayDua', 'دعاء الجمعة'], ['qada', 'قضاء قبل رمضان']]);
 export const DEFAULT_OCCASIONS = Object.freeze({ fridayPrayer: 0, fridayDua: 0, qada: 0 });
 export const DEFAULT_PRAYER = Object.freeze({ city: null, method: 'UmmAlQura', asr: 'Shafi', highLatitude: 'MiddleOfTheNight',
-  adjustments: Object.freeze([0, 0, 0, 0, 0]), ramadanIsha: false, enabled: false, activatedAt: 0, delivery: 'silent', soundId: null,
+  adjustments: Object.freeze([0, 0, 0, 0, 0]), ramadanIsha: false, enabled: false, activatedAt: 0, delivery: 'normal', soundId: null,
   occasions: DEFAULT_OCCASIONS });
 export const hasPrayerReminders = p => p.enabled || Object.values(p.occasions).some(at => at > 0);
 export const renewPrayerActivation = (p, now) => ({ ...p, activatedAt: p.enabled ? now : p.activatedAt,

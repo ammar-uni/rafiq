@@ -5,7 +5,7 @@ import { DEFAULT_PRAYER, DEFAULT_OCCASIONS, PRAYERS, validatePrayer, readStoredP
 
 export const MINUTE = 60_000;
 export const DAY = 24 * 60 * MINUTE;
-export const DEFAULT_USER = Object.freeze({ enabled: false, frequency: 'daily', delivery: 'silent', pausedUntil: 0, dmBlocked: false, breakAt: null, lastTestAt: null });
+export const DEFAULT_USER = Object.freeze({ enabled: false, frequency: 'session', delivery: 'normal', pausedUntil: 0, dmBlocked: false, breakAt: null, lastTestAt: null });
 const columns = { enabled: 'enabled', frequency: 'frequency', delivery: 'delivery', pausedUntil: 'paused_until', dmBlocked: 'dm_blocked', breakAt: 'break_at', lastTestAt: 'last_test_at' };
 const id = value => { if (typeof value !== 'string' || !/^\d{1,25}$/.test(value)) throw new TypeError('Expected a Discord ID'); return value; };
 const tables = {
@@ -27,8 +27,8 @@ export class Store {
       CREATE TABLE IF NOT EXISTS users (
         user_id TEXT PRIMARY KEY,
         enabled INTEGER NOT NULL DEFAULT 0 CHECK(enabled IN (0,1)),
-        frequency TEXT NOT NULL DEFAULT 'daily' CHECK(frequency IN ('daily','session','session5')),
-        delivery TEXT NOT NULL DEFAULT 'silent' CHECK(delivery IN ('normal','silent')),
+        frequency TEXT NOT NULL DEFAULT 'session' CHECK(frequency IN ('daily','session','session5')),
+        delivery TEXT NOT NULL DEFAULT 'normal' CHECK(delivery IN ('normal','silent')),
         paused_until INTEGER NOT NULL DEFAULT 0,
         dm_blocked INTEGER NOT NULL DEFAULT 0 CHECK(dm_blocked IN (0,1)),
         break_at INTEGER,
