@@ -74,9 +74,9 @@
     @container rafiq (max-width:450px) { #rafiq-native-preview .rn-section { gap:8px;flex-wrap:wrap; } #rafiq-native-preview .rn-stage { padding:18px 12px; } }
   </style>
   <div class="rn-stage">
-    <div class="rn-kicker">رفيق / ٠.٨ · تجربة التصميم</div>
+    <div class="rn-kicker">رفيق / ٠.٩ · تجربة التصميم</div>
     <h1>خيرٌ يرافقك.</h1>
-    <p>اختر مدينتك وتذكيراتك، وجرّب الجمعة والقضاء والأذكار وأفكار الخير.</p>
+    <p>ابدأ بالمدينة، اختر تذكيراتك، ثم شاهد يومك والأذكار المختصرة.</p>
     <div class="rn-scenarios" aria-label="التنقل في المعاينة">
       <button type="button" data-action="welcome">الترحيب</button>
       <button type="button" data-action="home">مساحتي</button>
@@ -115,7 +115,7 @@
     const app=new RafiqApp({store,queue,prayers,sendDM:async()=>{simulatedMessages++;}});
     const escapeHtml=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const markdown=value=>value.split('\n').map(line=>{
-      const safe=escapeHtml(line).replace(/\[([^\]]+)\]\((https:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/&lt;t:(\d+):R&gt;/g,(_,seconds)=>{const minutes=Math.ceil((Number(seconds)*1000-Date.now())/60000);return minutes>0?'بعد نحو '+minutes.toLocaleString('ar')+' دقيقة':'حان الموعد';});
+      const safe=escapeHtml(line).replace(/\[([^\]]+)\]\((https:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/&lt;t:(\d+):(R|f)&gt;/g,(_,seconds,style)=>{if(style==='f')return new Date(Number(seconds)*1000).toLocaleString('ar',{dateStyle:'medium',timeStyle:'short'});const minutes=Math.ceil((Number(seconds)*1000-Date.now())/60000);return minutes>0?'بعد نحو '+minutes.toLocaleString('ar')+' دقيقة':'حان الموعد';});
       if(safe.startsWith('### '))return '<h3>'+safe.slice(4)+'</h3>';
       if(safe.startsWith('## '))return '<h2>'+safe.slice(3)+'</h2>';
       if(safe.startsWith('-# '))return '<div class="rn-small">'+safe.slice(3)+'</div>';
@@ -153,9 +153,9 @@
     let payload=welcomePayload();
     async function navigate(action, values=[], focus=true) {
       if(busy)return;
-      if(['prayer_city_modal','prayer_adjust_modal'].includes(action)) {
-        const modal=prayerModal(action,store.getPrayer());
-        view.innerHTML='<div class="rn-container"><h2>'+escapeHtml(modal.title)+'</h2>'+(action==='prayer_city_modal'?'<p>بحث حقيقي مثل البوت. مثال: مكة المكرمة، السعودية. قد يُرسل نص البحث إلى Open-Meteo عند الحاجة. اختيارك في المعاينة مؤقت ولا يغيّر إعداداتك في ديسكورد.</p>':'')+'<form id="rn-prayer-form">'+modal.components.map(row=>{const f=row.component;return '<label style="display:block;margin:16px 0">'+escapeHtml(row.label)+'<input style="display:block;width:100%;box-sizing:border-box;padding:12px;margin-top:8px;background:transparent;color:inherit;border:1px solid #8aaec4;border-radius:8px" name="'+f.custom_id+'" value="'+escapeHtml(f.value||'')+'" placeholder="'+escapeHtml(f.placeholder)+'" maxlength="'+f.max_length+'" required></label>';}).join('')+'<button type="submit" class="rn-positive">'+(action==='prayer_city_modal'?'ابحث':'احفظ التعديل')+'</button> <button type="button" data-action="prayer">رجوع</button></form></div>';
+      if(MODAL_ACTIONS.includes(action.replace(/^setup_/,''))) {
+        const modal=appModal(action,store.getPrayer());
+        view.innerHTML='<div class="rn-container"><h2>'+escapeHtml(modal.title)+'</h2>'+(action.endsWith('prayer_city_modal')?'<p>بحث حقيقي مثل البوت. مثال: مكة المكرمة، السعودية. قد يُرسل نص البحث إلى Open-Meteo عند الحاجة. اختيارك في المعاينة مؤقت ولا يغيّر إعداداتك في ديسكورد.</p>':'')+'<form id="rn-prayer-form">'+modal.components.map(row=>{const f=row.component;return '<label style="display:block;margin:16px 0">'+escapeHtml(row.label)+'<input style="display:block;width:100%;box-sizing:border-box;padding:12px;margin-top:8px;background:transparent;color:inherit;border:1px solid #8aaec4;border-radius:8px" name="'+f.custom_id+'" value="'+escapeHtml(f.value||'')+'" placeholder="'+escapeHtml(f.placeholder)+'" maxlength="'+f.max_length+'" required></label>';}).join('')+'<button type="submit" class="rn-positive">'+(action.endsWith('prayer_city_modal')?'ابحث':'احفظ التعديل')+'</button> <button type="button" data-action="'+(action.startsWith('setup_')?'setup_choices':action.startsWith('daily_')?'daily':'prayer')+'">رجوع</button></form></div>';
         view.querySelector('input').focus();
         view.querySelector('form').addEventListener('submit',event=>{event.preventDefault();const data=new FormData(event.target);void navigate(modal.custom_id.slice(9),modal.components.map(row=>data.get(row.component.custom_id)));});
         return;
