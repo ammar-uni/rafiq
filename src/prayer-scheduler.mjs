@@ -1,7 +1,7 @@
 import { prayerDate } from './prayer-times.mjs';
 import { reminderWindow } from './occasion-times.mjs';
 import { hasPrayerReminders } from './prayer-config.mjs';
-import { prayerReminderPayload, occasionReminderPayload } from './messages.mjs';
+import { prayerReminderPayload, occasionReminderPayload, dailyReminderPayload } from './messages.mjs';
 
 export class PrayerScheduler {
   constructor({ store, queue, deliver, canSend = () => true, now = Date.now, calculate = reminderWindow, sounds = [], onError = () => {} }) {
@@ -33,7 +33,7 @@ export class PrayerScheduler {
           const claimed = this.store.claimPrayer(userId, p, event, at);
           if (claimed) {
             const sound = this.sounds.find(sound => sound.id === claimed.soundId) || null;
-            const payload = ['fridayPrayer', 'fridayDua', 'qada30', 'qada15'].includes(event.key)
+            const payload = ['morning', 'evening', 'quran'].includes(event.key) ? dailyReminderPayload(claimed, event) : ['fridayPrayer', 'fridayDua', 'qada30', 'qada15'].includes(event.key)
               ? occasionReminderPayload(claimed, event) : prayerReminderPayload(claimed, event, sound);
             await this.deliver(userId, payload, `prayer:${userId}:${event.day}:${event.key}`);
           }

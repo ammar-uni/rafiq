@@ -1,5 +1,5 @@
-import { DHIKR_CARDS, GOOD_DEEDS, OCCASION_CARDS, IDEA_CATEGORIES, dhikrById, ideaById } from './content.mjs';
-import { DEFAULT_PRAYER, OCCASIONS, PRAYERS, PRAYER_METHODS, PRAYER_HIGH_LATITUDE } from './prayer-config.mjs';
+import { DHIKR_CARDS, GOOD_DEEDS, OCCASION_CARDS, DAILY_DHIKR, IDEA_CATEGORIES, dhikrById, ideaById } from './content.mjs';
+import { DEFAULT_PRAYER, DAILY_REMINDERS, OCCASIONS, PRAYERS, PRAYER_METHODS, PRAYER_HIGH_LATITUDE } from './prayer-config.mjs';
 import { prayerClock } from './prayer-times.mjs';
 /** Native Discord REST payloads. Rendering only; these functions never send messages. */
 export const FLAGS = Object.freeze({ componentsV2: 32768, ephemeral: 64, silent: 4096 });
@@ -119,7 +119,7 @@ export function prayerLocationPayload(notice = '') {
 
 export function prayerCitiesPayload(cities, token) {
   return envelope([
-    text('## اختر المدينة الصحيحة\nراجع الدولة والمنطقة. تغيير المدينة يوقف تذكيرات الصلاة والجمعة والقضاء؛ راجع الجدول ثم أعد تفعيل ما تحتاجه.'),
+    text('## اختر المدينة الصحيحة\nراجع الدولة والمنطقة. تغيير المدينة يوقف تذكيرات الصلاة والجمعة والقضاء والأذكار والقراءة؛ راجع الجدول ثم أعد تفعيل ما تحتاجه.'),
     prayerSelect(`prayer_city_${token}`, 'نتائج البحث — اختر مدينتك', cities.map((city, i) => [String(i), city.label]), null),
     text('-# بيانات المدن: [GeoNames](https://www.geonames.org/) و[Open-Meteo](https://open-meteo.com/en/docs/geocoding-api). تنتهي هذه النتائج بعد ١٠ دقائق.'),
     row(button('بحث جديد', 'prayer_city_modal'), button('رجوع', 'prayer'))
@@ -128,7 +128,7 @@ export function prayerCitiesPayload(cities, token) {
 
 export function prayerCalculationPayload(p = DEFAULT_PRAYER, notice = '') {
   return envelope([
-    text(`## ضبط الحساب${notice ? `\n${notice}` : ''}\nاختر الطريقة التي تطابق الجدول المعتمد عندك. تغيير الحساب يوقف تذكيرات الصلاة والجمعة والقضاء؛ راجع الجدول ثم أعد تفعيل ما تحتاجه.`),
+    text(`## ضبط الحساب${notice ? `\n${notice}` : ''}\nاختر الطريقة التي تطابق الجدول المعتمد عندك. تغيير الحساب يوقف تذكيرات الصلاة والجمعة والقضاء والأذكار والقراءة؛ راجع الجدول ثم أعد تفعيل ما تحتاجه.`),
     prayerSelect('prayer_method', 'طريقة الحساب', [['none', 'اختر طريقة الحساب'], ...PRAYER_METHODS], p.method || 'none'),
     text('-# حساب العصر معتمد عند بلوغ ظل الشيء مثله، بعد استثناء ظل الزوال.'),
     text('**تقدير الفجر والعشاء عند قِصر الليل**\nاختر التقدير المعتمد محليًا. هذه خيارات حسابية، وليست فتوى في الترجيح بينها. لا نضع جدولًا بديلًا لليل أو نهار قطبي متصل.'),
@@ -141,7 +141,7 @@ export function prayerCalculationPayload(p = DEFAULT_PRAYER, notice = '') {
 
 export function prayerAudioPayload(p = DEFAULT_PRAYER, sounds = []) {
   return envelope([
-    text('## الإشعار والصوت\nاختر كيف تصلك تذكيرات الصلاة والجمعة والقضاء. لقراءة التذكير من إشعار الهاتف، اختر «إشعار الجوال وسطح المكتب» واسمح بمعاينة الرسائل في إعدادات جهازك.'),
+    text('## الإشعار والصوت\nاختر كيف تصلك تذكيرات الصلاة والجمعة والقضاء والأذكار والقراءة. لقراءة التذكير من إشعار الهاتف، اختر «إشعار الجوال وسطح المكتب» واسمح بمعاينة الرسائل في إعدادات جهازك.'),
     prayerSelect('prayer_delivery', 'كيف يصلك التذكير؟', [['normal', 'إشعار الجوال وسطح المكتب'], ['silent', 'في الخاص، بلا تنبيه']], p.delivery),
     text('-# «بلا تنبيه» يمنع إشعار الدفع، ولا يعني إشعارًا بلا صوت. ظهور الإشعار وطول المعاينة والصوت تتبع إعدادات ديسكورد وجهازك.'),
     text('**الصوت المخصص للصلوات الخمس**\nيمكن إضافة ملفات صوتية هنا لاحقًا. اختيار ملف يرفقه بتذكير الصلاة لتشغيله بيدك؛ لا يبدأ تلقائيًا ولا يُسمع لبقية القناة. تشغيل صوت خاص تلقائيًا أثناء اللعب يحتاج تطبيقًا مرافقًا على جهازك؛ هذه الإمكانية لم تُضف بعد.'),
@@ -180,6 +180,128 @@ export function prayerModal(action, p = DEFAULT_PRAYER) {
   if (action === 'prayer_city_modal') return { custom_id: 'rafiq:v1:prayer_search', title: 'اختر مدينتك', components: [field('city', 'اسم المدينة، الدولة', null, 'مثال: مكة المكرمة، السعودية', 80)] };
   if (action === 'prayer_adjust_modal') return { custom_id: 'rafiq:v1:prayer_adjust', title: 'تعديل المواقيت بالدقائق', components: PRAYERS.map(([id, label], i) => field(id, label, String(p.adjustments[i]), 'بين -60 و60؛ مثل +2 أو -3', 3)) };
   throw new RangeError('Unknown modal');
+}
+export const MODAL_ACTIONS = Object.freeze(['prayer_city_modal', 'prayer_adjust_modal', 'daily_morning_modal', 'daily_evening_modal', 'daily_quran_modal']);
+export function appModal(action, p = DEFAULT_PRAYER) {
+  const setup = action.startsWith('setup_');
+  const raw = setup ? action.slice(6) : action;
+  let modal;
+  if (raw.startsWith('prayer_')) modal = prayerModal(raw, p);
+  else {
+    const key = /^daily_(morning|evening|quran)_modal$/.exec(raw)?.[1];
+    if (!key) throw new RangeError('Unknown modal');
+    const quran = key === 'quran', value = quran ? p.daily.quran.time : p.daily[key].iqamaMinutes;
+    modal = { custom_id: `rafiq:v1:daily_time_${key}`, title: quran ? 'موعد قراءة القرآن' : `إقامة ${key === 'morning' ? 'الفجر' : 'المغرب'}`, components: [{ type: 18,
+      label: quran ? 'الساعة بتوقيت مدينتك — 24 ساعة' : 'كم دقيقة بين الأذان والإقامة؟',
+      component: { type: 4, custom_id: 'time', style: 1, required: true, max_length: quran ? 5 : 2,
+        placeholder: quran ? 'مثال: 20:30' : 'مثال: 20؛ ثم ننتظر 15 دقيقة أخرى', ...(value !== null ? { value: String(value) } : {}) } }] };
+  }
+  if (setup) modal.custom_id = modal.custom_id.replace('rafiq:v1:', 'rafiq:v1:setup_');
+  return modal;
+}
+
+export function setupStartPayload(p = DEFAULT_PRAYER) {
+  return envelope([
+    text('## أهلًا بك في رفيق 🌿\nنضبط مساحتك في ثلاث خطوات بسيطة.'),
+    text('**١ · مدينتك** → ٢ · تذكيراتك → ٣ · تجربة الإشعار'),
+    text(p.city ? `مدينتك المحفوظة: **${p.city.label}**\nتستخدم التذكيرات هذا التوقيت. يمكنك إبقاء المدينة أو تغييرها.` : 'ابدأ باختيار مدينتك لتظهر المواقيت والتذكيرات بتوقيتك. نحتاج اسم المدينة فقط، ولا نطلب عنوانك.'),
+    text('-# حفظ المدينة لا يفعّل أي تذكير. ستختار ما تريد في الخطوة التالية.'),
+    row(button(p.city ? 'غيّر المدينة' : 'اختر مدينتي', 'setup_prayer_location', 3), ...(p.city ? [button('التالي: تذكيراتي', 'setup_choices', 3)] : [])),
+    row(button('أتصفّح الآن', 'home'))
+  ], { ephemeral: true });
+}
+
+export function setupChoicesPayload(p, user) {
+  const status = active => active ? 'مفعّل' : 'غير مفعّل';
+  return envelope([
+    text(`## اختر ما ينفعك\n١ · مدينتك ✓ → **٢ · تذكيراتك** → ٣ · تجربة الإشعار\n${p.city?.label || 'يمكنك اختيار المدينة لاحقًا'}`),
+    section(`**كفارة المجلس** · ${status(user.enabled && user.subscribedHere)}`, button('ضبط المجلس', 'setup_reminder_intro')),
+    section(`**الصلوات الخمس** · ${status(p.enabled)}`, button('راجع المواقيت', 'setup_prayer')),
+    section(`**الصباح والمساء** · ${status(p.daily.morning.activatedAt || p.daily.evening.activatedAt)}\nثلاثة أذكار في رسالة واحدة لكل وقت تفعّله.`, button('اختيار الأذكار', 'setup_daily')),
+    section(`**قراءة القرآن** · ${status(p.daily.quran.activatedAt)}\nتذكير اختياري بموعد تحدده بنفسك.`, button('موعد القراءة', 'setup_daily_quran')),
+    section('**الجمعة وقضاء رمضان** · خيارات مستقلة', button('عرض الخيارات', 'setup_prayer_occasions')),
+    text('-# لا يوجد تفعيل شامل. اختياراتك تُحفظ فورًا، ويمكنك تعديلها لاحقًا من «يومي».'),
+    row(button('رجوع للمدينة', 'setup'), button('التالي: تجربة الإشعار', 'setup_test', 3))
+  ], { ephemeral: true });
+}
+
+export function setupTestPayload(p, user, notice = '') {
+  return envelope([
+    text(`## جرّب وصول الإشعار\n١ · مدينتك ✓ → ٢ · تذكيراتك ✓ → **٣ · تجربة الإشعار**${notice ? `\n${notice}` : ''}`),
+    text(`إشعار الصلاة والأذكار والقرآن: **${p.delivery === 'normal' ? 'الجوال وسطح المكتب' : 'في الخاص بلا تنبيه'}**.\nإشعار المجلس والمؤقّت: **${user.delivery === 'normal' ? 'الجوال وسطح المكتب' : 'في الخاص بلا تنبيه'}**.`),
+    text('نرسل التجربة فقط عند ضغط الزر. وصول الرسالة لا يثبت ظهور إشعار على هاتفك؛ تأكد بنفسك من إعدادات ديسكورد والجهاز.'),
+    row(button('أرسل تجربة', 'setup_send_test', 3), button('ضبط الإشعار', 'setup_prayer_audio')),
+    row(button('رجوع لتذكيراتي', 'setup_choices'), button('انتهيت — يومي', 'today', 3))
+  ], { ephemeral: true });
+}
+
+// Keep the existing, tested settings screens inside the onboarding journey.
+export function setupWrapPayload(payload) {
+  const wrapped = structuredClone(payload);
+  const visit = item => {
+    if (item.custom_id?.startsWith('rafiq:v1:') && !item.custom_id.startsWith('rafiq:v1:setup_')) {
+      const action = item.custom_id.slice(9);
+      item.custom_id = ['home', 'cancel'].includes(action) ? 'rafiq:v1:setup_choices' : `rafiq:v1:setup_${action}`;
+    }
+    item.components?.forEach(visit);
+    if (item.accessory) visit(item.accessory);
+  };
+  wrapped.components.forEach(visit);
+  wrapped.components[0].components.push(row(button('متابعة الإعداد', 'setup_continue', 3)));
+  return wrapped;
+}
+
+export function dailySettingsPayload(p = DEFAULT_PRAYER, { notice = '', events = [], paused = false, dmBlocked = false } = {}) {
+  return envelope([
+    text(`## أذكاري وقراءتي${notice ? `\n${notice}` : ''}\n${p.city ? p.city.label : 'اختر المدينة لضبط التوقيت المحلي.'}`),
+    ...DAILY_REMINDERS.flatMap(([key, title]) => {
+      const item = p.daily[key], next = events.find(e => e.key === key);
+      const timing = key === 'quran' ? item.time ? `كل يوم عند ${item.time} بتوقيت مدينتك.` : 'حدد ساعة تناسبك.'
+        : item.iqamaMinutes === null ? 'حدد المدة بين الأذان والإقامة في مسجدك.' : `الإقامة بعد الأذان بـ${arabicNumber(item.iqamaMinutes)} دقيقة؛ التذكير بعدها بربع ساعة.`;
+      return [text(`**${title}** · ${item.activatedAt ? 'مفعّل' : 'غير مفعّل'}\n${timing}${next ? `\nالموعد القادم حسب الإعداد: <t:${Math.floor(next.at / 1000)}:f>` : ''}`),
+        row(button('ضبط الموعد', `daily_${key}_modal`), button(item.activatedAt ? 'إيقاف' : 'تفعيل', `daily_${item.activatedAt ? 'off' : 'enable'}_${key}`, item.activatedAt ? 2 : 3))];
+    }),
+    ...(dmBlocked || paused ? [text(dmBlocked ? 'الإرسال معلّق: اختبر الخاص من الإعدادات.' : 'التذكيرات متوقفة مؤقتًا من إعداداتك.')] : []),
+    text('-# ثلاثة أذكار مختارة لكل وقت، برسالة واحدة. الإقامة تقديرية بحسب مدخلك وجدول الصلاة، وليست موعدًا نعرفه من مسجدك. ربع الساعة لتنظيم الإشعار، وليس توقيتًا شرعيًا مخصوصًا.'),
+    row(button('اقرأ أذكار الصباح', 'daily_morning_read'), button('اقرأ أذكار المساء', 'daily_evening_read')),
+    row(button('مدينتي', 'prayer_location'), button('إشعاري', 'prayer_audio'), button('يومي', 'today'))
+  ], { ephemeral: true });
+}
+
+const dailyText = period => DAILY_DHIKR.map((card, i) => `${arabicNumber(i + 1)} · ${card.title}${card.repeat ? ` — ${arabicNumber(card.repeat)} مرات` : ''}\n${card.text || card[period]}\n${card.source.reference}`).join('\n\n');
+export function dailyReadingPayload(period) {
+  if (!['morning', 'evening'].includes(period)) throw new RangeError('Unknown period');
+  return envelope([text(`## أذكار ${period === 'morning' ? 'الصباح' : 'المساء'}\nثلاثة أذكار مختارة\n\n${dailyText(period)}`),
+    row(button('المصادر والتوضيح', 'daily_sources'), button('ضبط تذكيري', 'daily'), button('يومي', 'today'))], { ephemeral: true });
+}
+export function dailySourcesPayload() {
+  return envelope([
+    text('## مصادر الأذكار المختارة'),
+    ...DAILY_DHIKR.map(card => text(`**${card.title}**\n${sourceDetails(card.source)}\n${card.source.note}`)),
+    text('الثلاثة اختصار للمحتوى، وليست حصرًا للأذكار المشروعة. اختيار توقيت التذكير لا يربط العبادة بربع ساعة بعد الإقامة. [بيان وقت أذكار الصباح والمساء — ابن باز](https://binbaz.org.sa/fatwas/14478/وقت-اذكار-الصباح-والمساء).'),
+    row(button('الصباح', 'daily_morning_read'), button('المساء', 'daily_evening_read'), button('إعداداتي', 'daily'))
+  ], { ephemeral: true });
+}
+export function dailyReminderPayload(p, event) {
+  if (event.key === 'quran') return notification('حان الموعد الذي اخترته لقراءة القرآن 🌿\nافتح مصحفك واقرأ ما تيسر لك.', [row(button('تعديل الموعد', 'daily'), button('إيقاف تذكير القراءة', 'daily_off_quran'))], { silent: p.delivery === 'silent' });
+  if (!['morning', 'evening'].includes(event.key)) throw new RangeError('Unknown daily reminder');
+  return notification(`أذكار ${event.key === 'morning' ? 'الصباح' : 'المساء'} — ثلاثة أذكار مختارة\n\n${dailyText(event.key)}`, [row(button('المصادر', 'daily_sources'), button('تذكيري', 'daily'), button('إيقاف هذا التذكير', `daily_off_${event.key}`))], { silent: p.delivery === 'silent' });
+}
+
+export function todayPayload({ p = DEFAULT_PRAYER, user = {}, now = Date.now(), nextPrayer = null, next = null, subscribed = false } = {}) {
+  const blocked = user.dmBlocked || user.pausedUntil > now;
+  const labels = { break: 'الاستراحة', morning: 'أذكار الصباح', evening: 'أذكار المساء', quran: 'قراءة القرآن', fridayPrayer: 'الاستعداد للجمعة', fridayDua: 'دعاء الجمعة', qada30: 'قضاء رمضان', qada15: 'قضاء رمضان', ...Object.fromEntries(PRAYERS) };
+  return envelope([
+    text(`## يومي مع رفيق 🌿\n${p.city ? p.city.label : 'اختر مدينتك لتظهر مواقيتك هنا.'}`),
+    text(nextPrayer ? `الصلاة القادمة: **${nextPrayer.label}** <t:${Math.floor(nextPrayer.at / 1000)}:R> · ${prayerClock(nextPrayer.at, p.city.timezone)}` : 'لم يظهر جدول الصلاة بعد؛ اختر المدينة وراجع المواقيت.'),
+    text(blocked ? user.dmBlocked ? 'الإرسال معلّق: اختبر الخاص من إعداداتك.' : 'التنبيهات متوقفة مؤقتًا.' : next ? `التذكير المجدول القادم: **${labels[next.key]}** <t:${Math.floor(next.at / 1000)}:f>.` : 'لا يوجد موعد قادم متاح للتذكيرات المختارة. راجع الخيارات والمواقيت أدناه.'),
+    section(`**المجلس** · ${user.enabled && subscribed ? 'مفعّل؛ بعد مغادرة مجلس مؤهل' : 'غير مفعّل'}`, button('المجلس', 'settings')),
+    section(`**الصلوات الخمس** · ${p.enabled ? 'مفعّلة' : 'غير مفعّلة'}`, button('مواقيتي', 'prayer')),
+    section(DAILY_REMINDERS.map(([key, label]) => `**${label}** · ${p.daily[key].activatedAt ? 'مفعّل' : 'غير مفعّل'}`).join('\n'), button('أذكاري وقراءتي', 'daily')),
+    section(OCCASIONS.map(([key, label]) => `**${label}** · ${p.occasions[key] ? 'مفعّل' : 'غير مفعّل'}`).join('\n'), button('الجمعة والقضاء', 'prayer_occasions')),
+    ...(user.breakAt > now ? [text(`مؤقّت الاستراحة: <t:${Math.floor(user.breakAt / 1000)}:R>.`)] : []),
+    row(button('تحديث', 'today'), button('إعداد بسيط', 'setup'), button('مساحتي', 'home'))
+  ], { ephemeral: true });
 }
 export function reminderPayload({ silent = false, preview = false, enabled = true, paused = false } = {}) {
   if (!preview) return notification(`كفارة المجلس: ${COPY.dhikr.replaceAll('\n', ' ')}\n${DHIKR_CARDS[0].source.reference}`, [
@@ -290,6 +412,7 @@ export function homePayload({ enabled = false, subscribedHere = true, paused = f
   const status = dmBlocked ? 'تعذّر الوصول إلى الخاص؛ راجع إعداداتك' : !enabled ? 'تذكير المجلس غير مفعّل' : paused ? 'تذكير المجلس متوقف مؤقتًا' : !subscribedHere ? 'تذكيرك مفعّل في سيرفر آخر؛ يمكنك تفعيله هنا أيضًا' : 'تذكير المجلس مفعّل';
   return envelope([
     text('-# رفيق · مساحتك الخاصة\n## ماذا يناسب لحظتك؟\nذكر تقرؤه، وفكرة تطبّقها، ووقت ترتاح فيه.'), separator(),
+    row(button('ابدأ الإعداد', 'setup', 3), button('يومي', 'today'), button('أذكاري وقراءتي', 'daily')),
     section('### 🌿 أذكار موثّقة\nذكر ودعاء، مع المصدر متى أردت.', button('أذكار موثّقة', 'library', 3)),
     section('### 🌱 فكرة خير\nمع أهلك، مع أصحابك، أو أثناء اللعب.', button('فكرة خير', 'idea')),
     section('### 🕰️ مواقيت صلاتك\nتذكير خاص بحسب مدينتك، حين تختاره.', button('مواقيت الصلاة', 'prayer')),
@@ -370,7 +493,7 @@ export function breakReminderPayload({ silent = false } = {}) {
 
 export function notificationHelpPayload() {
   return envelope([
-    text('## اقرأ التذكير من إشعار جوالك\n١. في إعدادات التذكير، اختر «إشعار الجوال وسطح المكتب». للصلاة والجمعة والقضاء اختيار مستقل عن المجلس والمؤقّت.\n٢. في إعدادات هاتفك ← الإشعارات ← Discord، اسمح بالإشعارات ومعاينة النص في الموضع الذي يناسب خصوصيتك. تأكد من السماح بإشعارات الرسائل الخاصة ومن عدم كتم محادثة رفيق.\n٣. جرّب «اختبر الخاص» للمجلس أو «اختبر الإشعار» للصلاة.'),
+    text('## اقرأ التذكير من إشعار جوالك\n١. في إعدادات التذكير، اختر «إشعار الجوال وسطح المكتب». للصلاة والجمعة والقضاء والأذكار والقراءة اختيار مستقل عن المجلس والمؤقّت.\n٢. في إعدادات هاتفك ← الإشعارات ← Discord، اسمح بالإشعارات ومعاينة النص في الموضع الذي يناسب خصوصيتك. تأكد من السماح بإشعارات الرسائل الخاصة ومن عدم كتم محادثة رفيق.\n٣. جرّب «اختبر الخاص» للمجلس أو «اختبر الإشعار» للصلاة.'),
     text('يرسل رفيق النص داخل الرسالة، لتتمكن من قراءته من الإشعار عندما يسمح جهازك. قد تختصر الشاشة النص أو تخفيه، وقد يمنع الكتم أو عدم الإزعاج التنبيه. وصول الرسالة للخاص لا يثبت ظهور إشعار على الهاتف.'),
     row(linkButton('إعدادات إشعارات ديسكورد', 'https://support.discord.com/hc/en-us/articles/218892547--Mobile-Notifications-Settings-101')),
     row(button('إعدادات المجلس', 'settings'), button('إشعار الصلاة والجمعة', 'prayer_audio'), button('مساحتي', 'home'))
@@ -379,7 +502,7 @@ export function notificationHelpPayload() {
 
 export function privacyPayload({ privacyURL, supportURL } = {}) {
   return envelope([
-    text('## بياناتك واختياراتك\nنحفظ معرّفك في ديسكورد، واختياراتك، والسيرفرات التي فعّلت فيها التذكير، ومحفوظاتك ومؤقّتك. عند إعداد الصلاة نحفظ المدينة التي تختارها وإحداثيات مركزها ومنطقتها الزمنية وطريقة الحساب والتعديلات واختيار الإشعار والصوت. نحفظ أيضًا التذكيرات الاختيارية للجمعة والقضاء ووقت تفعيلها؛ لا نسأل عن عدد أيام القضاء أو سببه، ولا نسجّل أداء عبادتك.'),
+    text('## بياناتك واختياراتك\nنحفظ معرّفك في ديسكورد، واختياراتك، والسيرفرات التي فعّلت فيها التذكير، ومحفوظاتك ومؤقّتك. عند إعداد الصلاة نحفظ المدينة التي تختارها وإحداثيات مركزها ومنطقتها الزمنية وطريقة الحساب والتعديلات واختيار الإشعار والصوت. نحفظ أيضًا التذكيرات الاختيارية للجمعة والقضاء والأذكار والقرآن، ووقت تفعيلها ومواعيدها، والمدة التي تختارها للإقامة؛ لا نسأل عن عدد أيام القضاء أو سببه، ولا نسجّل أداء عبادتك.'),
     text('لا نقرأ محتوى المحادثات ولا نسجّل الصوت. توقيت المجلس يبقى في الذاكرة أثناء التشغيل، وتُحفظ أوقات محاولات التذكير مؤقتًا لمنع التكرار. حذف بياناتك يوقف التنبيهات ويمحو سجلك من قاعدة البوت؛ الرسائل الموجودة في ديسكورد تبقى عندك.'),
     text('-# بيانات التشغيل المحفوظة مشفّرة. ننظّف محاولات المجلس والمؤقّت بعد ٤٨ ساعة، ومحاولات الصلاة والجمعة والقضاء بعد ٧ أيام، ونزيل اشتراك السيرفر إذا أُزيل منه البوت.'),
     ...(privacyURL ? [row(linkButton('سياسة الخصوصية', privacyURL), ...(supportURL ? [linkButton('المساعدة والإبلاغ', supportURL)] : []))] : []),

@@ -4,7 +4,7 @@ import { Store } from './store.mjs';
 import { SerialQueue } from './serial.mjs';
 import { RafiqApp } from './app.mjs';
 import { ReminderEngine } from './reminders.mjs';
-import { noticePayload, prayerModal } from './messages.mjs';
+import { noticePayload, appModal, MODAL_ACTIONS } from './messages.mjs';
 import { PRAYERS } from './prayer-config.mjs';
 import { PrayerApp } from './prayer-app.mjs';
 import { PrayerScheduler } from './prayer-scheduler.mjs';
@@ -98,12 +98,13 @@ async function main() {
     if (stopping || !identityVerified) return;
     const isCommand = interaction.isChatInputCommand() && ['rafiq', 'rafiq-setup', 'rafiq-status'].includes(interaction.commandName);
     const isComponent = interaction.isMessageComponent() && interaction.customId.startsWith('rafiq:v1:');
-    const isModal = interaction.isModalSubmit() && ['rafiq:v1:prayer_search', 'rafiq:v1:prayer_adjust'].includes(interaction.customId);
+    const isModal = interaction.isModalSubmit() && /^rafiq:v1:(setup_)?(prayer_search|prayer_adjust|daily_time_(morning|evening|quran))$/.test(interaction.customId);
     if (!isCommand && !isComponent && !isModal) return;
     try {
       const action = isCommand ? interaction.options.getString('section') || 'home' : interaction.customId.slice('rafiq:v1:'.length);
-      if (isComponent && ['prayer_city_modal', 'prayer_adjust_modal'].includes(action)) {
-        await interaction.showModal(prayerModal(action, store.getPrayer(interaction.user.id)));
+      const rawAction = action.startsWith('setup_') ? action.slice(6) : action;
+      if (isComponent && MODAL_ACTIONS.includes(rawAction)) {
+        await interaction.showModal(appModal(action, store.getPrayer(interaction.user.id)));
         return;
       }
       await acknowledgePrivate(interaction);
@@ -113,9 +114,9 @@ async function main() {
       } else if (isCommand && interaction.commandName === 'rafiq-status') {
         payload = statusPayload(interaction, store);
       } else {
-        const values = isModal ? (action === 'prayer_search' ? [interaction.fields.getTextInputValue('city')] : PRAYERS.map(([key]) => interaction.fields.getTextInputValue(key))) : interaction.isStringSelectMenu() ? interaction.values : [];
+        const values = isModal ? (rawAction === 'prayer_search' ? [interaction.fields.getTextInputValue('city')] : rawAction.startsWith('daily_time_') ? [interaction.fields.getTextInputValue('time')] : PRAYERS.map(([key]) => interaction.fields.getTextInputValue(key))) : interaction.isStringSelectMenu() ? interaction.values : [];
         payload = await app.handle({ userId: interaction.user.id, guildId: interaction.guildId, action, values });
-        if (['enable', 'resume', 'test_dm'].includes(action)) seedUser(interaction.user.id);
+        if (['enable', 'resume', 'test_dm'].includes(rawAction)) seedUser(interaction.user.id);
       }
       await interaction.editReply(toDiscord(payload, { forEdit: true }));
     } catch (error) {

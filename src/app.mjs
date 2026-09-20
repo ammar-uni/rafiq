@@ -2,10 +2,12 @@ import { DHIKR_CARDS, GOOD_DEEDS, IDEA_CATEGORIES, dhikrById, ideaById } from '.
 import { DAY, MINUTE } from './store.mjs';
 import * as ui from './messages.mjs';
 import { hasPrayerReminders, renewPrayerActivation } from './prayer-config.mjs';
+import { DailyApp } from './daily-app.mjs';
 
 export class RafiqApp {
   constructor({ store, queue, sendDM, privacyURL, supportURL, prayers = null, now = Date.now, cancelUser = () => {}, cancelGuild = () => {} }) {
     Object.assign(this, { store, queue, sendDM, privacyURL, supportURL, prayers, now, cancelUser, cancelGuild });
+    this.daily = new DailyApp({ store, now });
   }
   state(userId, guildId = null) {
     const user = this.store.getUser(userId);
@@ -14,6 +16,21 @@ export class RafiqApp {
   handle(input) { return this.queue.run(input.userId, () => this.route(input)); }
 
   async route({ userId, guildId = null, action = 'home', values = [] }) {
+    if (action === 'setup') return ui.setupStartPayload(this.store.getPrayer(userId));
+    if (action === 'setup_choices' || action === 'setup_continue') return ui.setupChoicesPayload(this.store.getPrayer(userId), this.state(userId, guildId));
+    if (action === 'setup_test') return ui.setupTestPayload(this.store.getPrayer(userId), this.state(userId, guildId));
+    if (action === 'setup_send_test') {
+      if (!this.prayers) return ui.noticePayload('التجربة غير متاحة', 'أعد فتح رفيق ثم حاول مجددًا.');
+      const response = await this.prayers.route(userId, 'prayer_test', []);
+      const heading = response.components[0].components[0].content;
+      return ui.setupTestPayload(this.store.getPrayer(userId), this.state(userId, guildId), heading.split('\n').slice(1).join('\n'));
+    }
+    if (action.startsWith('setup_')) {
+      const raw = action.slice(6);
+      if (raw.startsWith('setup_')) return ui.setupStartPayload(this.store.getPrayer(userId));
+      return ui.setupWrapPayload(await this.route({ userId, guildId, action: raw, values }));
+    }
+    if (action === 'today' || action === 'daily' || action.startsWith('daily_')) return this.daily.route(userId, action, values);
     if (action === 'prayer' || action.startsWith('prayer_')) return this.prayers ? this.prayers.route(userId, action, values) : ui.noticePayload('مواقيت الصلاة', 'تحتاج هذه الميزة إلى تشغيل النسخة المحدّثة من رفيق.');
     const user = this.state(userId, guildId);
     const settings = notice => ui.settingsPayload({ ...this.state(userId, guildId), notice });

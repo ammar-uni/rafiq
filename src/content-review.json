@@ -71,6 +71,21 @@
       "id": "ramadan-qada",
       "checkedOn": "2026-09-13",
       "sha256": "27c3854be99052595c34db6c07e9de9e645ebcce1c2b9bdef6cfe373da3759e8"
+    },
+    {
+      "id": "daily-forgiveness",
+      "checkedOn": "2026-09-20",
+      "sha256": "4c5281c5ca1068a50829c2e9edf6e7c644b60068bb9e3446c01ca444e75421aa"
+    },
+    {
+      "id": "daily-protection",
+      "checkedOn": "2026-09-20",
+      "sha256": "ce07753d51ff6167089aceec891e78c9aefd6dd93f8defcaa686a3e7c8ae0dd1"
+    },
+    {
+      "id": "daily-life",
+      "checkedOn": "2026-09-20",
+      "sha256": "df1c3de824dc0eba7c030a03f695151c204bc7c1961167e1c6ef74ac6f483afe"
     }
   ]
 }
