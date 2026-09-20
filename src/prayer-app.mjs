@@ -1,4 +1,4 @@
-import { DEFAULT_PRAYER, DEFAULT_OCCASIONS, OCCASIONS, hasPrayerReminders, renewPrayerActivation, PRAYERS, PRAYER_METHODS, PRAYER_HIGH_LATITUDE } from './prayer-config.mjs';
+import { DEFAULT_PRAYER, DEFAULT_OCCASIONS, OCCASIONS, stopDaily, hasPrayerReminders, renewPrayerActivation, PRAYERS, PRAYER_METHODS, PRAYER_HIGH_LATITUDE } from './prayer-config.mjs';
 import { prayerDate, prayerWindow } from './prayer-times.mjs';
 import { nextFridayReminders } from './occasion-times.mjs';
 import { findPrayerCities } from './prayer-geocoding.mjs';
@@ -82,26 +82,26 @@ export class PrayerApp {
     if (action.startsWith('prayer_city_')) {
       const entry = this.searches.get(userId);
       if (!entry || action !== `prayer_city_${entry.token}` || values.length !== 1 || !/^[0-7]$/.test(values[0]) || !entry.cities[Number(values[0])]) return this.page(userId, 'انتهت نتائج البحث أو لم تعد صالحة. ابحث عن المدينة مجددًا.');
-      save({ city: entry.cities[Number(values[0])], method: p.method || DEFAULT_PRAYER.method, enabled: false, occasions: { ...DEFAULT_OCCASIONS }, activatedAt: now });
+      save({ city: entry.cities[Number(values[0])], method: p.method || DEFAULT_PRAYER.method, enabled: false, occasions: { ...DEFAULT_OCCASIONS }, daily: stopDaily(p.daily), activatedAt: now });
       this.searches.delete(userId);
-      return this.page(userId, 'حُفظت المدينة وتوقفت تذكيرات الصلاة والجمعة والقضاء. راجع الجدول ثم فعّل ما تحتاجه.');
+      return this.page(userId, 'حُفظت المدينة وتوقفت تذكيرات الصلاة والجمعة والقضاء والأذكار والقراءة. راجع الجدول ثم فعّل ما تحتاجه.');
     }
     const calculationChoices = { prayer_method: ['method', PRAYER_METHODS], prayer_highLatitude: ['highLatitude', PRAYER_HIGH_LATITUDE] };
     if (Object.hasOwn(calculationChoices, action)) {
       const [field, choices] = calculationChoices[action];
       if (values.length !== 1 || !choices.some(([key]) => key === values[0])) return ui.prayerCalculationPayload(p, 'اختر قيمة من القائمة.');
-      save({ [field]: values[0], enabled: false, occasions: { ...DEFAULT_OCCASIONS }, activatedAt: now });
+      save({ [field]: values[0], enabled: false, occasions: { ...DEFAULT_OCCASIONS }, daily: stopDaily(p.daily), activatedAt: now });
       return ui.prayerCalculationPayload(this.store.getPrayer(userId), 'حُفظ الاختيار وتوقفت التذكيرات المرتبطة بالجدول؛ راجعه وأعد تفعيل ما تحتاجه.');
     }
     if (action === 'prayer_ramadan' && p.method === 'UmmAlQura') {
-      save({ ramadanIsha: !p.ramadanIsha, enabled: false, occasions: { ...DEFAULT_OCCASIONS }, activatedAt: now });
+      save({ ramadanIsha: !p.ramadanIsha, enabled: false, occasions: { ...DEFAULT_OCCASIONS }, daily: stopDaily(p.daily), activatedAt: now });
       return ui.prayerCalculationPayload(this.store.getPrayer(userId), 'توقفت التذكيرات المرتبطة بالجدول؛ راجعه وأعد تفعيل ما تحتاجه.');
     }
     if (action === 'prayer_adjust') {
       const normalized = values.map(value => String(value).trim().replace(/[٠-٩]/g, d => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d))).replace(/[۰-۹]/g, d => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d))));
       if (normalized.length !== PRAYERS.length || normalized.some(value => !/^[+-]?\d{1,2}$/.test(value) || Math.abs(Number(value)) > 60)) return ui.prayerCalculationPayload(p, 'لم تُحفظ التعديلات. أدخل عدد دقائق صحيحًا بين -60 و60 لكل صلاة.');
-      save({ adjustments: normalized.map(Number), enabled: false, occasions: { ...DEFAULT_OCCASIONS }, activatedAt: now });
-      return this.page(userId, 'حُفظت التعديلات وتوقفت تذكيرات الصلاة والجمعة والقضاء؛ راجع الجدول ثم أعد التفعيل.');
+      save({ adjustments: normalized.map(Number), enabled: false, occasions: { ...DEFAULT_OCCASIONS }, daily: stopDaily(p.daily), activatedAt: now });
+      return this.page(userId, 'حُفظت التعديلات وتوقفت تذكيرات الصلاة والجمعة والقضاء والأذكار والقراءة؛ راجع الجدول ثم أعد التفعيل.');
     }
     if (action === 'prayer_enable') {
       const user = this.store.getUser(userId);

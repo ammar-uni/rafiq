@@ -1,4 +1,5 @@
 import { prayerDate, prayerSchedule, prayerWindow } from './prayer-times.mjs';
+import { dailyEvents } from './daily-times.mjs';
 
 const civilDay = 86400000;
 const hijri = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', { timeZone: 'UTC', year: 'numeric', month: 'numeric', day: 'numeric' });
@@ -44,7 +45,7 @@ export function occasionEvents(preferences, window) {
 
 export function reminderWindow(preferences, now) {
   const window = prayerWindow(preferences, now);
-  return [...window, ...occasionEvents(preferences, window)].sort((a, b) => a.at - b.at);
+  return [...window, ...occasionEvents(preferences, window), ...dailyEvents(preferences, window, now)].sort((a, b) => a.at - b.at);
 }
 
 export function nextFridayReminders(preferences, now) {

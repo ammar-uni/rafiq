@@ -1,0 +1,27 @@
+{
+  "content": "حان الموعد الذي اخترته لقراءة القرآن 🌿\nافتح مصحفك واقرأ ما تيسر لك.",
+  "flags": 0,
+  "allowed_mentions": {
+    "parse": [],
+    "replied_user": false
+  },
+  "components": [
+    {
+      "type": 1,
+      "components": [
+        {
+          "type": 2,
+          "label": "تعديل الموعد",
+          "style": 2,
+          "custom_id": "rafiq:v1:daily"
+        },
+        {
+          "type": 2,
+          "label": "إيقاف تذكير القراءة",
+          "style": 2,
+          "custom_id": "rafiq:v1:daily_off_quran"
+        }
+      ]
+    }
+  ]
+}

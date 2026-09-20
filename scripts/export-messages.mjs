@@ -6,6 +6,7 @@ import { DEFAULT_PRAYER } from '../src/prayer-config.mjs';
 import { prayerSchedule } from '../src/prayer-times.mjs';
 import { occasionsPayload, occasionSourcesPayload, occasionReminderPayload } from '../src/messages.mjs';
 import { occasionEvents, nextFridayReminders } from '../src/occasion-times.mjs';
+import { setupStartPayload, setupChoicesPayload, setupTestPayload, todayPayload, dailySettingsPayload, dailyReadingPayload, dailySourcesPayload, dailyReminderPayload } from '../src/messages.mjs';
 const destination = new URL('../examples/', import.meta.url);
 await mkdir(destination, { recursive:true });
 const payloads = {welcome:welcomePayload(),reminder:reminderPayload(),enabled:enabledPayload(),settings:settingsPayload(),idea:ideaPayload(),home:homePayload(),library:libraryPayload(),break:breakPayload(),methodology:methodologyPayload(),privacy:privacyPayload(),support:supportPayload(),'reminder-intro':reminderIntroPayload(),source:sourcePayload('majlis'),'idea-source':ideaSourcePayload('parents')};
@@ -19,5 +20,6 @@ const occasions = { fridayPrayer: 1800000000000, fridayDua: 1800000000000, qada:
 payloads.occasions = occasionsPayload({ preferences: { ...p, occasions }, ready: true, next: nextFridayReminders(p, 1800000000000) });
 payloads['occasion-sources'] = occasionSourcesPayload();
 for (const day of ['2026-09-18', '2027-01-09', '2027-01-24']) for (const event of occasionEvents({ ...p, occasions }, prayerSchedule(p, day))) payloads[event.key] = occasionReminderPayload(p, event);
+Object.assign(payloads, {'setup-start':setupStartPayload(),'setup-choices':setupChoicesPayload(p,{}),'setup-test':setupTestPayload(p,{}),'today':todayPayload({p}),'daily-settings':dailySettingsPayload(p),'daily-morning':dailyReadingPayload('morning'),'daily-evening':dailyReadingPayload('evening'),'daily-sources':dailySourcesPayload(),'daily-reminder':dailyReminderPayload(p,{key:'morning'}),'quran-reminder':dailyReminderPayload(p,{key:'quran'})});
 for (const [name,payload] of Object.entries(payloads)) await writeFile(new URL(`${name}.json`,destination),JSON.stringify(payload,null,2)+'\n');
 console.log(`${Object.keys(payloads).length} Discord message payloads exported to examples/.`);

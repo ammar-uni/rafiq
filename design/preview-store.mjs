@@ -1,5 +1,5 @@
 /** Memory-only preview adapter. No storage, Discord connection, or personal data. */
-import { DEFAULT_PRAYER, DEFAULT_OCCASIONS } from '../src/prayer-config.mjs';
+import { DEFAULT_PRAYER, DEFAULT_OCCASIONS, stopDaily } from '../src/prayer-config.mjs';
 export class PreviewStore {
   constructor() { this.reset(); }
   reset() {
@@ -21,5 +21,5 @@ export class PreviewStore {
   transaction(fn) { return fn(); }
   getPrayer() { return structuredClone(this.prayer || DEFAULT_PRAYER); }
   setPrayer(id, p) { this.prayer = structuredClone(p); return this.getPrayer(); }
-  disablePrayer(id, all = false) { if (this.prayer) { this.prayer.enabled = false; if (all) this.prayer.occasions = { ...DEFAULT_OCCASIONS }; } }
+  disablePrayer(id, all = false) { if (this.prayer) { this.prayer.enabled = false; if (all) { this.prayer.occasions = { ...DEFAULT_OCCASIONS }; this.prayer.daily = stopDaily(this.prayer.daily); } } }
 }

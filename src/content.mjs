@@ -111,9 +111,30 @@ export const GOOD_DEEDS = Object.freeze([
     evidence: 'أصل الفكرة: حفظ اللسان والقول الطيب.', source: speech
   }
 ]);
+// Three selections per period; wording follows the cited Arabic narration.
+// These are a short selection, not a claim to collect every morning/evening dhikr.
+export const DAILY_DHIKR = Object.freeze([
+  {
+    id: 'daily-forgiveness', title: 'سيد الاستغفار',
+    text: 'اللهم أنت ربي، لا إله إلا أنت، خلقتني وأنا عبدك، وأنا على عهدك ووعدك ما استطعت، أعوذ بك من شر ما صنعت، أبوء لك بنعمتك علي، وأبوء لك بذنبي، فاغفر لي، فإنه لا يغفر الذنوب إلا أنت.',
+    source: { ...source('https://sunnah.com/bukhari:6306', 'رواه البخاري', 'لفظ الدعاء من حديث شداد بن أوس. ورد فيه قوله في النهار والليل مع اليقين؛ لا يضيف رفيق عددًا تعبديًا من عنده.', [citation('bukhari', '6306', 'شداد بن أوس')]), checkedOn: '2026-09-20' }
+  },
+  {
+    id: 'daily-protection', title: 'بسم الله الذي لا يضر', repeat: 3,
+    text: 'بسم الله الذي لا يضر مع اسمه شيء في الأرض ولا في السماء وهو السميع العليم.',
+    source: { ...source('https://sunnah.com/tirmidhi:3388', 'رواه الترمذي', 'وردت ثلاث مرات في صباح كل يوم ومساء كل ليلة. قال الترمذي: «هذا حديث حسن صحيح غريب».', [citation('tirmidhi', '3388', 'عثمان بن عفان')]), checkedOn: '2026-09-20' }
+  },
+  {
+    id: 'daily-life', title: 'اللهم بك أصبحنا وبك أمسينا',
+    morning: 'اللهم بك أصبحنا وبك أمسينا وبك نحيا وبك نموت وإليك النشور.',
+    evening: 'اللهم بك أمسينا وبك نحيا وبك نموت وإليك النشور.',
+    source: { ...source('https://sunnah.com/abudawud:5068', 'رواه أبو داود', 'اعتمدنا لفظ رواية أبي داود رقم ٥٠٦٨ كما في المصدر المرتبط، بما فيه لفظ المساء، دون تركيب ألفاظ الروايات. صححه الألباني.', [citation('abudawud', '5068', 'أبو هريرة')]), checkedOn: '2026-09-20' }
+  }
+]);
 export function dhikrById(id) { return DHIKR_CARDS.find(card => card.id === id); }
 export function ideaById(id) { return GOOD_DEEDS.find(card => card.id === id); }
 function freezeContent(value) {
   if (value && typeof value === 'object') { Object.values(value).forEach(freezeContent); Object.freeze(value); }
 }
 freezeContent(DHIKR_CARDS); freezeContent(GOOD_DEEDS); freezeContent(IDEA_CATEGORIES); freezeContent(OCCASION_CARDS);
+freezeContent(DAILY_DHIKR);

@@ -1,0 +1,110 @@
+{
+  "flags": 32832,
+  "allowed_mentions": {
+    "parse": [],
+    "replied_user": false
+  },
+  "components": [
+    {
+      "type": 17,
+      "accent_color": 6663305,
+      "components": [
+        {
+          "type": 10,
+          "content": "## يومي مع رفيق 🌿\nمكة المكرمة، السعودية"
+        },
+        {
+          "type": 10,
+          "content": "لم يظهر جدول الصلاة بعد؛ اختر المدينة وراجع المواقيت."
+        },
+        {
+          "type": 10,
+          "content": "لا يوجد موعد قادم متاح للتذكيرات المختارة. راجع الخيارات والمواقيت أدناه."
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "**المجلس** · غير مفعّل"
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "المجلس",
+            "style": 2,
+            "custom_id": "rafiq:v1:settings"
+          }
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "**الصلوات الخمس** · غير مفعّلة"
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "مواقيتي",
+            "style": 2,
+            "custom_id": "rafiq:v1:prayer"
+          }
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "**أذكار الصباح** · غير مفعّل\n**أذكار المساء** · غير مفعّل\n**قراءة القرآن** · غير مفعّل"
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "أذكاري وقراءتي",
+            "style": 2,
+            "custom_id": "rafiq:v1:daily"
+          }
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "**صلاة الجمعة** · غير مفعّل\n**دعاء الجمعة** · غير مفعّل\n**قضاء قبل رمضان** · غير مفعّل"
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "الجمعة والقضاء",
+            "style": 2,
+            "custom_id": "rafiq:v1:prayer_occasions"
+          }
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "تحديث",
+              "style": 2,
+              "custom_id": "rafiq:v1:today"
+            },
+            {
+              "type": 2,
+              "label": "إعداد بسيط",
+              "style": 2,
+              "custom_id": "rafiq:v1:setup"
+            },
+            {
+              "type": 2,
+              "label": "مساحتي",
+              "style": 2,
+              "custom_id": "rafiq:v1:home"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
