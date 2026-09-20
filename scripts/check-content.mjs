@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
-import { DHIKR_CARDS, GOOD_DEEDS, OCCASION_CARDS } from '../src/content.mjs';
+import { DHIKR_CARDS, GOOD_DEEDS, OCCASION_CARDS, DAILY_DHIKR } from '../src/content.mjs';
 import { assertReviewedContent } from '../src/content-review.mjs';
 assertReviewedContent();
 const ids = new Set();
-for (const card of [...DHIKR_CARDS, ...GOOD_DEEDS, ...Object.values(OCCASION_CARDS)]) {
+for (const card of [...DHIKR_CARDS, ...GOOD_DEEDS, ...Object.values(OCCASION_CARDS), ...DAILY_DHIKR]) {
   assert.ok(!ids.has(card.id)); ids.add(card.id);
   assert.ok(/^[a-z-]+$/.test(card.id));
-  assert.ok(card.title && (card.text || card.body));
+  assert.ok(card.title && (card.text || card.body || (card.morning && card.evening)));
   assert.ok(card.source.reference && card.source.publisher && /^\d{4}-\d{2}-\d{2}$/.test(card.source.checkedOn));
   const url = new URL(card.source.url);
   assert.equal(url.protocol, 'https:');
@@ -14,4 +14,4 @@ for (const card of [...DHIKR_CARDS, ...GOOD_DEEDS, ...Object.values(OCCASION_CAR
   if (url.hostname === 'binbaz.org.sa') assert.ok(/^\/(fatwas|audios)\/\d+\//.test(url.pathname));
   else assert.ok(card.source.citations.some(ref => ref.url === card.source.url));
 }
-console.log(`${DHIKR_CARDS.length} dhikr cards, ${GOOD_DEEDS.length} good-deed suggestions and ${Object.keys(OCCASION_CARDS).length} occasion reminders match the source-review record. This detects unreviewed changes, not religious authenticity.`);
+console.log(`${DHIKR_CARDS.length} dhikr cards, ${GOOD_DEEDS.length} good-deed suggestions ${Object.keys(OCCASION_CARDS).length} occasion reminders and ${DAILY_DHIKR.length} morning/evening selections match the source-review record. This detects unreviewed changes, not religious authenticity.`);
