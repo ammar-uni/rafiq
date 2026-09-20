@@ -1,0 +1,61 @@
+{
+  "flags": 32832,
+  "allowed_mentions": {
+    "parse": [],
+    "replied_user": false
+  },
+  "components": [
+    {
+      "type": 17,
+      "accent_color": 6663305,
+      "components": [
+        {
+          "type": 10,
+          "content": "## جرّب وصول الإشعار\n١ · مدينتك ✓ → ٢ · تذكيراتك ✓ → **٣ · تجربة الإشعار**"
+        },
+        {
+          "type": 10,
+          "content": "إشعار الصلاة والأذكار والقرآن: **الجوال وسطح المكتب**.\nإشعار المجلس والمؤقّت: **في الخاص بلا تنبيه**."
+        },
+        {
+          "type": 10,
+          "content": "نرسل التجربة فقط عند ضغط الزر. وصول الرسالة لا يثبت ظهور إشعار على هاتفك؛ تأكد بنفسك من إعدادات ديسكورد والجهاز."
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "أرسل تجربة",
+              "style": 3,
+              "custom_id": "rafiq:v1:setup_send_test"
+            },
+            {
+              "type": 2,
+              "label": "ضبط الإشعار",
+              "style": 2,
+              "custom_id": "rafiq:v1:setup_prayer_audio"
+            }
+          ]
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "رجوع لتذكيراتي",
+              "style": 2,
+              "custom_id": "rafiq:v1:setup_choices"
+            },
+            {
+              "type": 2,
+              "label": "انتهيت — يومي",
+              "style": 3,
+              "custom_id": "rafiq:v1:today"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

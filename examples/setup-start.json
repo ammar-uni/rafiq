@@ -1,0 +1,53 @@
+{
+  "flags": 32832,
+  "allowed_mentions": {
+    "parse": [],
+    "replied_user": false
+  },
+  "components": [
+    {
+      "type": 17,
+      "accent_color": 6663305,
+      "components": [
+        {
+          "type": 10,
+          "content": "## أهلًا بك في رفيق 🌿\nنضبط مساحتك في ثلاث خطوات بسيطة."
+        },
+        {
+          "type": 10,
+          "content": "**١ · مدينتك** → ٢ · تذكيراتك → ٣ · تجربة الإشعار"
+        },
+        {
+          "type": 10,
+          "content": "ابدأ باختيار مدينتك لتظهر المواقيت والتذكيرات بتوقيتك. نحتاج اسم المدينة فقط، ولا نطلب عنوانك."
+        },
+        {
+          "type": 10,
+          "content": "-# حفظ المدينة لا يفعّل أي تذكير. ستختار ما تريد في الخطوة التالية."
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "اختر مدينتي",
+              "style": 3,
+              "custom_id": "rafiq:v1:setup_prayer_location"
+            }
+          ]
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "أتصفّح الآن",
+              "style": 2,
+              "custom_id": "rafiq:v1:home"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

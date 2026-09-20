@@ -19,6 +19,29 @@
           "spacing": 1
         },
         {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "ابدأ الإعداد",
+              "style": 3,
+              "custom_id": "rafiq:v1:setup"
+            },
+            {
+              "type": 2,
+              "label": "يومي",
+              "style": 2,
+              "custom_id": "rafiq:v1:today"
+            },
+            {
+              "type": 2,
+              "label": "أذكاري وقراءتي",
+              "style": 2,
+              "custom_id": "rafiq:v1:daily"
+            }
+          ]
+        },
+        {
           "type": 9,
           "components": [
             {

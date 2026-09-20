@@ -1,0 +1,115 @@
+{
+  "flags": 32832,
+  "allowed_mentions": {
+    "parse": [],
+    "replied_user": false
+  },
+  "components": [
+    {
+      "type": 17,
+      "accent_color": 6663305,
+      "components": [
+        {
+          "type": 10,
+          "content": "## اختر ما ينفعك\n١ · مدينتك ✓ → **٢ · تذكيراتك** → ٣ · تجربة الإشعار\nمكة المكرمة، السعودية"
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "**كفارة المجلس** · غير مفعّل"
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "ضبط المجلس",
+            "style": 2,
+            "custom_id": "rafiq:v1:setup_reminder_intro"
+          }
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "**الصلوات الخمس** · غير مفعّل"
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "راجع المواقيت",
+            "style": 2,
+            "custom_id": "rafiq:v1:setup_prayer"
+          }
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "**الصباح والمساء** · غير مفعّل\nثلاثة أذكار في رسالة واحدة لكل وقت تفعّله."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "اختيار الأذكار",
+            "style": 2,
+            "custom_id": "rafiq:v1:setup_daily"
+          }
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "**قراءة القرآن** · غير مفعّل\nتذكير اختياري بموعد تحدده بنفسك."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "موعد القراءة",
+            "style": 2,
+            "custom_id": "rafiq:v1:setup_daily_quran"
+          }
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "**الجمعة وقضاء رمضان** · خيارات مستقلة"
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "عرض الخيارات",
+            "style": 2,
+            "custom_id": "rafiq:v1:setup_prayer_occasions"
+          }
+        },
+        {
+          "type": 10,
+          "content": "-# لا يوجد تفعيل شامل. اختياراتك تُحفظ فورًا، ويمكنك تعديلها لاحقًا من «يومي»."
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "رجوع للمدينة",
+              "style": 2,
+              "custom_id": "rafiq:v1:setup"
+            },
+            {
+              "type": 2,
+              "label": "التالي: تجربة الإشعار",
+              "style": 3,
+              "custom_id": "rafiq:v1:setup_test"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
