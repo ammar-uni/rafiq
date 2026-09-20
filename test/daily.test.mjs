@@ -16,7 +16,7 @@ import { RafiqApp } from '../src/app.mjs';
 import { PreviewStore } from '../design/preview-store.mjs';
 import { SerialQueue } from '../src/serial.mjs';
 import { DAILY_DHIKR } from '../src/content.mjs';
-import { appModal, dailyReminderPayload, FLAGS } from '../src/messages.mjs';
+import { appModal, dailyReminderPayload, MODAL_ACTIONS, FLAGS } from '../src/messages.mjs';
 import { toDiscord } from '../src/discord-adapter.mjs';
 
 const day = '2026-09-20', start = Date.parse(day + 'T00:00Z');
@@ -43,11 +43,12 @@ test('guided setup saves the chosen city, remains opt-in, and explicitly tests w
   assert.deepEqual(h.store.getPrayer('1').daily, DEFAULT_DAILY);
   await h.act('setup_choices'); await h.act('setup_test');
   assert.equal(h.sent.length, 0);
-  const modal = appModal('setup_daily_morning_modal', h.store.getPrayer('1'));
-  assert.equal(modal.custom_id, 'rafiq:v1:setup_daily_time_morning');
-  assert.equal(modal.components[0].component.value, undefined, 'no invented iqama default');
-  await h.act('setup_daily_time_morning', ['٢٠']);
-  assert.equal(h.store.getPrayer('1').daily.morning.activatedAt, 0);
+  const settings = JSON.stringify(await h.act('setup_daily'));
+  assert.doesNotMatch(settings, /daily_(morning|evening)_modal|بين الأذان والإقامة/);
+  assert.match(settings, /daily_quran_modal/);
+  assert.ok(!MODAL_ACTIONS.includes('daily_morning_modal'));
+  assert.throws(() => appModal('setup_daily_morning_modal'), RangeError);
+  assert.equal(appModal('setup_daily_quran_modal').custom_id, 'rafiq:v1:setup_daily_time_quran');
   await h.act('setup_daily_enable_morning');
   assert.equal(h.store.getPrayer('1').daily.morning.activatedAt, start);
   assert.equal(h.store.getPrayer('1').daily.evening.activatedAt, 0);
@@ -59,14 +60,20 @@ test('guided setup saves the chosen city, remains opt-in, and explicitly tests w
   assert.match(JSON.stringify(await h.act('today')), /أذكار الصباح/);
 });
 
-test('iqama offsets add fifteen minutes, handle midnight, and Quran wall time follows DST', () => {
+test('adhkar use a fixed thirty minutes after adhan regardless of legacy iqama values; Quran follows DST', () => {
   const p = prefs(), schedule = prayerSchedule(p, day), events = dailyEvents(p, schedule, start);
-  assert.equal(events.find(e => e.key === 'morning').at, schedule[0].at + 35 * 60000);
-  assert.equal(events.find(e => e.key === 'evening').at, schedule[3].at + 25 * 60000);
+  assert.equal(events.find(e => e.key === 'morning').at, schedule[0].at + 30 * 60000);
+  assert.equal(events.find(e => e.key === 'evening').at, schedule[3].at + 30 * 60000);
+  for (const iqamaMinutes of [null, 0, 90]) {
+    const changed = structuredClone(p);
+    changed.daily.morning.iqamaMinutes = iqamaMinutes;
+    changed.daily.evening.iqamaMinutes = iqamaMinutes;
+    assert.deepEqual(dailyEvents(changed, schedule, start), events);
+  }
   assert.equal(events.find(e => e.key === 'quran' && e.day === day).at, Date.parse(day + 'T17:30Z'));
   const late = { ...schedule[3], at: Date.parse(day + 'T23:55Z') };
   assert.equal(dailyEvents(p, [late], start).find(e => e.key === 'evening').day, day);
-  assert.equal(dailyEvents(p, [late], start).find(e => e.key === 'evening').at, Date.parse('2026-09-21T00:20Z'));
+  assert.equal(dailyEvents(p, [late], start).find(e => e.key === 'evening').at, Date.parse('2026-09-21T00:25Z'));
   assert.equal(localClockInstant('2026-03-29', '02:30', 'Europe/Berlin'), null);
   assert.equal(localClockInstant('2026-10-25', '02:30', 'Europe/Berlin'), Date.parse('2026-10-25T00:30Z'));
   assert.equal(localClockInstant('2026-03-28', '20:30', 'Europe/Berlin'), Date.parse('2026-03-28T19:30Z'));
@@ -108,10 +115,12 @@ test('late activation, downtime, pause, blocked DMs and failures cannot create d
 test('editing schedules requires fresh opt-in; invalid inputs and ordinary navigation preserve choices', async t => {
   const h = harness(t); h.store.setPrayer('1', prefs());
   const before = h.store.getPrayer('1');
-  for (const [action, value] of [['daily_time_morning', '91'], ['daily_time_evening', '-1'], ['daily_time_quran', '24:00'], ['daily_time_quran', '8:30']]) await h.act(action, [value]);
+  for (const [action, value] of [['daily_time_morning', '30'], ['daily_time_evening', '10'], ['daily_time_quran', '24:00'], ['daily_time_quran', '8:30'], ['daily_morning_modal', ''], ['setup_daily_evening_modal', '']]) await h.act(action, [value]);
   assert.deepEqual(h.store.getPrayer('1'), before);
-  await h.act('daily_time_morning', ['30']);
-  assert.equal(h.store.getPrayer('1').daily.morning.activatedAt, 0);
+  await h.act('daily_time_quran', ['٢١:٣٠']);
+  assert.equal(h.store.getPrayer('1').daily.quran.time, '21:30');
+  assert.equal(h.store.getPrayer('1').daily.quran.activatedAt, 0);
+  assert.equal(h.store.getPrayer('1').daily.morning.activatedAt, start);
   assert.equal(h.store.getPrayer('1').daily.evening.activatedAt, start);
   await h.act('daily_off_quran'); assert.equal(h.store.getPrayer('1').daily.quran.activatedAt, 0);
   h.store.setPrayer('1', prefs()); await h.act('prayer_search', ['مكة']);
@@ -158,7 +167,7 @@ test('three short source-reviewed adhkar serialize as readable notification text
 test('preview and real app agree on onboarding, reading and explicit activation', async t => {
   const a = harness(t), b = harness(t, new PreviewStore());
   for (const h of [a, b]) h.store.setPrayer('1', { ...structuredClone(DEFAULT_PRAYER), city });
-  for (const [action, values = []] of [['setup'], ['setup_choices'], ['daily'], ['daily_time_morning', ['20']], ['daily_enable_morning'], ['daily_time_quran', ['20:30']], ['daily_enable_quran'], ['today'], ['daily_morning_read'], ['daily_evening_read'], ['daily_sources'], ['setup_test'], ['setup_send_test'], ['daily_off_quran'], ['disable']]) {
+  for (const [action, values = []] of [['setup'], ['setup_choices'], ['daily'], ['daily_enable_morning'], ['daily_enable_evening'], ['daily_time_quran', ['20:30']], ['daily_enable_quran'], ['today'], ['daily_morning_read'], ['daily_evening_read'], ['daily_sources'], ['setup_test'], ['setup_send_test'], ['daily_off_quran'], ['disable']]) {
     assert.deepEqual(await a.act(action, values), await b.act(action, values), action);
   }
 });
