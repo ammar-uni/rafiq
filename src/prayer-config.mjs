@@ -8,6 +8,8 @@ export const PRAYER_HIGH_LATITUDE = Object.freeze([['MiddleOfTheNight', 'نصف 
 export const OCCASIONS = Object.freeze([['fridayPrayer', 'صلاة الجمعة'], ['fridayDua', 'دعاء الجمعة'], ['qada', 'قضاء قبل رمضان']]);
 export const DEFAULT_OCCASIONS = Object.freeze({ fridayPrayer: 0, fridayDua: 0, qada: 0 });
 export const DAILY_REMINDERS = Object.freeze([['morning', 'أذكار الصباح'], ['evening', 'أذكار المساء'], ['quran', 'قراءة القرآن']]);
+// A reminder offset from the calculated adhan, not a mosque's iqama time.
+export const ADHKAR_DELAY_MINUTES = 30;
 export const DEFAULT_DAILY = Object.freeze({ morning: Object.freeze({ activatedAt: 0, iqamaMinutes: null }), evening: Object.freeze({ activatedAt: 0, iqamaMinutes: null }), quran: Object.freeze({ activatedAt: 0, time: null }) });
 export const stopDaily = daily => Object.fromEntries(Object.entries(daily).map(([key, value]) => [key, { ...value, activatedAt: 0 }]));
 export const DEFAULT_PRAYER = Object.freeze({ city: null, method: 'UmmAlQura', asr: 'Shafi', highLatitude: 'MiddleOfTheNight',

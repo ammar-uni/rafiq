@@ -2,7 +2,7 @@ import * as ui from './messages.mjs';
 import { prayerDate, prayerWindow, prayerSchedule } from './prayer-times.mjs';
 import { reminderWindow, nextFridayReminders, nextRamadan } from './occasion-times.mjs';
 import { eventActivation } from './daily-times.mjs';
-import { DAILY_REMINDERS } from './prayer-config.mjs';
+import { DAILY_REMINDERS, ADHKAR_DELAY_MINUTES } from './prayer-config.mjs';
 
 const digits = value => String(value).trim().replace(/[٠-٩]/g, d => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d))).replace(/[۰-۹]/g, d => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)));
 export class DailyApp {
@@ -49,21 +49,24 @@ export class DailyApp {
       this.store.setPrayer(userId, { ...p, daily: { ...p.daily, [off[1]]: { ...p.daily[off[1]], activatedAt: 0 } } });
       return this.page(userId, 'توقف هذا التذكير فقط.');
     }
-    const timing = /^daily_time_(morning|evening|quran)$/.exec(action);
-    if (timing) {
-      const key = timing[1], value = values.length === 1 ? digits(values[0]) : '';
-      if (key === 'quran' ? !/^([01]\d|2[0-3]):[0-5]\d$/.test(value) : !/^\d{1,2}$/.test(value) || Number(value) > 90) return this.page(userId, key === 'quran' ? 'أدخل الساعة بصيغة 24 ساعة، مثل 20:30. لم يتغير موعدك.' : 'أدخل عدد دقائق من 0 إلى 90 بين الأذان والإقامة. لم يتغير موعدك.');
-      this.store.setPrayer(userId, { ...p, daily: { ...p.daily, [key]: { activatedAt: 0, ...(key === 'quran' ? { time: value } : { iqamaMinutes: Number(value) }) } } });
+    // Previously issued buttons/forms remain safe after removing iqama setup.
+    if (/^daily_(time_(morning|evening)|(morning|evening)_modal)$/.test(action)) return this.page(userId, 'موعد الأذكار تلقائي بعد الأذان بنصف ساعة؛ يكفي اختيار المدينة ثم التفعيل.');
+    if (action === 'daily_time_quran') {
+      const value = values.length === 1 ? digits(values[0]) : '';
+      if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(value)) return this.page(userId, 'أدخل الساعة بصيغة 24 ساعة، مثل 20:30. لم يتغير موعدك.');
+      this.store.setPrayer(userId, { ...p, daily: { ...p.daily, quran: { activatedAt: 0, time: value } } });
       return this.page(userId, 'حُفظ الموعد. راجعه ثم اضغط «تفعيل»؛ الحفظ وحده لا يفعّل التذكير.');
     }
     const enable = /^daily_enable_(morning|evening|quran)$/.exec(action);
     if (enable) {
       const key = enable[1], item = p.daily[key], user = this.store.getUser(userId);
       if (!p.city || !p.method) return this.page(userId, 'اختر مدينتك أولًا لحفظ التوقيت المحلي الصحيح.');
-      if (key === 'quran' ? !item.time : item.iqamaMinutes === null) return this.page(userId, 'اضبط موعد هذا التذكير أولًا ثم فعّله.');
+      if (key === 'quran' && !item.time) return this.page(userId, 'اضبط موعد هذا التذكير أولًا ثم فعّله.');
       if (key !== 'quran' && prayerWindow(p, now).filter(e => e.day === prayerDate(now, p.city.timezone)).length !== 5) return this.page(userId, 'جدول الصلاة غير متاح هنا الآن؛ راجعه قبل تفعيل هذا التذكير.');
       if (user.dmBlocked || user.pausedUntil > now) return this.page(userId, 'استأنف التنبيهات وتأكد من وصول الخاص من إعداداتك.');
-      if (!item.activatedAt) this.store.setPrayer(userId, { ...p, daily: { ...p.daily, [key]: { ...item, activatedAt: now } } });
+      // Retain the v5 field only for compatibility with 0.9.0 rollback readers.
+      // Current scheduling ignores it; no iqama time is collected from users.
+      if (!item.activatedAt) this.store.setPrayer(userId, { ...p, daily: { ...p.daily, [key]: { ...item, activatedAt: now, ...(key !== 'quran' ? { iqamaMinutes: ADHKAR_DELAY_MINUTES - 15 } : {}) } } });
       return this.page(userId, `فُعّل تذكير ${DAILY_REMINDERS.find(([id]) => id === key)[1]} فقط.`);
     }
     return this.page(userId);
