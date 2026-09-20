@@ -1,4 +1,5 @@
 import { prayerDate } from './prayer-times.mjs';
+import { ADHKAR_DELAY_MINUTES } from './prayer-config.mjs';
 
 // Resolve civil clock time without the server's own timezone. A skipped DST
 // minute is omitted; the earlier occurrence is used when clocks turn back.
@@ -23,10 +24,8 @@ export function dailyEvents(p, window, now) {
   if (!p.city) return [];
   const events = [];
   for (const [key, prayer] of [['morning', 'fajr'], ['evening', 'maghrib']]) {
-    const item = p.daily[key];
-    if (item.iqamaMinutes === null) continue;
     for (const event of window.filter(e => e.key === prayer)) {
-      events.push({ key, day: event.day, at: event.at + (item.iqamaMinutes + 15) * 60000, referenceAt: event.at });
+      events.push({ key, day: event.day, at: event.at + ADHKAR_DELAY_MINUTES * 60000, referenceAt: event.at });
     }
   }
   if (p.daily.quran.time) for (const offset of [-1, 0, 1]) {

@@ -1,5 +1,5 @@
 import { DHIKR_CARDS, GOOD_DEEDS, OCCASION_CARDS, DAILY_DHIKR, IDEA_CATEGORIES, dhikrById, ideaById } from './content.mjs';
-import { DEFAULT_PRAYER, DAILY_REMINDERS, OCCASIONS, PRAYERS, PRAYER_METHODS, PRAYER_HIGH_LATITUDE } from './prayer-config.mjs';
+import { DEFAULT_PRAYER, DAILY_REMINDERS, ADHKAR_DELAY_MINUTES, OCCASIONS, PRAYERS, PRAYER_METHODS, PRAYER_HIGH_LATITUDE } from './prayer-config.mjs';
 import { prayerClock } from './prayer-times.mjs';
 /** Native Discord REST payloads. Rendering only; these functions never send messages. */
 export const FLAGS = Object.freeze({ componentsV2: 32768, ephemeral: 64, silent: 4096 });
@@ -181,20 +181,19 @@ export function prayerModal(action, p = DEFAULT_PRAYER) {
   if (action === 'prayer_adjust_modal') return { custom_id: 'rafiq:v1:prayer_adjust', title: 'تعديل المواقيت بالدقائق', components: PRAYERS.map(([id, label], i) => field(id, label, String(p.adjustments[i]), 'بين -60 و60؛ مثل +2 أو -3', 3)) };
   throw new RangeError('Unknown modal');
 }
-export const MODAL_ACTIONS = Object.freeze(['prayer_city_modal', 'prayer_adjust_modal', 'daily_morning_modal', 'daily_evening_modal', 'daily_quran_modal']);
+export const MODAL_ACTIONS = Object.freeze(['prayer_city_modal', 'prayer_adjust_modal', 'daily_quran_modal']);
 export function appModal(action, p = DEFAULT_PRAYER) {
   const setup = action.startsWith('setup_');
   const raw = setup ? action.slice(6) : action;
   let modal;
   if (raw.startsWith('prayer_')) modal = prayerModal(raw, p);
   else {
-    const key = /^daily_(morning|evening|quran)_modal$/.exec(raw)?.[1];
-    if (!key) throw new RangeError('Unknown modal');
-    const quran = key === 'quran', value = quran ? p.daily.quran.time : p.daily[key].iqamaMinutes;
-    modal = { custom_id: `rafiq:v1:daily_time_${key}`, title: quran ? 'موعد قراءة القرآن' : `إقامة ${key === 'morning' ? 'الفجر' : 'المغرب'}`, components: [{ type: 18,
-      label: quran ? 'الساعة بتوقيت مدينتك — 24 ساعة' : 'كم دقيقة بين الأذان والإقامة؟',
-      component: { type: 4, custom_id: 'time', style: 1, required: true, max_length: quran ? 5 : 2,
-        placeholder: quran ? 'مثال: 20:30' : 'مثال: 20؛ ثم ننتظر 15 دقيقة أخرى', ...(value !== null ? { value: String(value) } : {}) } }] };
+    if (raw !== 'daily_quran_modal') throw new RangeError('Unknown modal');
+    const value = p.daily.quran.time;
+    modal = { custom_id: 'rafiq:v1:daily_time_quran', title: 'موعد قراءة القرآن', components: [{ type: 18,
+      label: 'الساعة بتوقيت مدينتك — 24 ساعة',
+      component: { type: 4, custom_id: 'time', style: 1, required: true, max_length: 5,
+        placeholder: 'مثال: 20:30', ...(value !== null ? { value } : {}) } }] };
   }
   if (setup) modal.custom_id = modal.custom_id.replace('rafiq:v1:', 'rafiq:v1:setup_');
   return modal;
@@ -257,12 +256,12 @@ export function dailySettingsPayload(p = DEFAULT_PRAYER, { notice = '', events =
     ...DAILY_REMINDERS.flatMap(([key, title]) => {
       const item = p.daily[key], next = events.find(e => e.key === key);
       const timing = key === 'quran' ? item.time ? `كل يوم عند ${item.time} بتوقيت مدينتك.` : 'حدد ساعة تناسبك.'
-        : item.iqamaMinutes === null ? 'حدد المدة بين الأذان والإقامة في مسجدك.' : `الإقامة بعد الأذان بـ${arabicNumber(item.iqamaMinutes)} دقيقة؛ التذكير بعدها بربع ساعة.`;
+        : `تلقائيًا بعد أذان ${key === 'morning' ? 'الفجر' : 'المغرب'} بـ${arabicNumber(ADHKAR_DELAY_MINUTES)} دقيقة حسب مواقيت مدينتك.`;
       return [text(`**${title}** · ${item.activatedAt ? 'مفعّل' : 'غير مفعّل'}\n${timing}${next ? `\nالموعد القادم حسب الإعداد: <t:${Math.floor(next.at / 1000)}:f>` : ''}`),
-        row(button('ضبط الموعد', `daily_${key}_modal`), button(item.activatedAt ? 'إيقاف' : 'تفعيل', `daily_${item.activatedAt ? 'off' : 'enable'}_${key}`, item.activatedAt ? 2 : 3))];
+        row(...(key === 'quran' ? [button('ضبط الموعد', 'daily_quran_modal')] : []), button(item.activatedAt ? 'إيقاف' : 'تفعيل', `daily_${item.activatedAt ? 'off' : 'enable'}_${key}`, item.activatedAt ? 2 : 3))];
     }),
     ...(dmBlocked || paused ? [text(dmBlocked ? 'الإرسال معلّق: اختبر الخاص من الإعدادات.' : 'التذكيرات متوقفة مؤقتًا من إعداداتك.')] : []),
-    text('-# ثلاثة أذكار مختارة لكل وقت، برسالة واحدة. الإقامة تقديرية بحسب مدخلك وجدول الصلاة، وليست موعدًا نعرفه من مسجدك. ربع الساعة لتنظيم الإشعار، وليس توقيتًا شرعيًا مخصوصًا.'),
+    text('-# ثلاثة أذكار مختارة لكل وقت، برسالة واحدة. الموعد تقريبي للتذكير، ولا يعتمد على معرفة إقامة مسجدك. اختر المدينة ثم فعّل ما تريد.'),
     row(button('اقرأ أذكار الصباح', 'daily_morning_read'), button('اقرأ أذكار المساء', 'daily_evening_read')),
     row(button('مدينتي', 'prayer_location'), button('إشعاري', 'prayer_audio'), button('يومي', 'today'))
   ], { ephemeral: true });
@@ -278,7 +277,7 @@ export function dailySourcesPayload() {
   return envelope([
     text('## مصادر الأذكار المختارة'),
     ...DAILY_DHIKR.map(card => text(`**${card.title}**\n${sourceDetails(card.source)}\n${card.source.note}`)),
-    text('الثلاثة اختصار للمحتوى، وليست حصرًا للأذكار المشروعة. اختيار توقيت التذكير لا يربط العبادة بربع ساعة بعد الإقامة. [بيان وقت أذكار الصباح والمساء — ابن باز](https://binbaz.org.sa/fatwas/14478/وقت-اذكار-الصباح-والمساء).'),
+    text('الثلاثة اختصار للمحتوى، وليست حصرًا للأذكار المشروعة. تأخير الإشعار نصف ساعة عن الأذان تنظيم للتذكير، وليس وقتًا شرعيًا مخصوصًا للذكر. [بيان وقت أذكار الصباح والمساء — ابن باز](https://binbaz.org.sa/fatwas/14478/وقت-اذكار-الصباح-والمساء).'),
     row(button('الصباح', 'daily_morning_read'), button('المساء', 'daily_evening_read'), button('إعداداتي', 'daily'))
   ], { ephemeral: true });
 }
@@ -502,7 +501,7 @@ export function notificationHelpPayload() {
 
 export function privacyPayload({ privacyURL, supportURL } = {}) {
   return envelope([
-    text('## بياناتك واختياراتك\nنحفظ معرّفك في ديسكورد، واختياراتك، والسيرفرات التي فعّلت فيها التذكير، ومحفوظاتك ومؤقّتك. عند إعداد الصلاة نحفظ المدينة التي تختارها وإحداثيات مركزها ومنطقتها الزمنية وطريقة الحساب والتعديلات واختيار الإشعار والصوت. نحفظ أيضًا التذكيرات الاختيارية للجمعة والقضاء والأذكار والقرآن، ووقت تفعيلها ومواعيدها، والمدة التي تختارها للإقامة؛ لا نسأل عن عدد أيام القضاء أو سببه، ولا نسجّل أداء عبادتك.'),
+    text('## بياناتك واختياراتك\nنحفظ معرّفك في ديسكورد، واختياراتك، والسيرفرات التي فعّلت فيها التذكير، ومحفوظاتك ومؤقّتك. عند إعداد الصلاة نحفظ المدينة التي تختارها وإحداثيات مركزها ومنطقتها الزمنية وطريقة الحساب والتعديلات واختيار الإشعار والصوت. نحفظ أيضًا التذكيرات الاختيارية للجمعة والقضاء والأذكار والقرآن، ووقت تفعيلها ومواعيدها؛ لا نسأل عن عدد أيام القضاء أو سببه، ولا نسجّل أداء عبادتك.'),
     text('لا نقرأ محتوى المحادثات ولا نسجّل الصوت. توقيت المجلس يبقى في الذاكرة أثناء التشغيل، وتُحفظ أوقات محاولات التذكير مؤقتًا لمنع التكرار. حذف بياناتك يوقف التنبيهات ويمحو سجلك من قاعدة البوت؛ الرسائل الموجودة في ديسكورد تبقى عندك.'),
     text('-# بيانات التشغيل المحفوظة مشفّرة. ننظّف محاولات المجلس والمؤقّت بعد ٤٨ ساعة، ومحاولات الصلاة والجمعة والقضاء بعد ٧ أيام، ونزيل اشتراك السيرفر إذا أُزيل منه البوت.'),
     ...(privacyURL ? [row(linkButton('سياسة الخصوصية', privacyURL), ...(supportURL ? [linkButton('المساعدة والإبلاغ', supportURL)] : []))] : []),
