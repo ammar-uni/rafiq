@@ -120,7 +120,7 @@ export const DAILY_DHIKR = Object.freeze([
     source: { ...source('https://sunnah.com/bukhari:6306', 'رواه البخاري', 'لفظ الدعاء من حديث شداد بن أوس. ورد فيه قوله في النهار والليل مع اليقين؛ لا يضيف رفيق عددًا تعبديًا من عنده.', [citation('bukhari', '6306', 'شداد بن أوس')]), checkedOn: '2026-09-20' }
   },
   {
-    id: 'daily-protection', title: 'بسم الله الذي لا يضر', repeat: 3,
+    id: 'daily-protection', title: 'بسم الله', repeat: 3,
     text: 'بسم الله الذي لا يضر مع اسمه شيء في الأرض ولا في السماء وهو السميع العليم.',
     source: { ...source('https://sunnah.com/tirmidhi:3388', 'رواه الترمذي', 'وردت ثلاث مرات في صباح كل يوم ومساء كل ليلة. قال الترمذي: «هذا حديث حسن صحيح غريب».', [citation('tirmidhi', '3388', 'عثمان بن عفان')]), checkedOn: '2026-09-20' }
   },

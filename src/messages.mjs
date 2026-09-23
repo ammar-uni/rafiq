@@ -181,12 +181,20 @@ export function prayerModal(action, p = DEFAULT_PRAYER) {
   if (action === 'prayer_adjust_modal') return { custom_id: 'rafiq:v1:prayer_adjust', title: 'تعديل المواقيت بالدقائق', components: PRAYERS.map(([id, label], i) => field(id, label, String(p.adjustments[i]), 'بين -60 و60؛ مثل +2 أو -3', 3)) };
   throw new RangeError('Unknown modal');
 }
-export const MODAL_ACTIONS = Object.freeze(['prayer_city_modal', 'prayer_adjust_modal', 'daily_quran_modal']);
+export const MODAL_ACTIONS = Object.freeze(['prayer_city_modal', 'prayer_adjust_modal', 'daily_quran_modal', ...['morning', 'evening'].flatMap(key => ['before', 'after'].map(direction => `daily_offset_${key}_${direction}_modal`))]);
 export function appModal(action, p = DEFAULT_PRAYER) {
   const setup = action.startsWith('setup_');
   const raw = setup ? action.slice(6) : action;
   let modal;
   if (raw.startsWith('prayer_')) modal = prayerModal(raw, p);
+  else if (/^daily_offset_(morning|evening)_(before|after)_modal$/.test(raw)) {
+    const [, key, direction] = /^daily_offset_(morning|evening)_(before|after)_modal$/.exec(raw);
+    const before = direction === 'before', offset = p.daily[key].offsetMinutes;
+    modal = { custom_id: `rafiq:v1:daily_offset_${key}_${direction}`, title: `موعد أذكار ${key === 'morning' ? 'الصباح' : 'المساء'}`, components: [{ type: 18,
+      label: `${before ? 'قبل' : 'بعد'} أذان ${key === 'morning' ? 'الفجر' : 'المغرب'} بكم دقيقة؟ (١–٦٠)`,
+      component: { type: 4, custom_id: 'minutes', style: 1, required: true, max_length: 2, placeholder: 'مثال: 30',
+        value: String(offset && (offset < 0) === before ? Math.abs(offset) : ADHKAR_DELAY_MINUTES) } }] };
+  }
   else {
     if (raw !== 'daily_quran_modal') throw new RangeError('Unknown modal');
     const value = p.daily.quran.time;
@@ -250,15 +258,30 @@ export function setupWrapPayload(payload) {
   return wrapped;
 }
 
+function dailyOffsetDescription(p, key) {
+  const offset = p.daily[key].offsetMinutes, prayer = key === 'morning' ? 'الفجر' : 'المغرب';
+  return offset === 0 ? `عند أذان ${prayer} حسب مواقيت مدينتك.` : `${offset < 0 ? 'قبل' : 'بعد'} أذان ${prayer} بـ${arabicNumber(Math.abs(offset))} دقيقة حسب مواقيت مدينتك.`;
+}
+export function dailyOffsetPayload(p, key, notice = '') {
+  if (!['morning', 'evening'].includes(key)) throw new RangeError('Unknown adhkar period');
+  return envelope([
+    text(`## موعد أذكار ${key === 'morning' ? 'الصباح' : 'المساء'}${notice ? `\n${notice}` : ''}\nالموعد الحالي: **${dailyOffsetDescription(p, key)}**`),
+    text('اختر قبل الأذان أو بعده، ثم أدخل عدد الدقائق من ١ إلى ٦٠. يمكنك أيضًا اختيار وقت الأذان نفسه.\nاختيارك لهذه الفترة فقط؛ موعد الفترة الأخرى يبقى كما هو.'),
+    row(button('قبل الأذان', `daily_offset_${key}_before_modal`), button('عند الأذان', `daily_offset_${key}_at`), button('بعد الأذان', `daily_offset_${key}_after_modal`)),
+    text('-# التوقيت لتنظيم التنبيه؛ الاختيار المبكر تذكير مسبق. لا يحدد رفيق وقتًا شرعيًا للذكر ولا يحتاج وقت الإقامة.'),
+    row(button('إعادة إلى بعد الأذان بـ٣٠ دقيقة', `daily_offset_${key}_reset`), button('رجوع', 'daily'))
+  ], { ephemeral: true });
+}
+
 export function dailySettingsPayload(p = DEFAULT_PRAYER, { notice = '', events = [], paused = false, dmBlocked = false } = {}) {
   return envelope([
     text(`## أذكاري وقراءتي${notice ? `\n${notice}` : ''}\n${p.city ? p.city.label : 'اختر المدينة لضبط التوقيت المحلي.'}`),
     ...DAILY_REMINDERS.flatMap(([key, title]) => {
       const item = p.daily[key], next = events.find(e => e.key === key);
       const timing = key === 'quran' ? item.time ? `كل يوم عند ${item.time} بتوقيت مدينتك.` : 'حدد ساعة تناسبك.'
-        : `تلقائيًا بعد أذان ${key === 'morning' ? 'الفجر' : 'المغرب'} بـ${arabicNumber(ADHKAR_DELAY_MINUTES)} دقيقة حسب مواقيت مدينتك.`;
+        : dailyOffsetDescription(p, key);
       return [text(`**${title}** · ${item.activatedAt ? 'مفعّل' : 'غير مفعّل'}\n${timing}${next ? `\nالموعد القادم حسب الإعداد: <t:${Math.floor(next.at / 1000)}:f>` : ''}`),
-        row(...(key === 'quran' ? [button('ضبط الموعد', 'daily_quran_modal')] : []), button(item.activatedAt ? 'إيقاف' : 'تفعيل', `daily_${item.activatedAt ? 'off' : 'enable'}_${key}`, item.activatedAt ? 2 : 3))];
+        row(button(key === 'quran' ? 'ضبط الموعد' : 'تعديل الموعد', key === 'quran' ? 'daily_quran_modal' : `daily_offset_${key}`), button(item.activatedAt ? 'إيقاف' : 'تفعيل', `daily_${item.activatedAt ? 'off' : 'enable'}_${key}`, item.activatedAt ? 2 : 3))];
     }),
     ...(dmBlocked || paused ? [text(dmBlocked ? 'الإرسال معلّق: اختبر الخاص من الإعدادات.' : 'التذكيرات متوقفة مؤقتًا من إعداداتك.')] : []),
     text('-# ثلاثة أذكار مختارة لكل وقت، برسالة واحدة. الموعد تقريبي للتذكير، ولا يعتمد على معرفة إقامة مسجدك. اختر المدينة ثم فعّل ما تريد.'),
@@ -277,14 +300,14 @@ export function dailySourcesPayload() {
   return envelope([
     text('## مصادر الأذكار المختارة'),
     ...DAILY_DHIKR.map(card => text(`**${card.title}**\n${sourceDetails(card.source)}\n${card.source.note}`)),
-    text('الثلاثة اختصار للمحتوى، وليست حصرًا للأذكار المشروعة. تأخير الإشعار نصف ساعة عن الأذان تنظيم للتذكير، وليس وقتًا شرعيًا مخصوصًا للذكر. [بيان وقت أذكار الصباح والمساء — ابن باز](https://binbaz.org.sa/fatwas/14478/وقت-اذكار-الصباح-والمساء).'),
+    text('الثلاثة اختصار للمحتوى، وليست حصرًا للأذكار المشروعة. توقيت الإشعار الذي تختاره تنظيم للتذكير، وليس وقتًا شرعيًا مخصوصًا للذكر. [بيان وقت أذكار الصباح والمساء — ابن باز](https://binbaz.org.sa/fatwas/14478/وقت-اذكار-الصباح-والمساء).'),
     row(button('الصباح', 'daily_morning_read'), button('المساء', 'daily_evening_read'), button('إعداداتي', 'daily'))
   ], { ephemeral: true });
 }
 export function dailyReminderPayload(p, event) {
   if (event.key === 'quran') return notification('حان الموعد الذي اخترته لقراءة القرآن 🌿\nافتح مصحفك واقرأ ما تيسر لك.', [row(button('تعديل الموعد', 'daily'), button('إيقاف تذكير القراءة', 'daily_off_quran'))], { silent: p.delivery === 'silent' });
   if (!['morning', 'evening'].includes(event.key)) throw new RangeError('Unknown daily reminder');
-  return notification(`أذكار ${event.key === 'morning' ? 'الصباح' : 'المساء'} — ثلاثة أذكار مختارة\n\n${dailyText(event.key)}`, [row(button('المصادر', 'daily_sources'), button('تذكيري', 'daily'), button('إيقاف هذا التذكير', `daily_off_${event.key}`))], { silent: p.delivery === 'silent' });
+  return notification(`${p.daily[event.key].offsetMinutes < 0 ? 'تذكير مبكر حسب اختيارك: ' : ''}أذكار ${event.key === 'morning' ? 'الصباح' : 'المساء'} — ثلاثة أذكار مختارة\n\n${dailyText(event.key)}`, [row(button('المصادر', 'daily_sources'), button('تذكيري', 'daily'), button('إيقاف هذا التذكير', `daily_off_${event.key}`))], { silent: p.delivery === 'silent' });
 }
 
 export function todayPayload({ p = DEFAULT_PRAYER, user = {}, now = Date.now(), nextPrayer = null, next = null, subscribed = false } = {}) {
@@ -501,7 +524,7 @@ export function notificationHelpPayload() {
 
 export function privacyPayload({ privacyURL, supportURL } = {}) {
   return envelope([
-    text('## بياناتك واختياراتك\nنحفظ معرّفك في ديسكورد، واختياراتك، والسيرفرات التي فعّلت فيها التذكير، ومحفوظاتك ومؤقّتك. عند إعداد الصلاة نحفظ المدينة التي تختارها وإحداثيات مركزها ومنطقتها الزمنية وطريقة الحساب والتعديلات واختيار الإشعار والصوت. نحفظ أيضًا التذكيرات الاختيارية للجمعة والقضاء والأذكار والقرآن، ووقت تفعيلها ومواعيدها؛ لا نسأل عن عدد أيام القضاء أو سببه، ولا نسجّل أداء عبادتك.'),
+    text('## بياناتك واختياراتك\nنحفظ معرّفك في ديسكورد، واختياراتك، والسيرفرات التي فعّلت فيها التذكير، ومحفوظاتك ومؤقّتك. عند إعداد الصلاة نحفظ المدينة التي تختارها وإحداثيات مركزها ومنطقتها الزمنية وطريقة الحساب والتعديلات واختيار الإشعار والصوت. نحفظ أيضًا التذكيرات الاختيارية للجمعة والقضاء والأذكار والقرآن، ووقت تفعيلها ومواعيدها، ومنها الدقائق التي تختارها قبل الأذان أو بعده للأذكار؛ لا نسأل عن عدد أيام القضاء أو سببه، ولا نسجّل أداء عبادتك.'),
     text('لا نقرأ محتوى المحادثات ولا نسجّل الصوت. توقيت المجلس يبقى في الذاكرة أثناء التشغيل، وتُحفظ أوقات محاولات التذكير مؤقتًا لمنع التكرار. حذف بياناتك يوقف التنبيهات ويمحو سجلك من قاعدة البوت؛ الرسائل الموجودة في ديسكورد تبقى عندك.'),
     text('-# بيانات التشغيل المحفوظة مشفّرة. ننظّف محاولات المجلس والمؤقّت بعد ٤٨ ساعة، ومحاولات الصلاة والجمعة والقضاء بعد ٧ أيام، ونزيل اشتراك السيرفر إذا أُزيل منه البوت.'),
     ...(privacyURL ? [row(linkButton('سياسة الخصوصية', privacyURL), ...(supportURL ? [linkButton('المساعدة والإبلاغ', supportURL)] : []))] : []),

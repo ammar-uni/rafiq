@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Store } from '../src/store.mjs';
 import { EncryptedSnapshot } from '../src/encrypted-snapshot.mjs';
-import { DEFAULT_PRAYER, DEFAULT_DAILY, renewPrayerActivation } from '../src/prayer-config.mjs';
+import { DEFAULT_PRAYER, DEFAULT_DAILY, renewPrayerActivation, validatePrayer, readStoredPrayer } from '../src/prayer-config.mjs';
 import { prayerSchedule } from '../src/prayer-times.mjs';
 import { dailyEvents, localClockInstant } from '../src/daily-times.mjs';
 import { reminderWindow } from '../src/occasion-times.mjs';
@@ -18,10 +18,11 @@ import { SerialQueue } from '../src/serial.mjs';
 import { DAILY_DHIKR } from '../src/content.mjs';
 import { appModal, dailyReminderPayload, MODAL_ACTIONS, FLAGS } from '../src/messages.mjs';
 import { toDiscord } from '../src/discord-adapter.mjs';
+import { ModalBuilder } from 'discord.js';
 
 const day = '2026-09-20', start = Date.parse(day + 'T00:00Z');
 const city = { label: 'مكة المكرمة، السعودية', latitude: 21.426, longitude: 39.826, timezone: 'Asia/Riyadh' };
-const prefs = () => ({ ...structuredClone(DEFAULT_PRAYER), city, daily: { morning: { activatedAt: start, iqamaMinutes: 20 }, evening: { activatedAt: start, iqamaMinutes: 10 }, quran: { activatedAt: start, time: '20:30' } } });
+const prefs = () => ({ ...structuredClone(DEFAULT_PRAYER), city, daily: { morning: { activatedAt: start, offsetMinutes: 30 }, evening: { activatedAt: start, offsetMinutes: 30 }, quran: { activatedAt: start, time: '20:30' } } });
 function harness(t, store = new Store(':memory:')) {
   if (store.close) t.after(() => store.close());
   let now = start, online = true;
@@ -60,20 +61,26 @@ test('guided setup saves the chosen city, remains opt-in, and explicitly tests w
   assert.match(JSON.stringify(await h.act('today')), /أذكار الصباح/);
 });
 
-test('adhkar use a fixed thirty minutes after adhan regardless of legacy iqama values; Quran follows DST', () => {
+test('adhkar support signed offsets and midnight crossings; Quran follows DST', () => {
   const p = prefs(), schedule = prayerSchedule(p, day), events = dailyEvents(p, schedule, start);
   assert.equal(events.find(e => e.key === 'morning').at, schedule[0].at + 30 * 60000);
   assert.equal(events.find(e => e.key === 'evening').at, schedule[3].at + 30 * 60000);
-  for (const iqamaMinutes of [null, 0, 90]) {
+  for (const offsetMinutes of [-60, -1, 0, 1, 60]) {
     const changed = structuredClone(p);
-    changed.daily.morning.iqamaMinutes = iqamaMinutes;
-    changed.daily.evening.iqamaMinutes = iqamaMinutes;
-    assert.deepEqual(dailyEvents(changed, schedule, start), events);
+    changed.daily.morning.offsetMinutes = offsetMinutes;
+    const actual = dailyEvents(changed, schedule, start);
+    assert.equal(actual.find(e => e.key === 'morning').at, schedule[0].at + offsetMinutes * 60000);
+    assert.equal(actual.find(e => e.key === 'evening').at, schedule[3].at + 30 * 60000);
   }
   assert.equal(events.find(e => e.key === 'quran' && e.day === day).at, Date.parse(day + 'T17:30Z'));
   const late = { ...schedule[3], at: Date.parse(day + 'T23:55Z') };
   assert.equal(dailyEvents(p, [late], start).find(e => e.key === 'evening').day, day);
   assert.equal(dailyEvents(p, [late], start).find(e => e.key === 'evening').at, Date.parse('2026-09-21T00:25Z'));
+  p.daily.morning.offsetMinutes = -60;
+  const early = { ...schedule[0], at: Date.parse(day + 'T00:10Z') };
+  const earlyEvent = dailyEvents(p, [early], start).find(e => e.key === 'morning');
+  assert.equal(earlyEvent.at, Date.parse('2026-09-19T23:10Z'));
+  assert.equal(earlyEvent.day, day, 'dedupe uses the reference prayer day across midnight');
   assert.equal(localClockInstant('2026-03-29', '02:30', 'Europe/Berlin'), null);
   assert.equal(localClockInstant('2026-10-25', '02:30', 'Europe/Berlin'), Date.parse('2026-10-25T00:30Z'));
   assert.equal(localClockInstant('2026-03-28', '20:30', 'Europe/Berlin'), Date.parse('2026-03-28T19:30Z'));
@@ -129,7 +136,7 @@ test('editing schedules requires fresh opt-in; invalid inputs and ordinary navig
   assert.equal(h.store.getPrayer('1').daily.quran.time, '20:30');
 });
 
-test('v4 migration preserves old preferences, keeps additions off and persists encrypted v5 with dedupe', t => {
+test('v4 migration preserves old preferences, keeps additions off and persists encrypted v6 with dedupe', t => {
   const folder = mkdtempSync(join(tmpdir(), 'rafiq-daily-')); t.after(() => rmSync(folder, { recursive: true }));
   const file = join(folder, 'state.enc'), encryptionKey = randomBytes(32).toString('hex');
   let store = new Store(file, { encryptionKey });
@@ -147,8 +154,8 @@ test('v4 migration preserves old preferences, keeps additions off and persists e
   assert.ok(store.claimPrayer('1', prefs(), event, event.at)); store.close();
   store = new Store(file, { encryptionKey }); t.after(() => store.close());
   assert.equal(store.claimPrayer('1', prefs(), event, event.at + 1000), null);
-  for (const value of [city.label, 'iqamaMinutes', '20:30']) assert.equal(readFileSync(file).includes(Buffer.from(value)), false);
-  assert.equal(store.snapshot.read().version, 5);
+  for (const value of [city.label, 'offsetMinutes', '20:30']) assert.equal(readFileSync(file).includes(Buffer.from(value)), false);
+  assert.equal(store.snapshot.read().version, 6);
   store.forget('1'); store.close(); store = new Store(file, { encryptionKey });
   assert.deepEqual(store.getPrayer('1'), DEFAULT_PRAYER); store.close();
 });
@@ -167,7 +174,7 @@ test('three short source-reviewed adhkar serialize as readable notification text
 test('preview and real app agree on onboarding, reading and explicit activation', async t => {
   const a = harness(t), b = harness(t, new PreviewStore());
   for (const h of [a, b]) h.store.setPrayer('1', { ...structuredClone(DEFAULT_PRAYER), city });
-  for (const [action, values = []] of [['setup'], ['setup_choices'], ['daily'], ['daily_enable_morning'], ['daily_enable_evening'], ['daily_time_quran', ['20:30']], ['daily_enable_quran'], ['today'], ['daily_morning_read'], ['daily_evening_read'], ['daily_sources'], ['setup_test'], ['setup_send_test'], ['daily_off_quran'], ['disable']]) {
+  for (const [action, values = []] of [['setup'], ['setup_choices'], ['daily'], ['daily_enable_morning'], ['daily_enable_evening'], ['setup_daily_offset_morning'], ['setup_daily_offset_morning_before', ['٣٥']], ['daily_offset_evening_after', ['٦٠']], ['daily_time_quran', ['20:30']], ['daily_enable_quran'], ['today'], ['daily_morning_read'], ['daily_evening_read'], ['daily_sources'], ['setup_test'], ['setup_send_test'], ['daily_off_quran'], ['disable']]) {
     assert.deepEqual(await a.act(action, values), await b.act(action, values), action);
   }
 });
@@ -182,4 +189,90 @@ test('My Day includes the nearest timer, next Friday and seasonal reminder witho
   h.store.setPrayer('1', { ...structuredClone(DEFAULT_PRAYER), city, occasions: { fridayPrayer: 0, fridayDua: 0, qada: start } });
   assert.match(JSON.stringify(await h.act('today')), /التذكير المجدول القادم: \*\*قضاء رمضان/);
   assert.equal(h.sent.length, 0);
+});
+
+test('offset editing is independent, bounded, opt-in and keeps active reminders running', async t => {
+  const h = harness(t);
+  h.store.setPrayer('1', { ...structuredClone(DEFAULT_PRAYER), city });
+  await h.act('daily_offset_morning_before', ['٦٠']);
+  assert.deepEqual(h.store.getPrayer('1').daily.morning, { activatedAt: 0, offsetMinutes: -60 });
+  await h.act('daily_enable_morning');
+  h.clock(start + 1000);
+  await h.act('setup_daily_offset_morning_after', ['۴۵']);
+  assert.deepEqual(h.store.getPrayer('1').daily.morning, { activatedAt: start + 1000, offsetMinutes: 45 });
+  assert.deepEqual(h.store.getPrayer('1').daily.evening, DEFAULT_DAILY.evening);
+  const before = h.store.getPrayer('1');
+  for (const value of ['0', '-1', '61', '1.5', '', 'a', '999', '+30']) {
+    await h.act('daily_offset_morning_before', [value]);
+    assert.deepEqual(h.store.getPrayer('1'), before);
+  }
+  await h.act('daily_offset_morning_after', ['20', '30']);
+  assert.deepEqual(h.store.getPrayer('1'), before);
+  await h.act('daily_offset_morning_at');
+  assert.equal(h.store.getPrayer('1').daily.morning.offsetMinutes, 0);
+  await h.act('daily_offset_morning_reset');
+  assert.equal(h.store.getPrayer('1').daily.morning.offsetMinutes, 30);
+  assert.equal(h.sent.length, 0);
+  for (const value of [-61, 61, 0.5, '30', null, undefined]) {
+    const p = prefs(); p.daily.morning.offsetMinutes = value;
+    assert.throws(() => validatePrayer(p), /offset/);
+  }
+});
+
+test('changing offsets cannot replay a sent reminder or send a newly selected past time', async t => {
+  const h = harness(t), p = prefs(); h.store.setPrayer('1', p);
+  const fajr = prayerSchedule(p, day)[0].at;
+  h.clock(fajr + 30 * 60000); await h.scheduler.tick(); assert.equal(h.sent.length, 1);
+  await h.act('daily_offset_morning_after', ['60']);
+  h.clock(fajr + 60 * 60000); await h.scheduler.tick(); assert.equal(h.sent.length, 1);
+  // A new user selects a time that passed one minute ago. Activation is renewed
+  // so the scheduler's two-minute freshness window does not create a late send.
+  const other = harness(t); other.store.setPrayer('1', p);
+  other.clock(fajr + 60000); await other.act('daily_offset_morning_at');
+  await other.scheduler.tick(); assert.equal(other.sent.length, 0);
+  const nextDay = '2026-09-21';
+  other.clock(prayerSchedule(other.store.getPrayer('1'), nextDay)[0].at);
+  await other.scheduler.tick(); await other.scheduler.tick(); assert.equal(other.sent.length, 1);
+});
+
+test('before/after forms serialize correctly and display the selected period and magnitude', () => {
+  for (const key of ['morning', 'evening']) for (const direction of ['before', 'after']) for (const prefix of ['', 'setup_']) {
+    const p = prefs(); p.daily[key].offsetMinutes = direction === 'before' ? -60 : 60;
+    const action = `daily_offset_${key}_${direction}_modal`;
+    assert.ok(MODAL_ACTIONS.includes(action));
+    const json = new ModalBuilder(appModal(prefix + action, p)).toJSON();
+    assert.equal(json.custom_id, `rafiq:v1:${prefix}daily_offset_${key}_${direction}`);
+    assert.equal(json.components[0].component.custom_id, 'minutes');
+    assert.equal(json.components[0].component.value, '60');
+    assert.ok(json.components[0].label.includes(key === 'morning' ? 'الفجر' : 'المغرب'));
+    assert.ok(json.components[0].label.includes(direction === 'before' ? 'قبل' : 'بعد'));
+  }
+});
+
+test('v5 migration retains all opt-ins and non-daily data; signed offsets persist encrypted after restart', t => {
+  const folder = mkdtempSync(join(tmpdir(), 'rafiq-offset-')); t.after(() => rmSync(folder, { recursive: true }));
+  const file = join(folder, 'state.enc'), encryptionKey = randomBytes(32).toString('hex');
+  let store = new Store(file, { encryptionKey });
+  store.subscribe('1', '10'); store.updateUser('1', { delivery: 'silent', frequency: 'session5' }); store.toggleFavorite('1', 'majlis');
+  store.setPrayer('1', prefs()); store.close();
+  const snapshot = new EncryptedSnapshot(file, encryptionKey), old = snapshot.read();
+  old.version = 5;
+  const previous = JSON.parse(old.tables.prayer_settings[0][1]);
+  previous.daily.morning = { activatedAt: start, iqamaMinutes: 90 };
+  previous.daily.evening = { activatedAt: 0, iqamaMinutes: null };
+  old.tables.prayer_settings[0][1] = JSON.stringify(previous); snapshot.write(old); snapshot.close();
+  store = new Store(file, { encryptionKey });
+  const migrated = store.getPrayer('1');
+  assert.deepEqual(migrated.daily.morning, { activatedAt: start, offsetMinutes: 30 });
+  assert.deepEqual(migrated.daily.evening, { activatedAt: 0, offsetMinutes: 30 });
+  assert.deepEqual({ ...migrated, daily: previous.daily }, previous);
+  store.persist();
+  const actual = store.snapshot.read(); assert.equal(actual.version, 6);
+  for (const name of Object.keys(old.tables).filter(n => n !== 'prayer_settings')) assert.deepEqual(actual.tables[name], old.tables[name]);
+  migrated.daily.morning.offsetMinutes = -60; migrated.daily.evening.offsetMinutes = 60;
+  store.setPrayer('1', migrated); store.close();
+  store = new Store(file, { encryptionKey });
+  assert.deepEqual(store.getPrayer('1'), migrated);
+  store.close();
+  assert.throws(() => readStoredPrayer(previous, 6), /daily activation/);
 });

@@ -49,8 +49,20 @@ export class DailyApp {
       this.store.setPrayer(userId, { ...p, daily: { ...p.daily, [off[1]]: { ...p.daily[off[1]], activatedAt: 0 } } });
       return this.page(userId, 'توقف هذا التذكير فقط.');
     }
-    // Previously issued buttons/forms remain safe after removing iqama setup.
-    if (/^daily_(time_(morning|evening)|(morning|evening)_modal)$/.test(action)) return this.page(userId, 'موعد الأذكار تلقائي بعد الأذان بنصف ساعة؛ يكفي اختيار المدينة ثم التفعيل.');
+    // Never reinterpret a stale iqama form as a new adhan-relative offset.
+    if (/^daily_(time_(morning|evening)|(morning|evening)_modal)$/.test(action)) return this.page(userId, 'لتغيير وقت الأذكار استخدم «تعديل الموعد». لا نطلب وقت الإقامة.');
+    const offsetPage = /^daily_offset_(morning|evening)$/.exec(action);
+    if (offsetPage) return ui.dailyOffsetPayload(p, offsetPage[1]);
+    const offsetSave = /^daily_offset_(morning|evening)_(before|after|at|reset)$/.exec(action);
+    if (offsetSave) {
+      const [, key, direction] = offsetSave;
+      const value = values.length === 1 ? digits(values[0]) : '';
+      if (['before', 'after'].includes(direction) && (!/^\d{1,2}$/.test(value) || Number(value) < 1 || Number(value) > 60)) return ui.dailyOffsetPayload(p, key, 'أدخل عددًا صحيحًا من ١ إلى ٦٠ دقيقة. لم يتغير موعدك.');
+      const offsetMinutes = direction === 'at' ? 0 : direction === 'reset' ? ADHKAR_DELAY_MINUTES : Number(value) * (direction === 'before' ? -1 : 1);
+      const item = p.daily[key];
+      if (offsetMinutes !== item.offsetMinutes) this.store.setPrayer(userId, { ...p, daily: { ...p.daily, [key]: { ...item, offsetMinutes, activatedAt: item.activatedAt ? now : 0 } } });
+      return this.page(userId, `حُفظ الموعد. ${item.activatedAt ? 'التذكير ما زال مفعّلًا؛ يبدأ بالموعد القادم.' : 'التذكير غير مفعّل؛ فعّله حين تريد.'}`);
+    }
     if (action === 'daily_time_quran') {
       const value = values.length === 1 ? digits(values[0]) : '';
       if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(value)) return this.page(userId, 'أدخل الساعة بصيغة 24 ساعة، مثل 20:30. لم يتغير موعدك.');
@@ -64,9 +76,7 @@ export class DailyApp {
       if (key === 'quran' && !item.time) return this.page(userId, 'اضبط موعد هذا التذكير أولًا ثم فعّله.');
       if (key !== 'quran' && prayerWindow(p, now).filter(e => e.day === prayerDate(now, p.city.timezone)).length !== 5) return this.page(userId, 'جدول الصلاة غير متاح هنا الآن؛ راجعه قبل تفعيل هذا التذكير.');
       if (user.dmBlocked || user.pausedUntil > now) return this.page(userId, 'استأنف التنبيهات وتأكد من وصول الخاص من إعداداتك.');
-      // Retain the v5 field only for compatibility with 0.9.0 rollback readers.
-      // Current scheduling ignores it; no iqama time is collected from users.
-      if (!item.activatedAt) this.store.setPrayer(userId, { ...p, daily: { ...p.daily, [key]: { ...item, activatedAt: now, ...(key !== 'quran' ? { iqamaMinutes: ADHKAR_DELAY_MINUTES - 15 } : {}) } } });
+      if (!item.activatedAt) this.store.setPrayer(userId, { ...p, daily: { ...p.daily, [key]: { ...item, activatedAt: now } } });
       return this.page(userId, `فُعّل تذكير ${DAILY_REMINDERS.find(([id]) => id === key)[1]} فقط.`);
     }
     return this.page(userId);
