@@ -88,8 +88,12 @@ test('an existing subscriber can opt in from a second server without disabling t
   const h = harness(t);
   await h.act('enable');
   const home = await h.act('home', [], '1', '20');
+  const reminders = await h.act('reminders', [], '1', '20');
+  const introduction = await h.act('reminder_intro', [], '1', '20');
   const settings = await h.act('settings', [], '1', '20');
-  assert.match(JSON.stringify(home), /فعّل تذكير المجلس/);
+  assert.match(JSON.stringify(home), /rafiq:v1:reminders/);
+  assert.match(JSON.stringify(reminders), /rafiq:v1:reminder_intro/);
+  assert.match(JSON.stringify(introduction), /فعّل تذكير المجلس/);
   assert.match(JSON.stringify(settings), /فعّل في هذا السيرفر/);
   assert.equal(h.store.isSubscribed('1', '20'), false);
   await h.act('enable', [], '1', '20');
