@@ -33,7 +33,7 @@ function harness(t, store = new Store(':memory:')) {
   return { store, prayers, scheduler, sent, clock: at => { now = at; }, online: value => { online = value; }, act: (action, values = []) => app.handle({ userId: '1', guildId: '10', action, values }) };
 }
 
-test('guided setup saves the chosen city, remains opt-in, and explicitly tests without enabling reminders', async t => {
+test('guided setup enables city occasion defaults while daily reminders and test messages require their own actions', async t => {
   const h = harness(t);
   for (const action of ['home', 'setup', 'today', 'daily', 'daily_morning_read', 'daily_sources']) await h.act(action);
   assert.equal(h.store.db.prepare('SELECT count(*) AS n FROM users').get().n, 0);
@@ -42,11 +42,13 @@ test('guided setup saves the chosen city, remains opt-in, and explicitly tests w
   assert.deepEqual(h.store.getPrayer('1').city, city);
   assert.equal(h.store.getPrayer('1').enabled, false);
   assert.deepEqual(h.store.getPrayer('1').daily, DEFAULT_DAILY);
+  assert.deepEqual(h.store.getPrayer('1').occasions, { fridayPrayer: 0, fridayDua: start, qada: start });
   await h.act('setup_choices'); await h.act('setup_test');
   assert.equal(h.sent.length, 0);
   const settings = JSON.stringify(await h.act('setup_daily'));
   assert.doesNotMatch(settings, /daily_(morning|evening)_modal|بين الأذان والإقامة/);
-  assert.match(settings, /daily_quran_modal/);
+  assert.match(settings, /setup_daily_quran/);
+  assert.match(JSON.stringify(await h.act('setup_daily_quran')), /setup_daily_quran_modal/);
   assert.ok(!MODAL_ACTIONS.includes('daily_morning_modal'));
   assert.throws(() => appModal('setup_daily_morning_modal'), RangeError);
   assert.equal(appModal('setup_daily_quran_modal').custom_id, 'rafiq:v1:setup_daily_time_quran');
@@ -164,13 +166,14 @@ test('editing schedules requires fresh opt-in; invalid inputs and ordinary navig
   assert.equal(h.store.getPrayer('1').daily.quran.time, '20:30');
 });
 
-test('v4 migration preserves old preferences, keeps additions off and persists encrypted v6 with dedupe', t => {
+test('v4 migration preserves old preferences, keeps additions off and persists encrypted v7 with dedupe', t => {
   const folder = mkdtempSync(join(tmpdir(), 'rafiq-daily-')); t.after(() => rmSync(folder, { recursive: true }));
   const file = join(folder, 'state.enc'), encryptionKey = randomBytes(32).toString('hex');
   let store = new Store(file, { encryptionKey });
   store.subscribe('1', '10'); store.updateUser('1', { delivery: 'silent', frequency: 'daily' }); store.toggleFavorite('1', 'majlis');
   store.setPrayer('1', { ...prefs(), enabled: true, activatedAt: start, delivery: 'silent' }); store.close();
   const snapshot = new EncryptedSnapshot(file, encryptionKey), legacy = snapshot.read(); legacy.version = 4;
+  delete legacy.tables.seasonal_attempts; legacy.tables.users.forEach(row => row.pop());
   const p = JSON.parse(legacy.tables.prayer_settings[0][1]); delete p.daily;
   legacy.tables.prayer_settings[0][1] = JSON.stringify(p); snapshot.write(legacy); snapshot.close();
   store = new Store(file, { encryptionKey });
@@ -183,7 +186,7 @@ test('v4 migration preserves old preferences, keeps additions off and persists e
   store = new Store(file, { encryptionKey }); t.after(() => store.close());
   assert.equal(store.claimPrayer('1', prefs(), event, event.at + 1000), null);
   for (const value of [city.label, 'offsetMinutes', '20:30']) assert.equal(readFileSync(file).includes(Buffer.from(value)), false);
-  assert.equal(store.snapshot.read().version, 6);
+  assert.equal(store.snapshot.read().version, 7);
   store.forget('1'); store.close(); store = new Store(file, { encryptionKey });
   assert.deepEqual(store.getPrayer('1'), DEFAULT_PRAYER); store.close();
 });
@@ -285,6 +288,7 @@ test('v5 migration retains all opt-ins and non-daily data; signed offsets persis
   store.setPrayer('1', prefs()); store.close();
   const snapshot = new EncryptedSnapshot(file, encryptionKey), old = snapshot.read();
   old.version = 5;
+  delete old.tables.seasonal_attempts; old.tables.users.forEach(row => row.pop());
   const previous = JSON.parse(old.tables.prayer_settings[0][1]);
   previous.daily.morning = { activatedAt: start, iqamaMinutes: 90 };
   previous.daily.evening = { activatedAt: 0, iqamaMinutes: null };
@@ -295,8 +299,9 @@ test('v5 migration retains all opt-ins and non-daily data; signed offsets persis
   assert.deepEqual(migrated.daily.evening, { activatedAt: 0, offsetMinutes: 30 });
   assert.deepEqual({ ...migrated, daily: previous.daily }, previous);
   store.persist();
-  const actual = store.snapshot.read(); assert.equal(actual.version, 6);
-  for (const name of Object.keys(old.tables).filter(n => n !== 'prayer_settings')) assert.deepEqual(actual.tables[name], old.tables[name]);
+  const actual = store.snapshot.read(); assert.equal(actual.version, 7);
+  for (const name of Object.keys(old.tables).filter(n => n !== 'prayer_settings')) assert.deepEqual(name === 'users' ? actual.tables[name].map(row => row.slice(0, -1)) : actual.tables[name], old.tables[name]);
+  assert.equal(store.getUser('1').seasonalAt, null);
   migrated.daily.morning.offsetMinutes = -60; migrated.daily.evening.offsetMinutes = 60;
   store.setPrayer('1', migrated); store.close();
   store = new Store(file, { encryptionKey });

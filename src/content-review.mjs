@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { DHIKR_CARDS, GOOD_DEEDS, OCCASION_CARDS, DAILY_DHIKR, HADITH_BOOKS } from './content.mjs';
+import { DHIKR_CARDS, GOOD_DEEDS, OCCASION_CARDS, DAILY_DHIKR, SEASONAL_CARDS, HADITH_BOOKS } from './content.mjs';
 
 const canonical = value => Array.isArray(value) ? value.map(canonical) : value && typeof value === 'object'
   ? Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])])) : value;
@@ -8,7 +8,7 @@ export const contentFingerprint = card => createHash('sha256').update(JSON.strin
 
 // A change detector, not a hadith authenticator. Update the review record only
 // after comparing wording, narrators and references with the actual sources.
-export function assertReviewedContent(cards = [...DHIKR_CARDS, ...GOOD_DEEDS, ...Object.values(OCCASION_CARDS), ...DAILY_DHIKR], review = JSON.parse(readFileSync(new URL('./content-review.json', import.meta.url), 'utf8'))) {
+export function assertReviewedContent(cards = [...DHIKR_CARDS, ...GOOD_DEEDS, ...Object.values(OCCASION_CARDS), ...DAILY_DHIKR, ...Object.values(SEASONAL_CARDS)], review = JSON.parse(readFileSync(new URL('./content-review.json', import.meta.url), 'utf8'))) {
   const reject = () => { const error = new Error('Content review required: compare the changed material with its primary sources before release.'); error.code = 'CONTENT_REVIEW_REQUIRED'; throw error; };
   if (review.version !== 1 || !Array.isArray(review.entries) || review.entries.length !== cards.length) reject();
   const ids = new Set();

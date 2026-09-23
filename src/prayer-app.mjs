@@ -48,7 +48,7 @@ export class PrayerApp {
       return occasions(`فُعّل تذكير ${OCCASIONS.find(([id]) => id === key)[1]} فقط. يمكنك إيقافه من الزر نفسه.`);
     }
     if (action === 'prayer') return this.page(userId);
-    if (action === 'prayer_location') return ui.prayerLocationPayload();
+    if (action === 'prayer_location') return ui.prayerLocationPayload('', p);
     if (action === 'prayer_calculation') return ui.prayerCalculationPayload(p);
     if (action === 'prayer_audio') return ui.prayerAudioPayload(p, this.sounds);
     if (action === 'prayer_test' && this.sendDM) {
@@ -59,6 +59,7 @@ export class PrayerApp {
         await this.sendDM(userId, ui.prayerTestPayload(p, this.sounds.find(sound => sound.id === p.soundId)), `prayer-test:${userId}:${now}`);
         this.store.transaction(() => {
           this.store.updateUser(userId, { dmBlocked: false });
+          if (user.dmBlocked && user.seasonalAt > 0) this.store.updateUser(userId, { seasonalAt: this.now() });
           if (user.dmBlocked && hasPrayerReminders(p)) this.store.setPrayer(userId, renewPrayerActivation(p, this.now()));
         });
         return this.page(userId, 'أُرسلت تجربة بإعدادات إشعار الصلاة التي اخترتها.');
@@ -75,16 +76,26 @@ export class PrayerApp {
       this.searches.set(userId, entry);
       this.globalSearches.push(now);
       try { entry.cities = await this.lookup(values[0]); }
-      catch { return ui.prayerLocationPayload('تعذّر البحث الآن. لم نغيّر مدينتك المحفوظة؛ حاول مجددًا بعد قليل.'); }
-      if (!entry.cities.length) return ui.prayerLocationPayload('لم نجد مدينة مطابقة. جرّب الاسم الكامل مع الدولة، أو تهجئة أخرى بالعربية أو الإنجليزية.');
-      return ui.prayerCitiesPayload(entry.cities, entry.token);
+      catch { return ui.prayerLocationPayload('تعذّر البحث الآن. لم نغيّر مدينتك المحفوظة؛ حاول مجددًا بعد قليل.', p); }
+      if (!entry.cities.length) return ui.prayerLocationPayload('لم نجد مدينة مطابقة. جرّب الاسم الكامل مع الدولة، أو تهجئة أخرى بالعربية أو الإنجليزية.', p);
+      return ui.prayerCitiesPayload(entry.cities, entry.token, p);
     }
     if (action.startsWith('prayer_city_')) {
       const entry = this.searches.get(userId);
       if (!entry || action !== `prayer_city_${entry.token}` || values.length !== 1 || !/^[0-7]$/.test(values[0]) || !entry.cities[Number(values[0])]) return this.page(userId, 'انتهت نتائج البحث أو لم تعد صالحة. ابحث عن المدينة مجددًا.');
-      save({ city: entry.cities[Number(values[0])], method: p.method || DEFAULT_PRAYER.method, enabled: false, occasions: { ...DEFAULT_OCCASIONS }, daily: stopDaily(p.daily), activatedAt: now });
+      const selected = { ...p, city: entry.cities[Number(values[0])], method: p.method || DEFAULT_PRAYER.method, enabled: false, occasions: { ...DEFAULT_OCCASIONS }, daily: stopDaily(p.daily), activatedAt: now };
+      const ready = prayerWindow(selected, now).filter(event => event.day === prayerDate(now, selected.city.timezone)).length === 5;
+      // The first-city picker explains these two defaults before selection.
+      // Later location changes preserve opt-outs and rebase active reminders so
+      // switching time zones cannot send an event that already passed.
+      if (ready) selected.occasions = p.city
+        ? Object.fromEntries(Object.entries(p.occasions).map(([key, at]) => [key, at ? now : 0]))
+        : { ...DEFAULT_OCCASIONS, fridayDua: now, qada: now };
+      this.store.setPrayer(userId, selected);
       this.searches.delete(userId);
-      return this.page(userId, 'حُفظت المدينة وتوقفت تذكيرات الصلاة والجمعة والقضاء والأذكار والقراءة. راجع الجدول ثم فعّل ما تحتاجه.');
+      return this.page(userId, !ready ? 'حُفظت المدينة، لكن مواقيتها غير مكتملة؛ لم نفعّل تذكيرات مرتبطة بها. راجع جدول الجهة المعتمدة محليًا.'
+        : p.city ? 'تغيّرت المدينة. بقيت اختيارات الجمعة والقضاء كما هي. توقفت تذكيرات الصلوات والأذكار والقراءة حتى تراجع الجدول وتعيد تفعيلها.'
+        : 'حُفظت مدينتك وفُعّل دعاء الجمعة وقضاء قبل رمضان في الخاص. يمكنك إيقاف أي منهما من «الجمعة والقضاء». راجع المواقيت قبل تفعيل الصلوات.');
     }
     const calculationChoices = { prayer_method: ['method', PRAYER_METHODS], prayer_highLatitude: ['highLatitude', PRAYER_HIGH_LATITUDE] };
     if (Object.hasOwn(calculationChoices, action)) {
@@ -103,14 +114,19 @@ export class PrayerApp {
       save({ adjustments: normalized.map(Number), enabled: false, occasions: { ...DEFAULT_OCCASIONS }, daily: stopDaily(p.daily), activatedAt: now });
       return this.page(userId, 'حُفظت التعديلات وتوقفت تذكيرات الصلاة والجمعة والقضاء والأذكار والقراءة؛ راجع الجدول ثم أعد التفعيل.');
     }
-    if (action === 'prayer_enable') {
+    if (action === 'prayer_enable' || action === 'prayer_enable_friday') {
       const user = this.store.getUser(userId);
       if (!p.city || !p.method || prayerWindow(p, now).filter(event => event.day === prayerDate(now, p.city.timezone)).length !== 5) return this.page(userId, 'أكمل المدينة وطريقة الحساب، وتأكد من ظهور الجدول أولًا.');
       if (user.pausedUntil > now || user.dmBlocked) return this.page(userId, 'استأنف التنبيهات من إعداداتك العامة، وتأكد من وصول الخاص قبل التفعيل.');
-      if (!p.enabled) save({ enabled: true, activatedAt: now });
-      return this.page(userId, 'فُعّل تذكير الصلوات القادمة، بحسب هذا الجدول.');
+      const withFriday = action === 'prayer_enable_friday';
+      // Old buttons only promised the five prayers. The new button names Friday.
+      // Repeated enable clicks must not undo a subsequent Friday opt-out.
+      if (!p.enabled) save({ enabled: true, activatedAt: now, ...(withFriday ? { occasions: { ...p.occasions, fridayPrayer: p.occasions.fridayPrayer || now } } : {}) });
+      return this.page(userId, p.enabled ? 'تذكير الصلوات مفعّل بالفعل. بقيت اختيارات الجمعة والقضاء كما هي.'
+        : withFriday ? 'فُعّلت الصلوات الخمس وصلاة الجمعة قبل الظهر بـ٤٥ دقيقة. يمكنك إيقاف الجمعة وحدها من «الجمعة والقضاء».'
+        : 'فُعّل تذكير الصلوات القادمة، بحسب هذا الجدول.');
     }
-    if (action === 'prayer_disable') { this.store.disablePrayer(userId); return this.page(userId, 'توقف تذكير الصلاة. بقيت إعداداتك لتعود إليها متى أردت.'); }
+    if (action === 'prayer_disable') { this.store.disablePrayer(userId); return this.page(userId, 'توقف تذكير الصلوات الخمس. تذكيرات الجمعة والقضاء تُدار بشكل مستقل من «الجمعة والقضاء».'); }
     if (action === 'prayer_delivery' && values.length === 1 && ['silent', 'normal'].includes(values[0])) {
       save({ delivery: values[0] }); return ui.prayerAudioPayload(this.store.getPrayer(userId), this.sounds);
     }

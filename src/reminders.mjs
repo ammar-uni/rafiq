@@ -86,6 +86,7 @@ export class ReminderEngine {
         });
       }
       await this.prayers?.tick();
+      await this.seasonal?.tick();
       this.store.prune(this.now());
     } finally { this.running = false; }
   }

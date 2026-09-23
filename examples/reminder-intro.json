@@ -52,7 +52,13 @@
           "components": [
             {
               "type": 2,
-              "label": "الآن أتصفّح فقط",
+              "label": "رجوع",
+              "style": 2,
+              "custom_id": "rafiq:v1:reminders"
+            },
+            {
+              "type": 2,
+              "label": "الرئيسية",
               "style": 2,
               "custom_id": "rafiq:v1:home"
             }

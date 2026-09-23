@@ -11,7 +11,7 @@
       "components": [
         {
           "type": 10,
-          "content": "## موعد أذكار المساء\nالموعد الحالي: **قبل أذان المغرب بـ١٠ دقائق حسب مواقيت مدينتك.**"
+          "content": "-# تذكيراتي / الأذكار / الموعد\n## موعد أذكار المساء\nالموعد الحالي: **قبل أذان المغرب بـ١٠ دقائق حسب مواقيت مدينتك.**"
         },
         {
           "type": 10,
@@ -52,12 +52,23 @@
               "label": "إعادة إلى قبل الأذان بـ١٠ دقائق",
               "style": 2,
               "custom_id": "rafiq:v1:daily_offset_evening_reset"
-            },
+            }
+          ]
+        },
+        {
+          "type": 1,
+          "components": [
             {
               "type": 2,
               "label": "رجوع",
               "style": 2,
-              "custom_id": "rafiq:v1:daily"
+              "custom_id": "rafiq:v1:daily_evening"
+            },
+            {
+              "type": 2,
+              "label": "الرئيسية",
+              "style": 2,
+              "custom_id": "rafiq:v1:home"
             }
           ]
         }

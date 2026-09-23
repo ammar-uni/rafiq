@@ -11,89 +11,71 @@
       "components": [
         {
           "type": 10,
-          "content": "## أذكاري وقراءتي\nمكة المكرمة، السعودية"
+          "content": "-# تذكيراتي / الأذكار\n## أذكار الصباح والمساء\nثلاثة أذكار في رسالة واحدة لكل فترة تفعّلها."
         },
         {
           "type": 10,
-          "content": "**أذكار الصباح** · غير مفعّل\nقبل أذان الفجر بـ١٠ دقائق حسب مواقيت مدينتك."
+          "content": "-# مكة المكرمة، السعودية"
         },
         {
-          "type": 1,
+          "type": 14,
+          "divider": true,
+          "spacing": 1
+        },
+        {
+          "type": 9,
           "components": [
             {
-              "type": 2,
-              "label": "تعديل الموعد",
-              "style": 2,
-              "custom_id": "rafiq:v1:daily_offset_morning"
-            },
-            {
-              "type": 2,
-              "label": "تفعيل",
-              "style": 3,
-              "custom_id": "rafiq:v1:daily_enable_morning"
+              "type": 10,
+              "content": "### أذكار الصباح\n**غير مفعّل**\nقبل أذان الفجر بـ١٠ دقائق حسب مواقيت مدينتك."
             }
-          ]
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "ضبط الصباح",
+            "style": 2,
+            "custom_id": "rafiq:v1:daily_morning"
+          }
         },
         {
-          "type": 10,
-          "content": "**أذكار المساء** · غير مفعّل\nقبل أذان المغرب بـ١٠ دقائق حسب مواقيت مدينتك."
+          "type": 14,
+          "divider": true,
+          "spacing": 1
         },
         {
-          "type": 1,
+          "type": 9,
           "components": [
             {
-              "type": 2,
-              "label": "تعديل الموعد",
-              "style": 2,
-              "custom_id": "rafiq:v1:daily_offset_evening"
-            },
-            {
-              "type": 2,
-              "label": "تفعيل",
-              "style": 3,
-              "custom_id": "rafiq:v1:daily_enable_evening"
+              "type": 10,
+              "content": "### أذكار المساء\n**غير مفعّل**\nقبل أذان المغرب بـ١٠ دقائق حسب مواقيت مدينتك."
             }
-          ]
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "ضبط المساء",
+            "style": 2,
+            "custom_id": "rafiq:v1:daily_evening"
+          }
         },
         {
-          "type": 10,
-          "content": "**قراءة القرآن** · غير مفعّل\nحدد ساعة تناسبك."
-        },
-        {
-          "type": 1,
-          "components": [
-            {
-              "type": 2,
-              "label": "ضبط الموعد",
-              "style": 2,
-              "custom_id": "rafiq:v1:daily_quran_modal"
-            },
-            {
-              "type": 2,
-              "label": "تفعيل",
-              "style": 3,
-              "custom_id": "rafiq:v1:daily_enable_quran"
-            }
-          ]
-        },
-        {
-          "type": 10,
-          "content": "-# ثلاثة أذكار مختارة لكل وقت، برسالة واحدة. الموعد تقريبي للتذكير، ولا يعتمد على معرفة إقامة مسجدك. اختر المدينة ثم فعّل ما تريد."
+          "type": 14,
+          "divider": true,
+          "spacing": 1
         },
         {
           "type": 1,
           "components": [
             {
               "type": 2,
-              "label": "اقرأ أذكار الصباح",
+              "label": "تذكير القراءة",
               "style": 2,
-              "custom_id": "rafiq:v1:daily_morning_read"
+              "custom_id": "rafiq:v1:daily_quran"
             },
             {
               "type": 2,
-              "label": "اقرأ أذكار المساء",
+              "label": "أقرأ الآن",
               "style": 2,
-              "custom_id": "rafiq:v1:daily_evening_read"
+              "custom_id": "rafiq:v1:explore"
             }
           ]
         },
@@ -102,21 +84,15 @@
           "components": [
             {
               "type": 2,
-              "label": "مدينتي",
+              "label": "رجوع",
               "style": 2,
-              "custom_id": "rafiq:v1:prayer_location"
+              "custom_id": "rafiq:v1:reminders"
             },
             {
               "type": 2,
-              "label": "إشعاري",
+              "label": "الرئيسية",
               "style": 2,
-              "custom_id": "rafiq:v1:prayer_audio"
-            },
-            {
-              "type": 2,
-              "label": "يومي",
-              "style": 2,
-              "custom_id": "rafiq:v1:today"
+              "custom_id": "rafiq:v1:home"
             }
           ]
         }

@@ -7,12 +7,12 @@ export const COMMANDS = [
     contexts: [0, 1], integration_types: [0],
     options: [{ type: ApplicationCommandOptionType.String, name: 'section', description: 'افتح ما تحتاجه مباشرة',
       choices: [
-        { name: 'مساحتي', value: 'home' }, { name: 'أذكار موثّقة', value: 'library' },
+        { name: 'الرئيسية', value: 'home' }, { name: 'تذكيراتي', value: 'reminders' }, { name: 'أقرأ الآن', value: 'explore' },
         { name: 'فكرة خير', value: 'idea' }, { name: 'محفوظاتي', value: 'favorites' },
-        { name: 'وقت لاستراحة', value: 'break' }, { name: 'إعداداتي', value: 'settings' },
+        { name: 'مؤقّت استراحة', value: 'break' }, { name: 'إعداد تذكير المجلس', value: 'settings' },
         { name: 'مواقيت الصلاة', value: 'prayer' },
-        { name: 'بياناتي', value: 'privacy' }, { name: 'مصادرنا', value: 'methodology' },
-        { name: 'مساعدة وإبلاغ', value: 'support' }
+        { name: 'مكتبة الأذكار', value: 'library' }, { name: 'بياناتي وخصوصيتي', value: 'privacy' }, { name: 'المصادر والمنهج', value: 'methodology' },
+        { name: 'دليل الاستخدام', value: 'help' }, { name: 'تواصل وإبلاغ', value: 'support' }
       ] }]
   },
   {

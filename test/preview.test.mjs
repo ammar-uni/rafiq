@@ -10,7 +10,8 @@ test('the browser preview and persisted app return identical payloads for the ma
   const stores = [store, new PreviewStore()];
   const apps = stores.map(store => new RafiqApp({ store, queue: new SerialQueue(), sendDM: async () => {}, now: () => 1800000000000 }));
   const steps = [
-    ['home'], ['favorites'], ['saved_ideas'], ['idea_save_parents_family'], ['idea_save_calm_play'],
+    ['daily_morning_read'], ['daily_sources_morning'], ['daily_evening_read'], ['daily_sources_evening'], ['explore'],
+    ['home'], ['reminders'], ['explore'], ['help'], ['daily'], ['daily_morning'], ['daily_evening'], ['daily_quran'], ['favorites'], ['saved_ideas'], ['idea_save_parents_family'], ['idea_save_calm_play'],
     ['favorites'], ['saved_ideas'], ['idea_source_parents_saved'], ['idea_save_parents_saved'], ['idea_save_calm_saved'],
     ['favorite_guidance'], ['favorite_majlis'], ['saved_dhikr'], ['source_majlis_saved'], ['favorite_majlis_saved'],
     ['reminder_intro'], ['enable'], ['settings'], ['notification_help'], ['frequency', ['session']], ['frequency', ['session5']], ['reminder_intro'], ['delivery', ['normal']],

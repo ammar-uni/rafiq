@@ -1,0 +1,138 @@
+{
+  "flags": 32832,
+  "allowed_mentions": {
+    "parse": [],
+    "replied_user": false
+  },
+  "components": [
+    {
+      "type": 17,
+      "accent_color": 6663305,
+      "components": [
+        {
+          "type": 10,
+          "content": "-# رفيق / الرئيسية\n## خيرٌ يرافقك. 🌿\nمساحة صغيرة لذكرٍ وخيرٍ في يومك."
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "**مكة المكرمة، السعودية**\nمواقيتك والتذكير القادم في «يومي»."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "يومي",
+            "style": 3,
+            "custom_id": "rafiq:v1:today"
+          }
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "**مواسم الخير · مفعّلة تلقائيًا عند البدء**\nمع البدء تصلك رسائل موسمية قليلة في الخاص، ويمكنك إيقافها."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "ابدأ مع رفيق",
+            "style": 3,
+            "custom_id": "rafiq:v1:setup_start"
+          }
+        },
+        {
+          "type": 14,
+          "divider": true,
+          "spacing": 1
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "### تذكيراتي\nالصلاة، الأذكار، المجلس، والجمعة."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "تذكيراتي",
+            "style": 2,
+            "custom_id": "rafiq:v1:reminders"
+          }
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "### أقرأ الآن\nأذكار الصباح والمساء، وأدعية موثّقة."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "أقرأ الآن",
+            "style": 2,
+            "custom_id": "rafiq:v1:explore"
+          }
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "### أفكار الخير\nخطوات بسيطة مع أهلك وأصحابك."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "فكرة خير",
+            "style": 2,
+            "custom_id": "rafiq:v1:idea"
+          }
+        },
+        {
+          "type": 14,
+          "divider": true,
+          "spacing": 1
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "مؤقّت استراحة",
+              "style": 2,
+              "custom_id": "rafiq:v1:break"
+            },
+            {
+              "type": 2,
+              "label": "محفوظاتي",
+              "style": 2,
+              "custom_id": "rafiq:v1:favorites"
+            }
+          ]
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "المساعدة",
+              "style": 2,
+              "custom_id": "rafiq:v1:help"
+            },
+            {
+              "type": 2,
+              "label": "بياناتي وخصوصيتي",
+              "style": 2,
+              "custom_id": "rafiq:v1:privacy"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

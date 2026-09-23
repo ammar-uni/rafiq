@@ -11,7 +11,22 @@
       "components": [
         {
           "type": 10,
-          "content": "-# رفيق · مساحتك الخاصة\n## ماذا يناسب لحظتك؟\nذكر تقرؤه، وفكرة تطبّقها، ووقت ترتاح فيه."
+          "content": "-# رفيق / الرئيسية\n## خيرٌ يرافقك. 🌿\nمساحة صغيرة لذكرٍ وخيرٍ في يومك."
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "**أول مرة هنا؟ أهلًا بك**\nعند البدء تتفعّل «مواسم الخير» تلقائيًا: تذكيرات قليلة في الخاص، ويمكنك إيقافها. اختيار المدينة لاحقًا متاح."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "ابدأ مع رفيق",
+            "style": 3,
+            "custom_id": "rafiq:v1:setup_start"
+          }
         },
         {
           "type": 14,
@@ -19,41 +34,18 @@
           "spacing": 1
         },
         {
-          "type": 1,
-          "components": [
-            {
-              "type": 2,
-              "label": "ابدأ الإعداد",
-              "style": 3,
-              "custom_id": "rafiq:v1:setup"
-            },
-            {
-              "type": 2,
-              "label": "يومي",
-              "style": 2,
-              "custom_id": "rafiq:v1:today"
-            },
-            {
-              "type": 2,
-              "label": "أذكاري وقراءتي",
-              "style": 2,
-              "custom_id": "rafiq:v1:daily"
-            }
-          ]
-        },
-        {
           "type": 9,
           "components": [
             {
               "type": 10,
-              "content": "### 🌿 أذكار موثّقة\nذكر ودعاء، مع المصدر متى أردت."
+              "content": "### تذكيراتي\nالصلاة، الأذكار، المجلس، والجمعة."
             }
           ],
           "accessory": {
             "type": 2,
-            "label": "أذكار موثّقة",
-            "style": 3,
-            "custom_id": "rafiq:v1:library"
+            "label": "تذكيراتي",
+            "style": 2,
+            "custom_id": "rafiq:v1:reminders"
           }
         },
         {
@@ -61,7 +53,22 @@
           "components": [
             {
               "type": 10,
-              "content": "### 🌱 فكرة خير\nمع أهلك، مع أصحابك، أو أثناء اللعب."
+              "content": "### أقرأ الآن\nأذكار الصباح والمساء، وأدعية موثّقة."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "أقرأ الآن",
+            "style": 2,
+            "custom_id": "rafiq:v1:explore"
+          }
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "### أفكار الخير\nخطوات بسيطة مع أهلك وأصحابك."
             }
           ],
           "accessory": {
@@ -72,101 +79,41 @@
           }
         },
         {
-          "type": 9,
-          "components": [
-            {
-              "type": 10,
-              "content": "### 🕰️ مواقيت صلاتك\nتذكير خاص بحسب مدينتك، حين تختاره."
-            }
-          ],
-          "accessory": {
-            "type": 2,
-            "label": "مواقيت الصلاة",
-            "style": 2,
-            "custom_id": "rafiq:v1:prayer"
-          }
-        },
-        {
-          "type": 9,
-          "components": [
-            {
-              "type": 10,
-              "content": "### الجمعة وقضاء رمضان\nتذكيرات تختارها، في وقت مدينتك."
-            }
-          ],
-          "accessory": {
-            "type": 2,
-            "label": "اختيار التذكيرات",
-            "style": 2,
-            "custom_id": "rafiq:v1:prayer_occasions"
-          }
-        },
-        {
-          "type": 9,
-          "components": [
-            {
-              "type": 10,
-              "content": "### ⏳ وقت لاستراحة\nحدّد وقتًا لرسالة واحدة تذكّرك باستراحتك."
-            }
-          ],
-          "accessory": {
-            "type": 2,
-            "label": "وقت لاستراحة",
-            "style": 2,
-            "custom_id": "rafiq:v1:break"
-          }
-        },
-        {
           "type": 14,
           "divider": true,
           "spacing": 1
         },
         {
-          "type": 10,
-          "content": "-# تذكير المجلس غير مفعّل"
-        },
-        {
           "type": 1,
           "components": [
+            {
+              "type": 2,
+              "label": "مؤقّت استراحة",
+              "style": 2,
+              "custom_id": "rafiq:v1:break"
+            },
             {
               "type": 2,
               "label": "محفوظاتي",
               "style": 2,
               "custom_id": "rafiq:v1:favorites"
-            },
-            {
-              "type": 2,
-              "label": "فعّل تذكير المجلس",
-              "style": 2,
-              "custom_id": "rafiq:v1:reminder_intro"
             }
           ]
-        },
-        {
-          "type": 14,
-          "divider": true,
-          "spacing": 1
         },
         {
           "type": 1,
           "components": [
             {
               "type": 2,
-              "label": "مصادرنا",
+              "label": "المساعدة",
               "style": 2,
-              "custom_id": "rafiq:v1:methodology"
+              "custom_id": "rafiq:v1:help"
             },
             {
               "type": 2,
-              "label": "بياناتي",
+              "label": "بياناتي وخصوصيتي",
               "style": 2,
               "custom_id": "rafiq:v1:privacy"
-            },
-            {
-              "type": 2,
-              "label": "مساعدة وإبلاغ",
-              "style": 2,
-              "custom_id": "rafiq:v1:support"
             }
           ]
         }

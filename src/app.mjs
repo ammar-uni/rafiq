@@ -3,6 +3,7 @@ import { DAY, MINUTE } from './store.mjs';
 import * as ui from './messages.mjs';
 import { hasPrayerReminders, renewPrayerActivation } from './prayer-config.mjs';
 import { DailyApp } from './daily-app.mjs';
+import { seasonalPreviewEvent } from './seasonal-times.mjs';
 
 export class RafiqApp {
   constructor({ store, queue, sendDM, privacyURL, supportURL, prayers = null, now = Date.now, cancelUser = () => {}, cancelGuild = () => {} }) {
@@ -16,7 +17,13 @@ export class RafiqApp {
   handle(input) { return this.queue.run(input.userId, () => this.route(input)); }
 
   async route({ userId, guildId = null, action = 'home', values = [] }) {
-    if (action === 'setup') return ui.setupStartPayload(this.store.getPrayer(userId));
+    if (action === 'setup_start') {
+      // Only this newly disclosed start button includes seasonal permission.
+      // Legacy setup/enable buttons and repeated visits preserve prior choices.
+      if (this.store.getUser(userId).seasonalAt === null) this.store.updateUser(userId, { seasonalAt: this.now() });
+      return ui.setupStartPayload(this.store.getPrayer(userId), this.state(userId, guildId));
+    }
+    if (action === 'setup') return ui.setupStartPayload(this.store.getPrayer(userId), this.state(userId, guildId));
     if (action === 'setup_choices' || action === 'setup_continue') return ui.setupChoicesPayload(this.store.getPrayer(userId), this.state(userId, guildId));
     if (action === 'setup_test') return ui.setupTestPayload(this.store.getPrayer(userId), this.state(userId, guildId));
     if (action === 'setup_send_test') {
@@ -33,10 +40,23 @@ export class RafiqApp {
     if (action === 'today' || action === 'daily' || action.startsWith('daily_')) return this.daily.route(userId, action, values);
     if (action === 'prayer' || action.startsWith('prayer_')) return this.prayers ? this.prayers.route(userId, action, values) : ui.noticePayload('مواقيت الصلاة', 'تحتاج هذه الميزة إلى تشغيل النسخة المحدّثة من رفيق.');
     const user = this.state(userId, guildId);
+    if (action === 'seasonal' || action === 'seasonal_on' || action === 'seasonal_off') {
+      if (action === 'seasonal_on' && !(user.seasonalAt > 0)) this.store.updateUser(userId, { seasonalAt: this.now() });
+      if (action === 'seasonal_off') this.store.updateUser(userId, { seasonalAt: 0 });
+      return ui.seasonalPayload(this.state(userId, guildId), action === 'seasonal_off' ? 'أُوقفت الرسائل الموسمية. بقية اختياراتك باقية.' : '');
+    }
+    if (['seasonal_preview', 'seasonal_preview_arafah', 'seasonal_preview_dhul-hijjah'].includes(action)) {
+      const event = seasonalPreviewEvent(this.now(), action === 'seasonal_preview_dhul-hijjah' ? 'dhul-hijjah' : 'arafah');
+      return event ? ui.seasonalReminderPayload(event, { preview: true }) : ui.seasonalPayload(user, 'نموذج الموعد غير متاح الآن.');
+    }
+    if (action === 'seasonal_source_arafah' || action === 'seasonal_source_dhul-hijjah') return ui.seasonalSourcePayload(action.slice('seasonal_source_'.length));
     const settings = notice => ui.settingsPayload({ ...this.state(userId, guildId), notice });
     const library = (selectedId, onlyFavorites = false) => ui.libraryPayload({ selectedId, onlyFavorites, favorites: this.store.favorites(userId) });
     const idea = (index = 0, category = 'all') => ui.ideaPayload(index, { category, favorites: this.store.savedIdeas(userId) });
-    if (action === 'home' || action === 'cancel') return ui.homePayload(user);
+    if (action === 'home' || action === 'cancel') return ui.homePayload({ ...user, preferences: this.store.getPrayer(userId), now: this.now() });
+    if (action === 'reminders') return ui.remindersMenuPayload(this.store.getPrayer(userId), user);
+    if (action === 'explore') return ui.explorePayload();
+    if (action === 'help') return ui.helpMenuPayload();
     if (action === 'preview') return ui.reminderPayload({ ...user, preview: true });
     if (action === 'reminder_intro') return ui.reminderIntroPayload(user);
     if (action === 'settings' || action === 'save') return settings('');
@@ -65,7 +85,7 @@ export class RafiqApp {
     if (action === 'disable') {
       this.cancelUser(userId);
       this.store.transaction(() => {
-        this.store.updateUser(userId, { enabled: false, pausedUntil: 0, breakAt: null });
+        this.store.updateUser(userId, { enabled: false, pausedUntil: 0, breakAt: null, seasonalAt: 0 });
         this.store.disablePrayer(userId, true);
       });
       return ui.disabledPayload();
@@ -82,7 +102,7 @@ export class RafiqApp {
       return ui.pausedPayload();
     }
     if (action === 'resume') {
-      this.store.updateUser(userId, { pausedUntil: 0 });
+      this.store.updateUser(userId, { pausedUntil: 0, ...(user.seasonalAt > 0 ? { seasonalAt: this.now() } : {}) });
       const p = this.store.getPrayer(userId);
       if (hasPrayerReminders(p)) this.store.setPrayer(userId, renewPrayerActivation(p, this.now()));
       return settings('استُؤنفت التنبيهات التي فعّلتها.');
@@ -153,6 +173,7 @@ export class RafiqApp {
       try {
         await this.sendDM(userId, ui.reminderPayload({ silent: user.delivery === 'silent' }), `test:${userId}:${now}`);
         this.store.updateUser(userId, { dmBlocked: false });
+        if (user.dmBlocked && user.seasonalAt > 0) this.store.updateUser(userId, { seasonalAt: this.now() });
         const p = this.store.getPrayer(userId);
         if (user.dmBlocked && hasPrayerReminders(p)) this.store.setPrayer(userId, renewPrayerActivation(p, this.now()));
         return settings('✓ أُرسلت رسالة تجريبية إلى الخاص');

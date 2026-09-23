@@ -7,14 +7,28 @@ import { prayerSchedule } from '../src/prayer-times.mjs';
 import { occasionsPayload, occasionSourcesPayload, occasionReminderPayload } from '../src/messages.mjs';
 import { occasionEvents, nextFridayReminders } from '../src/occasion-times.mjs';
 import { setupStartPayload, setupChoicesPayload, setupTestPayload, todayPayload, dailySettingsPayload, dailyOffsetPayload, dailyReadingPayload, dailySourcesPayload, dailyReminderPayload } from '../src/messages.mjs';
+import { remindersMenuPayload, explorePayload, helpMenuPayload, dailyDetailPayload } from '../src/messages.mjs';
+import { seasonalPayload, seasonalReminderPayload, seasonalSourcePayload } from '../src/messages.mjs';
+import { seasonalYearEvents } from '../src/seasonal-times.mjs';
 const destination = new URL('../examples/', import.meta.url);
 await mkdir(destination, { recursive:true });
 const payloads = {welcome:welcomePayload(),reminder:reminderPayload(),enabled:enabledPayload(),settings:settingsPayload(),idea:ideaPayload(),home:homePayload(),library:libraryPayload(),break:breakPayload(),methodology:methodologyPayload(),privacy:privacyPayload(),support:supportPayload(),'reminder-intro':reminderIntroPayload(),source:sourcePayload('majlis'),'idea-source':ideaSourcePayload('parents')};
 payloads.favorites = favoritesPayload({dhikrCount:1,ideaCount:1});
+payloads['reminders-menu'] = remindersMenuPayload();
+payloads.explore = explorePayload();
+payloads['help-menu'] = helpMenuPayload();
+payloads.seasonal = seasonalPayload({ seasonalAt: 1800000000000 });
+payloads['seasonal-off'] = seasonalPayload({ seasonalAt: 0 });
+for (const event of seasonalYearEvents(1448)) {
+  payloads[`seasonal-${event.key}`] = seasonalReminderPayload(event);
+  payloads[`seasonal-source-${event.key}`] = seasonalSourcePayload(event.key);
+}
 payloads['saved-idea'] = ideaPayload(0,{category:'saved',favorites:['parents']});
 payloads['active-timer'] = breakPayload({breakAt:1800000000000});
 const p = { ...DEFAULT_PRAYER, city: { label: 'مكة المكرمة، السعودية', latitude: 21.426, longitude: 39.826, timezone: 'Asia/Riyadh' }, method: 'UmmAlQura' };
 const today = prayerSchedule(p, '2026-09-09');
+for (const period of ['morning','evening','quran']) payloads[`daily-detail-${period}`] = dailyDetailPayload(p,period);
+payloads['home-returning'] = homePayload({preferences:p,now:1800000000000});
 Object.assign(payloads, { prayer: prayerPayload({ preferences: p, today, day: '2026-09-09', next: today[0] }), 'prayer-calculation': prayerCalculationPayload(p), 'prayer-audio': prayerAudioPayload(p), 'prayer-location': prayerLocationPayload(), 'prayer-reminder': prayerReminderPayload(p, today[0]) });
 const occasions = { fridayPrayer: 1800000000000, fridayDua: 1800000000000, qada: 1800000000000 };
 payloads.occasions = occasionsPayload({ preferences: { ...p, occasions }, ready: true, next: nextFridayReminders(p, 1800000000000) });

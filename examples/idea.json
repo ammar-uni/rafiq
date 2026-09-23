@@ -94,9 +94,9 @@
             },
             {
               "type": 2,
-              "label": "محفوظاتي",
+              "label": "الدليل والتوضيح",
               "style": 2,
-              "custom_id": "rafiq:v1:favorites"
+              "custom_id": "rafiq:v1:idea_source_parents_all"
             }
           ]
         },
@@ -105,15 +105,15 @@
           "components": [
             {
               "type": 2,
-              "label": "الدليل والتوضيح",
+              "label": "رجوع",
               "style": 2,
-              "custom_id": "rafiq:v1:idea_source_parents_all"
+              "custom_id": "rafiq:v1:home"
             },
             {
               "type": 2,
-              "label": "مساحتي",
+              "label": "محفوظاتي",
               "style": 2,
-              "custom_id": "rafiq:v1:home"
+              "custom_id": "rafiq:v1:favorites"
             }
           ]
         }
