@@ -28,7 +28,8 @@
     #rafiq-native-preview .rn-text + .rn-text { margin-top:11px; }
     #rafiq-native-preview .rn-text { white-space:normal; overflow-wrap:anywhere; }
     #rafiq-native-preview .rn-section { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:10px 0; }
-    #rafiq-native-preview .rn-section .rn-text { flex:1; min-width:0; }
+    #rafiq-native-preview .rn-section > div { flex:1; min-width:0; }
+    #rafiq-native-preview .rn-section .rn-text h3 { margin-bottom:3px; }
     #rafiq-native-preview .rn-section button { flex-shrink:0; }
     #rafiq-native-preview blockquote { margin:0; padding-inline-start:13px; border-inline-start:3px solid var(--rn-line); font-size:18px; line-height:1.9; }
     #rafiq-native-preview .rn-text h2 { font-size:22px; font-weight:500; line-height:1.6; margin:0 0 7px; }
@@ -68,22 +69,28 @@
     #rafiq-native-preview .rn-scenarios { display:flex;gap:8px;flex-wrap:wrap; }
     #rafiq-native-preview .rn-scenarios button { border:1px solid var(--rn-line);border-radius:20px;background:var(--rn-panel);font-size:13px; }
     #rafiq-native-preview button:focus-visible,#rafiq-native-preview select:focus-visible { outline:3px solid var(--rn-link);outline-offset:3px; }
-    #rafiq-native-preview button[disabled] { opacity:.55;cursor:wait; }
+    #rafiq-native-preview button[disabled] { opacity:.55;cursor:not-allowed; }
+    #rafiq-native-preview [aria-busy="true"] button { cursor:wait; }
     #rafiq-native-preview .rn-container { box-shadow:0 8px 28px #0000000a; }
     #rafiq-native-preview .rn-text strong { font-weight:650; }
+    #rafiq-native-preview .rn-stage { padding:22px 4px 24px; }
+    #rafiq-native-preview .rn-kicker { display:flex;align-items:center;gap:9px;flex-wrap:wrap; }
+    #rafiq-native-preview .rn-badge { border:1px solid var(--rn-line);border-radius:6px;padding:2px 8px;font-size:11px;color:var(--rn-muted); }
+    #rafiq-native-preview .rn-scenarios button[aria-current="page"] { border-color:var(--rn-link);color:var(--rn-link); }
+    #rafiq-native-preview .rn-text:focus { outline:none; }
     @container rafiq (max-width:450px) { #rafiq-native-preview .rn-section { gap:8px;flex-wrap:wrap; } #rafiq-native-preview .rn-stage { padding:18px 12px; } }
   </style>
   <div class="rn-stage">
-    <div class="rn-kicker">رفيق / ٠.١٠ · تجربة التصميم</div>
-    <h1>خيرٌ يرافقك.</h1>
-    <p>ابدأ بالمدينة، اختر تذكيراتك، ثم شاهد يومك والأذكار المختصرة.</p>
+    <div class="rn-kicker">رفيق · الإصدار 0.11 <span class="rn-badge">معاينة تفاعلية</span></div>
+    <h1>أوضح. أقرب. أخف.</h1>
+    <p>جرّب القوائم كما ستظهر في البوت. ابدأ الإعداد أو تصفّح بحرية.</p>
     <div class="rn-scenarios" aria-label="التنقل في المعاينة">
-      <button type="button" data-action="welcome">الترحيب</button>
-      <button type="button" data-action="home">مساحتي</button>
-      <button type="button" data-action="favorites">محفوظاتي</button>
-      <button type="button" data-action="break">المؤقّت</button>
-      <button type="button" data-demo="notification">رسالة التذكير</button>
+      <button type="button" data-action="home">الرئيسية</button>
+      <button type="button" data-action="setup">مستخدم جديد</button>
+      <button type="button" data-action="reminders">التذكيرات</button>
+      <button type="button" data-action="welcome">بطاقة السيرفر</button>
       <button type="button" data-demo="theme" aria-pressed="false">المظهر الفاتح</button>
+      <button type="button" data-demo="size" aria-pressed="true">عرض أوسع</button>
     </div>
   </div>
   <div class="rn-window">
@@ -105,7 +112,7 @@
     const banner='__BANNER_WEBP__';
     const store=new PreviewStore();
     const queue={run:(_id,task)=>Promise.resolve().then(task)};
-    let simulatedMessages=0, theme=getComputedStyle(root).colorScheme==='light'?'light':'dark', busy=false, currentAction='welcome';
+    let simulatedMessages=0, theme=getComputedStyle(root).colorScheme==='light'?'light':'dark', busy=false, currentAction='home';
     async function findPrayerCities(query) {
       const response=await fetch('/api/cities?'+new URLSearchParams({q:query}),{signal:AbortSignal.timeout(10000)});
       if(!response.ok)throw new Error('City search unavailable');
@@ -145,23 +152,24 @@
       const themeButton=root.querySelector('[data-demo="theme"]');
       themeButton.textContent=theme==='dark'?'المظهر الفاتح':'المظهر الداكن';
       themeButton.setAttribute('aria-pressed',String(theme==='light'));
+      root.querySelectorAll('.rn-scenarios [data-action]').forEach(button=>{if(button.dataset.action===currentAction)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');});
       root.querySelector('#rn-context').textContent=currentAction==='welcome'?'بطاقة الترحيب':currentAction==='notification'?'نموذج رسالة الخاص · لا يُرسل':'يظهر لك وحدك';
       view.innerHTML=(payload.content?'<div class="rn-text">'+markdown(payload.content)+'</div>':'')+payload.components.map(component).join('');
       root.querySelector('#rn-simulation').textContent='تجربة محلية · لا تُرسل رسائل ولا تُحفظ بيانات'+(simulatedMessages?' · جُرّب إرسال الخاص محليًا':'');
-      if(focus)view.querySelector('button,select')?.focus({preventScroll:true});
+      if(focus){const heading=view.querySelector('h2');if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true});}else view.querySelector('button,select')?.focus({preventScroll:true});}
     }
-    let payload=welcomePayload();
+    let payload=homePayload();
     async function navigate(action, values=[], focus=true) {
       if(busy)return;
       if(MODAL_ACTIONS.includes(action.replace(/^setup_/,''))) {
         const modal=appModal(action,store.getPrayer());
-        view.innerHTML='<div class="rn-container"><h2>'+escapeHtml(modal.title)+'</h2>'+(action.endsWith('prayer_city_modal')?'<p>بحث حقيقي مثل البوت. مثال: مكة المكرمة، السعودية. قد يُرسل نص البحث إلى Open-Meteo عند الحاجة. اختيارك في المعاينة مؤقت ولا يغيّر إعداداتك في ديسكورد.</p>':'')+'<form id="rn-prayer-form">'+modal.components.map(row=>{const f=row.component;return '<label style="display:block;margin:16px 0">'+escapeHtml(row.label)+'<input style="display:block;width:100%;box-sizing:border-box;padding:12px;margin-top:8px;background:transparent;color:inherit;border:1px solid #8aaec4;border-radius:8px" name="'+f.custom_id+'" value="'+escapeHtml(f.value||'')+'" placeholder="'+escapeHtml(f.placeholder)+'" maxlength="'+f.max_length+'" required></label>';}).join('')+'<button type="submit" class="rn-positive">'+(action.endsWith('prayer_city_modal')?'ابحث':'احفظ التعديل')+'</button> <button type="button" data-action="'+(action.startsWith('setup_')?'setup_choices':action.startsWith('daily_')?'daily':'prayer')+'">رجوع</button></form></div>';
+        view.innerHTML='<div class="rn-container"><h2>'+escapeHtml(modal.title)+'</h2>'+(action.endsWith('prayer_city_modal')?'<p>بحث حقيقي مثل البوت. مثال: مكة المكرمة، السعودية. قد يُرسل نص البحث إلى Open-Meteo عند الحاجة. اختيارك في المعاينة مؤقت ولا يغيّر إعداداتك في ديسكورد.</p>':'')+'<form id="rn-prayer-form">'+modal.components.map(row=>{const f=row.component;return '<label style="display:block;margin:16px 0">'+escapeHtml(row.label)+'<input style="display:block;width:100%;box-sizing:border-box;padding:12px;margin-top:8px;background:transparent;color:inherit;border:1px solid #8aaec4;border-radius:8px" name="'+f.custom_id+'" value="'+escapeHtml(f.value||'')+'" placeholder="'+escapeHtml(f.placeholder)+'" maxlength="'+f.max_length+'" required></label>';}).join('')+'<button type="submit" class="rn-positive">'+(action.endsWith('prayer_city_modal')?'ابحث':'احفظ التعديل')+'</button> <button type="button" data-demo="cancel-modal">رجوع</button></form></div>';
         view.querySelector('input').focus();
         view.querySelector('form').addEventListener('submit',event=>{event.preventDefault();const data=new FormData(event.target);void navigate(modal.custom_id.slice(9),modal.components.map(row=>data.get(row.component.custom_id)));});
         return;
       }
       busy=true;view.setAttribute('aria-busy','true');
-      if(action==='prayer_search') {
+      if(action.replace(/^setup_/,'')==='prayer_search') {
         const submit=view.querySelector('button[type="submit"]');
         if(submit){submit.disabled=true;submit.textContent='جارٍ البحث…';submit.setAttribute('role','status');}
       }
@@ -177,9 +185,11 @@
     root.addEventListener('click',event=>{
       if(busy)return;
       const target=event.target.closest('button');if(!target||!root.contains(target))return;
+      if(target.dataset.demo==='cancel-modal'){render(payload,true);return;}
       if(target.dataset.demo==='notification'){currentAction='notification';payload=reminderPayload({silent:false});render(payload,true);return;}
       if(target.dataset.demo==='theme'){theme=theme==='dark'?'light':'dark';target.textContent=theme==='dark'?'المظهر الفاتح':'المظهر الداكن';target.setAttribute('aria-pressed',String(theme==='light'));render(payload,false);return;}
-      if(target.dataset.demo==='reset'){store.reset();prayers.forget('1');simulatedMessages=0;void navigate('welcome');return;}
+      if(target.dataset.demo==='size'){const main=root.closest('main'),narrow=main.getBoundingClientRect().width<500;main.style.maxWidth=narrow?'736px':'390px';target.textContent=narrow?'عرض الجوال':'عرض أوسع';target.setAttribute('aria-pressed',String(!narrow));return;}
+      if(target.dataset.demo==='reset'){store.reset();prayers.forget('1');simulatedMessages=0;void navigate('home');return;}
       if(target.dataset.action)void navigate(target.dataset.action);
     });
     root.addEventListener('change',async event=>{
