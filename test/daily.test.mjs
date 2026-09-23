@@ -61,6 +61,34 @@ test('guided setup saves the chosen city, remains opt-in, and explicitly tests w
   assert.match(JSON.stringify(await h.act('today')), /أذكار الصباح/);
 });
 
+test('new adhkar defaults send ten minutes before each adhan, remain opt-in and keep saved times', async t => {
+  const h = harness(t);
+  h.store.setPrayer('1', { ...structuredClone(DEFAULT_PRAYER), city });
+  for (const period of ['morning', 'evening']) {
+    assert.deepEqual(h.store.getPrayer('1').daily[period], { activatedAt: 0, offsetMinutes: -10 });
+    for (const direction of ['before', 'after']) {
+      const modal = new ModalBuilder(appModal(`daily_offset_${period}_${direction}_modal`)).toJSON();
+      assert.equal(modal.components[0].component.value, '10');
+    }
+  }
+  const page = JSON.stringify(await h.act('daily'));
+  assert.match(page, /قبل أذان الفجر بـ١٠ دقائق/);
+  assert.match(page, /قبل أذان المغرب بـ١٠ دقائق/);
+  const schedule = prayerSchedule(h.store.getPrayer('1'), day);
+  h.clock(schedule[0].at - 10 * 60000); await h.scheduler.tick();
+  assert.equal(h.sent.length, 0, 'saving the city does not enable reminders');
+  h.clock(start); await h.act('daily_enable_morning'); await h.act('daily_enable_evening');
+  for (const reference of [schedule[0], schedule[3]]) {
+    const previous = h.sent.length;
+    h.clock(reference.at - 11 * 60000); await h.scheduler.tick(); assert.equal(h.sent.length, previous);
+    h.clock(reference.at - 10 * 60000); await h.scheduler.tick(); await h.scheduler.tick();
+    assert.equal(h.sent.length, previous + 1);
+    assert.match(h.sent.at(-1)[1].content, /^تذكير مبكر حسب اختيارك:/);
+    h.clock(reference.at + 30 * 60000); await h.scheduler.tick(); assert.equal(h.sent.length, previous + 1);
+  }
+  assert.deepEqual(readStoredPrayer(prefs()), prefs(), 'saved v6 timings keep their existing +30 choice');
+});
+
 test('adhkar support signed offsets and midnight crossings; Quran follows DST', () => {
   const p = prefs(), schedule = prayerSchedule(p, day), events = dailyEvents(p, schedule, start);
   assert.equal(events.find(e => e.key === 'morning').at, schedule[0].at + 30 * 60000);
@@ -211,7 +239,7 @@ test('offset editing is independent, bounded, opt-in and keeps active reminders 
   await h.act('daily_offset_morning_at');
   assert.equal(h.store.getPrayer('1').daily.morning.offsetMinutes, 0);
   await h.act('daily_offset_morning_reset');
-  assert.equal(h.store.getPrayer('1').daily.morning.offsetMinutes, 30);
+  assert.equal(h.store.getPrayer('1').daily.morning.offsetMinutes, -10);
   assert.equal(h.sent.length, 0);
   for (const value of [-61, 61, 0.5, '30', null, undefined]) {
     const p = prefs(); p.daily.morning.offsetMinutes = value;

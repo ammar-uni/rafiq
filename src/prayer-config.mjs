@@ -9,8 +9,8 @@ export const OCCASIONS = Object.freeze([['fridayPrayer', 'صلاة الجمعة'
 export const DEFAULT_OCCASIONS = Object.freeze({ fridayPrayer: 0, fridayDua: 0, qada: 0 });
 export const DAILY_REMINDERS = Object.freeze([['morning', 'أذكار الصباح'], ['evening', 'أذكار المساء'], ['quran', 'قراءة القرآن']]);
 // A reminder offset from the calculated adhan, not a mosque's iqama time.
-export const ADHKAR_DELAY_MINUTES = 30;
-export const DEFAULT_DAILY = Object.freeze({ morning: Object.freeze({ activatedAt: 0, offsetMinutes: ADHKAR_DELAY_MINUTES }), evening: Object.freeze({ activatedAt: 0, offsetMinutes: ADHKAR_DELAY_MINUTES }), quran: Object.freeze({ activatedAt: 0, time: null }) });
+export const DEFAULT_ADHKAR_OFFSET_MINUTES = -10;
+export const DEFAULT_DAILY = Object.freeze({ morning: Object.freeze({ activatedAt: 0, offsetMinutes: DEFAULT_ADHKAR_OFFSET_MINUTES }), evening: Object.freeze({ activatedAt: 0, offsetMinutes: DEFAULT_ADHKAR_OFFSET_MINUTES }), quran: Object.freeze({ activatedAt: 0, time: null }) });
 export const stopDaily = daily => Object.fromEntries(Object.entries(daily).map(([key, value]) => [key, { ...value, activatedAt: 0 }]));
 export const DEFAULT_PRAYER = Object.freeze({ city: null, method: 'UmmAlQura', asr: 'Shafi', highLatitude: 'MiddleOfTheNight',
   adjustments: Object.freeze([0, 0, 0, 0, 0]), ramadanIsha: false, enabled: false, activatedAt: 0, delivery: 'normal', soundId: null,
@@ -65,7 +65,7 @@ export function readStoredPrayer(p, version = 6) {
           (item.iqamaMinutes !== null && (!Number.isInteger(item.iqamaMinutes) || item.iqamaMinutes < 0 || item.iqamaMinutes > 90)) ||
           (item.activatedAt && item.iqamaMinutes === null)) throw new RangeError('Invalid legacy daily settings');
       // 0.9.1 ignored the old iqama value and always scheduled adhan +30.
-      p.daily[key] = { activatedAt: item.activatedAt, offsetMinutes: ADHKAR_DELAY_MINUTES };
+      p.daily[key] = { activatedAt: item.activatedAt, offsetMinutes: 30 };
     }
   }
   // Earlier previews allowed a later Asr calculation. Require a new schedule

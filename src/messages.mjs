@@ -1,5 +1,5 @@
 import { DHIKR_CARDS, GOOD_DEEDS, OCCASION_CARDS, DAILY_DHIKR, IDEA_CATEGORIES, dhikrById, ideaById } from './content.mjs';
-import { DEFAULT_PRAYER, DAILY_REMINDERS, ADHKAR_DELAY_MINUTES, OCCASIONS, PRAYERS, PRAYER_METHODS, PRAYER_HIGH_LATITUDE } from './prayer-config.mjs';
+import { DEFAULT_PRAYER, DAILY_REMINDERS, DEFAULT_ADHKAR_OFFSET_MINUTES, OCCASIONS, PRAYERS, PRAYER_METHODS, PRAYER_HIGH_LATITUDE } from './prayer-config.mjs';
 import { prayerClock } from './prayer-times.mjs';
 /** Native Discord REST payloads. Rendering only; these functions never send messages. */
 export const FLAGS = Object.freeze({ componentsV2: 32768, ephemeral: 64, silent: 4096 });
@@ -193,7 +193,7 @@ export function appModal(action, p = DEFAULT_PRAYER) {
     modal = { custom_id: `rafiq:v1:daily_offset_${key}_${direction}`, title: `موعد أذكار ${key === 'morning' ? 'الصباح' : 'المساء'}`, components: [{ type: 18,
       label: `${before ? 'قبل' : 'بعد'} أذان ${key === 'morning' ? 'الفجر' : 'المغرب'} بكم دقيقة؟ (١–٦٠)`,
       component: { type: 4, custom_id: 'minutes', style: 1, required: true, max_length: 2, placeholder: 'مثال: 30',
-        value: String(offset && (offset < 0) === before ? Math.abs(offset) : ADHKAR_DELAY_MINUTES) } }] };
+        value: String(offset && (offset < 0) === before ? Math.abs(offset) : Math.abs(DEFAULT_ADHKAR_OFFSET_MINUTES)) } }] };
   }
   else {
     if (raw !== 'daily_quran_modal') throw new RangeError('Unknown modal');
@@ -260,7 +260,8 @@ export function setupWrapPayload(payload) {
 
 function dailyOffsetDescription(p, key) {
   const offset = p.daily[key].offsetMinutes, prayer = key === 'morning' ? 'الفجر' : 'المغرب';
-  return offset === 0 ? `عند أذان ${prayer} حسب مواقيت مدينتك.` : `${offset < 0 ? 'قبل' : 'بعد'} أذان ${prayer} بـ${arabicNumber(Math.abs(offset))} دقيقة حسب مواقيت مدينتك.`;
+  const minutes = Math.abs(offset), unit = minutes >= 3 && minutes <= 10 ? 'دقائق' : 'دقيقة';
+  return offset === 0 ? `عند أذان ${prayer} حسب مواقيت مدينتك.` : `${offset < 0 ? 'قبل' : 'بعد'} أذان ${prayer} بـ${arabicNumber(minutes)} ${unit} حسب مواقيت مدينتك.`;
 }
 export function dailyOffsetPayload(p, key, notice = '') {
   if (!['morning', 'evening'].includes(key)) throw new RangeError('Unknown adhkar period');
@@ -269,7 +270,7 @@ export function dailyOffsetPayload(p, key, notice = '') {
     text('اختر قبل الأذان أو بعده، ثم أدخل عدد الدقائق من ١ إلى ٦٠. يمكنك أيضًا اختيار وقت الأذان نفسه.\nاختيارك لهذه الفترة فقط؛ موعد الفترة الأخرى يبقى كما هو.'),
     row(button('قبل الأذان', `daily_offset_${key}_before_modal`), button('عند الأذان', `daily_offset_${key}_at`), button('بعد الأذان', `daily_offset_${key}_after_modal`)),
     text('-# التوقيت لتنظيم التنبيه؛ الاختيار المبكر تذكير مسبق. لا يحدد رفيق وقتًا شرعيًا للذكر ولا يحتاج وقت الإقامة.'),
-    row(button('إعادة إلى بعد الأذان بـ٣٠ دقيقة', `daily_offset_${key}_reset`), button('رجوع', 'daily'))
+    row(button('إعادة إلى قبل الأذان بـ١٠ دقائق', `daily_offset_${key}_reset`), button('رجوع', 'daily'))
   ], { ephemeral: true });
 }
 

@@ -2,7 +2,7 @@ import * as ui from './messages.mjs';
 import { prayerDate, prayerWindow, prayerSchedule } from './prayer-times.mjs';
 import { reminderWindow, nextFridayReminders, nextRamadan } from './occasion-times.mjs';
 import { eventActivation } from './daily-times.mjs';
-import { DAILY_REMINDERS, ADHKAR_DELAY_MINUTES } from './prayer-config.mjs';
+import { DAILY_REMINDERS, DEFAULT_ADHKAR_OFFSET_MINUTES } from './prayer-config.mjs';
 
 const digits = value => String(value).trim().replace(/[٠-٩]/g, d => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d))).replace(/[۰-۹]/g, d => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)));
 export class DailyApp {
@@ -58,7 +58,7 @@ export class DailyApp {
       const [, key, direction] = offsetSave;
       const value = values.length === 1 ? digits(values[0]) : '';
       if (['before', 'after'].includes(direction) && (!/^\d{1,2}$/.test(value) || Number(value) < 1 || Number(value) > 60)) return ui.dailyOffsetPayload(p, key, 'أدخل عددًا صحيحًا من ١ إلى ٦٠ دقيقة. لم يتغير موعدك.');
-      const offsetMinutes = direction === 'at' ? 0 : direction === 'reset' ? ADHKAR_DELAY_MINUTES : Number(value) * (direction === 'before' ? -1 : 1);
+      const offsetMinutes = direction === 'at' ? 0 : direction === 'reset' ? DEFAULT_ADHKAR_OFFSET_MINUTES : Number(value) * (direction === 'before' ? -1 : 1);
       const item = p.daily[key];
       if (offsetMinutes !== item.offsetMinutes) this.store.setPrayer(userId, { ...p, daily: { ...p.daily, [key]: { ...item, offsetMinutes, activatedAt: item.activatedAt ? now : 0 } } });
       return this.page(userId, `حُفظ الموعد. ${item.activatedAt ? 'التذكير ما زال مفعّلًا؛ يبدأ بالموعد القادم.' : 'التذكير غير مفعّل؛ فعّله حين تريد.'}`);
