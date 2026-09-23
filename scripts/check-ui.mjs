@@ -8,7 +8,7 @@ import { prayerSchedule } from '../src/prayer-times.mjs';
 import { loadPrayerSounds } from '../src/prayer-sounds.mjs';
 import { occasionsPayload, occasionSourcesPayload, occasionReminderPayload } from '../src/messages.mjs';
 import { occasionEvents, nextFridayReminders } from '../src/occasion-times.mjs';
-import { setupStartPayload, setupChoicesPayload, setupTestPayload, setupWrapPayload, dailySettingsPayload, dailyReadingPayload, dailySourcesPayload, dailyReminderPayload, todayPayload } from '../src/messages.mjs';
+import { setupStartPayload, setupChoicesPayload, setupTestPayload, setupWrapPayload, dailySettingsPayload, dailyOffsetPayload, dailyReadingPayload, dailySourcesPayload, dailyReminderPayload, todayPayload } from '../src/messages.mjs';
 loadPrayerSounds();
 const fivePerDaySamples = [settingsPayload({frequency:'session5',enabled:true}), reminderIntroPayload({frequency:'session5'}), enabledPayload({frequency:'session5'})];
 const samples = [welcomePayload(), reminderPayload(), reminderPayload({silent:false}), reminderPayload({preview:true}), reminderPayload({preview:true,enabled:false}), reminderPayload({preview:true,paused:true}), enabledPayload(), settingsPayload(), settingsPayload({frequency:'session',delivery:'silent',enabled:true,paused:true}), pausedPayload(), disabledPayload(), ...GOOD_DEEDS.map((_,i)=>ideaPayload(i)), homePayload(), homePayload({enabled:true}), homePayload({enabled:true,dmBlocked:true}), ...DHIKR_CARDS.flatMap(card=>[libraryPayload({selectedId:card.id}),sourcePayload(card.id)]), libraryPayload({onlyFavorites:true}), libraryPayload({onlyFavorites:true,favorites:['guidance'],selectedId:'guidance'}), methodologyPayload(), privacyPayload(), forgetPromptPayload(), breakPayload(), breakPayload({breakAt:1800000000000}), breakReminderPayload()];
@@ -30,6 +30,10 @@ samples.push(setupStartPayload(),setupStartPayload(p),setupChoicesPayload(p,{}),
 for (const period of ['morning','evening']) samples.push(dailyReadingPayload(period),dailyReminderPayload(p,{key:period}));
 samples.push(dailyReminderPayload(p,{key:'quran'}));
 for (const payload of [prayerPayload({preferences:p,today}),prayerLocationPayload(),prayerCitiesPayload([p.city],'test'),prayerCalculationPayload(p),dailySettingsPayload(p),occasionsPayload({preferences:p}),settingsPayload(),homePayload()]) samples.push(setupWrapPayload(payload));
+for (const key of ['morning','evening']) for (const offsetMinutes of [-60, 0, 60]) {
+  const preferences = structuredClone(p); preferences.daily[key].offsetMinutes = offsetMinutes;
+  samples.push(dailyOffsetPayload(preferences,key), setupWrapPayload(dailyOffsetPayload(preferences,key)),dailySettingsPayload(preferences),dailyReminderPayload(preferences,{key}));
+}
 for (const payload of samples) {
   const isV2 = Boolean(payload.flags & FLAGS.componentsV2);
   if (isV2) assert.equal(payload.content, undefined);
