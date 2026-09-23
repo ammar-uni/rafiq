@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
-import { DHIKR_CARDS, GOOD_DEEDS, OCCASION_CARDS, DAILY_DHIKR } from '../src/content.mjs';
+import { DHIKR_CARDS, GOOD_DEEDS, OCCASION_CARDS, DAILY_DHIKR, SEASONAL_CARDS } from '../src/content.mjs';
 import { assertReviewedContent } from '../src/content-review.mjs';
 assertReviewedContent();
 const ids = new Set();
-for (const card of [...DHIKR_CARDS, ...GOOD_DEEDS, ...Object.values(OCCASION_CARDS), ...DAILY_DHIKR]) {
+for (const card of [...DHIKR_CARDS, ...GOOD_DEEDS, ...Object.values(OCCASION_CARDS), ...DAILY_DHIKR, ...Object.values(SEASONAL_CARDS)]) {
   assert.ok(!ids.has(card.id)); ids.add(card.id);
   assert.ok(/^[a-z-]+$/.test(card.id));
   assert.ok(card.title && (card.text || card.body || (card.morning && card.evening)));
@@ -14,4 +14,4 @@ for (const card of [...DHIKR_CARDS, ...GOOD_DEEDS, ...Object.values(OCCASION_CAR
   if (url.hostname === 'binbaz.org.sa') assert.ok(/^\/(fatwas|audios)\/\d+\//.test(url.pathname));
   else assert.ok(card.source.citations.some(ref => ref.url === card.source.url));
 }
-console.log(`${DHIKR_CARDS.length} dhikr cards, ${GOOD_DEEDS.length} good-deed suggestions ${Object.keys(OCCASION_CARDS).length} occasion reminders and ${DAILY_DHIKR.length} morning/evening selections match the source-review record. This detects unreviewed changes, not religious authenticity.`);
+console.log(`${DHIKR_CARDS.length} dhikr cards, ${GOOD_DEEDS.length} good-deed suggestions ${Object.keys(OCCASION_CARDS).length} occasion reminders and ${DAILY_DHIKR.length} morning/evening selections and ${Object.keys(SEASONAL_CARDS).length} seasonal cards match the source-review record. This detects unreviewed changes, not religious authenticity.`);

@@ -9,6 +9,9 @@ import { loadPrayerSounds } from '../src/prayer-sounds.mjs';
 import { occasionsPayload, occasionSourcesPayload, occasionReminderPayload } from '../src/messages.mjs';
 import { occasionEvents, nextFridayReminders } from '../src/occasion-times.mjs';
 import { setupStartPayload, setupChoicesPayload, setupTestPayload, setupWrapPayload, dailySettingsPayload, dailyOffsetPayload, dailyReadingPayload, dailySourcesPayload, dailyReminderPayload, todayPayload } from '../src/messages.mjs';
+import { remindersMenuPayload, explorePayload, helpMenuPayload, dailyDetailPayload } from '../src/messages.mjs';
+import { seasonalPayload, seasonalReminderPayload, seasonalSourcePayload } from '../src/messages.mjs';
+import { seasonalYearEvents } from '../src/seasonal-times.mjs';
 loadPrayerSounds();
 const fivePerDaySamples = [settingsPayload({frequency:'session5',enabled:true}), reminderIntroPayload({frequency:'session5'}), enabledPayload({frequency:'session5'})];
 const samples = [welcomePayload(), reminderPayload(), reminderPayload({silent:false}), reminderPayload({preview:true}), reminderPayload({preview:true,enabled:false}), reminderPayload({preview:true,paused:true}), enabledPayload(), settingsPayload(), settingsPayload({frequency:'session',delivery:'silent',enabled:true,paused:true}), pausedPayload(), disabledPayload(), ...GOOD_DEEDS.map((_,i)=>ideaPayload(i)), homePayload(), homePayload({enabled:true}), homePayload({enabled:true,dmBlocked:true}), ...DHIKR_CARDS.flatMap(card=>[libraryPayload({selectedId:card.id}),sourcePayload(card.id)]), libraryPayload({onlyFavorites:true}), libraryPayload({onlyFavorites:true,favorites:['guidance'],selectedId:'guidance'}), methodologyPayload(), privacyPayload(), forgetPromptPayload(), breakPayload(), breakPayload({breakAt:1800000000000}), breakReminderPayload()];
@@ -22,6 +25,8 @@ const sound = { id: 'soft', label: 'تنبيه هادئ', filename: 'soft.mp3' }
 samples.push(prayerPayload(), prayerPayload({ preferences: p, today, next: today[0] }), prayerPayload({ preferences: { ...p, enabled: true }, today, paused: true, dmBlocked: true }), prayerPayload({ preferences: p }), prayerLocationPayload(), prayerCitiesPayload([p.city], 'test'), prayerAudioPayload(p), prayerAudioPayload({ ...p, soundId: sound.id }, [sound]), prayerReminderPayload(p, today[0]), prayerReminderPayload({ ...p, delivery: 'normal' }, today[0], sound), prayerTestPayload(p, sound), ...PRAYER_METHODS.map(([method]) => prayerCalculationPayload({ ...p, method })), prayerCalculationPayload({ ...p, ramadanIsha: true }));
 samples.push(...fivePerDaySamples, notificationHelpPayload());
 const occasions = { fridayPrayer: 1800000000000, fridayDua: 1800000000000, qada: 1800000000000 };
+const cityDefaults = { ...p, occasions: { ...occasions, fridayPrayer: 0 } };
+samples.push(prayerLocationPayload('', cityDefaults), prayerCitiesPayload([p.city], 'returning', cityDefaults), setupChoicesPayload(cityDefaults, {}), setupWrapPayload(prayerPayload({ preferences: cityDefaults, today, paused: true, dmBlocked: true })));
 for (const preferences of [p, { ...p, occasions }]) {
   for (const state of [{}, { paused: true }, { dmBlocked: true }]) samples.push(occasionsPayload({ preferences, ready: true, next: nextFridayReminders(preferences, 1800000000000), ...state }));
 }
@@ -34,6 +39,18 @@ for (const key of ['morning','evening']) for (const offsetMinutes of [-60, 0, 60
   const preferences = structuredClone(p); preferences.daily[key].offsetMinutes = offsetMinutes;
   samples.push(dailyOffsetPayload(preferences,key), setupWrapPayload(dailyOffsetPayload(preferences,key)),dailySettingsPayload(preferences),dailyReminderPayload(preferences,{key}));
 }
+samples.push(explorePayload(), helpMenuPayload(), setupWrapPayload(explorePayload()));
+for (const preferences of [DEFAULT_PRAYER, p, { ...p, enabled: true, occasions, daily: { morning: { activatedAt: 1800000000000, offsetMinutes: -10 }, evening: { activatedAt: 1800000000000, offsetMinutes: 60 }, quran: { activatedAt: 1800000000000, time: '20:30' } } }]) {
+  for (const state of [{}, { paused: true }, { dmBlocked: true }]) {
+    samples.push(homePayload({preferences, ...state}), remindersMenuPayload(preferences,state), setupWrapPayload(remindersMenuPayload(preferences,state)));
+    for (const [key] of [['morning'],['evening'],['quran']]) samples.push(dailyDetailPayload(preferences,key,state),setupWrapPayload(dailyDetailPayload(preferences,key,state)));
+  }
+}
+for (const state of [{}, { seasonalAt: 0 }, { seasonalAt: 1800000000000 }, { seasonalAt: 1800000000000, paused: true }, { seasonalAt: 1800000000000, dmBlocked: true, delivery: 'silent' }]) {
+  samples.push(seasonalPayload(state), setupWrapPayload(seasonalPayload(state)), setupStartPayload(DEFAULT_PRAYER, state), setupChoicesPayload(DEFAULT_PRAYER, state), remindersMenuPayload(DEFAULT_PRAYER, state));
+  for (const preferences of [DEFAULT_PRAYER, p]) samples.push(homePayload({ preferences, ...state }), todayPayload({ p: preferences, user: state }));
+}
+for (const event of seasonalYearEvents(1448)) samples.push(seasonalReminderPayload(event), seasonalReminderPayload(event, { silent: true }), seasonalReminderPayload(event, { preview: true }), setupWrapPayload(seasonalReminderPayload(event, { preview: true })), seasonalSourcePayload(event.key), setupWrapPayload(seasonalSourcePayload(event.key)));
 for (const payload of samples) {
   const isV2 = Boolean(payload.flags & FLAGS.componentsV2);
   if (isV2) assert.equal(payload.content, undefined);
