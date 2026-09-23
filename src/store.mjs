@@ -5,14 +5,15 @@ import { DEFAULT_PRAYER, DEFAULT_OCCASIONS, PRAYERS, DAILY_REMINDERS, stopDaily,
 
 export const MINUTE = 60_000;
 export const DAY = 24 * 60 * MINUTE;
-export const DEFAULT_USER = Object.freeze({ enabled: false, frequency: 'session', delivery: 'normal', pausedUntil: 0, dmBlocked: false, breakAt: null, lastTestAt: null });
-const columns = { enabled: 'enabled', frequency: 'frequency', delivery: 'delivery', pausedUntil: 'paused_until', dmBlocked: 'dm_blocked', breakAt: 'break_at', lastTestAt: 'last_test_at' };
+export const DEFAULT_USER = Object.freeze({ enabled: false, frequency: 'session', delivery: 'normal', pausedUntil: 0, dmBlocked: false, breakAt: null, lastTestAt: null, seasonalAt: null });
+const columns = { enabled: 'enabled', frequency: 'frequency', delivery: 'delivery', pausedUntil: 'paused_until', dmBlocked: 'dm_blocked', breakAt: 'break_at', lastTestAt: 'last_test_at', seasonalAt: 'seasonal_at' };
 const id = value => { if (typeof value !== 'string' || !/^\d{1,25}$/.test(value)) throw new TypeError('Expected a Discord ID'); return value; };
 const tables = {
   users: ['user_id', ...Object.values(columns)],
   subscriptions: ['user_id', 'guild_id'], favorites: ['user_id', 'card_id'],
   reminder_attempts: ['user_id', 'attempted_at'], guild_panels: ['guild_id', 'channel_id', 'message_id'],
-  prayer_settings: ['user_id', 'settings'], prayer_attempts: ['user_id', 'local_day', 'prayer', 'attempted_at']
+  prayer_settings: ['user_id', 'settings'], prayer_attempts: ['user_id', 'local_day', 'prayer', 'attempted_at'],
+  seasonal_attempts: ['user_id', 'campaign_id', 'attempted_at']
 };
 
 export class Store {
@@ -32,7 +33,8 @@ export class Store {
         paused_until INTEGER NOT NULL DEFAULT 0,
         dm_blocked INTEGER NOT NULL DEFAULT 0 CHECK(dm_blocked IN (0,1)),
         break_at INTEGER,
-        last_test_at INTEGER
+        last_test_at INTEGER,
+        seasonal_at INTEGER CHECK(seasonal_at IS NULL OR seasonal_at >= 0)
       );
       CREATE TABLE IF NOT EXISTS subscriptions (
         user_id TEXT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
@@ -63,15 +65,21 @@ export class Store {
         local_day TEXT NOT NULL, prayer TEXT NOT NULL, attempted_at INTEGER NOT NULL,
         PRIMARY KEY(user_id, local_day, prayer)
       );
-      PRAGMA user_version = 6;
+      CREATE TABLE seasonal_attempts (
+        user_id TEXT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+        campaign_id TEXT NOT NULL, attempted_at INTEGER NOT NULL,
+        PRIMARY KEY(user_id, campaign_id)
+      );
+      PRAGMA user_version = 7;
     `);
     try {
       if (filename !== ':memory:') {
         this.snapshot = new EncryptedSnapshot(filename, encryptionKey);
         const saved = this.snapshot.read();
         if (saved) {
-          const sourceTables = Object.entries(tables).filter(([name]) => saved.version !== 1 || !name.startsWith('prayer_'));
-          if (![1, 2, 3, 4, 5, 6].includes(saved.version) || !saved.tables || Object.keys(saved.tables).length !== sourceTables.length) throw new Error('Unsupported snapshot structure');
+          const sourceTables = Object.entries(tables).filter(([name]) => (saved.version !== 1 || !name.startsWith('prayer_')) && (saved.version >= 7 || name !== 'seasonal_attempts'))
+            .map(([name, names]) => [name, name === 'users' && saved.version < 7 ? names.slice(0, -1) : names]);
+          if (![1, 2, 3, 4, 5, 6, 7].includes(saved.version) || !saved.tables || Object.keys(saved.tables).length !== sourceTables.length) throw new Error('Unsupported snapshot structure');
           this.db.exec('BEGIN IMMEDIATE');
           try {
             for (const [table, names] of sourceTables) {
@@ -96,7 +104,7 @@ export class Store {
     for (const [table, names] of Object.entries(tables)) {
       saved[table] = this.db.prepare('SELECT ' + names.join(', ') + ' FROM ' + table).all().map(row => names.map(name => row[name]));
     }
-    this.snapshot.write({ version: 6, tables: saved });
+    this.snapshot.write({ version: 7, tables: saved });
   }
 
   transaction(fn) {
@@ -121,7 +129,7 @@ export class Store {
     const row = this.db.prepare('SELECT * FROM users WHERE user_id = ?').get(id(userId));
     if (!row) return { ...DEFAULT_USER };
     return { enabled: Boolean(row.enabled), frequency: row.frequency, delivery: row.delivery, pausedUntil: row.paused_until,
-      dmBlocked: Boolean(row.dm_blocked), breakAt: row.break_at, lastTestAt: row.last_test_at };
+      dmBlocked: Boolean(row.dm_blocked), breakAt: row.break_at, lastTestAt: row.last_test_at, seasonalAt: row.seasonal_at };
   }
 
   ensureUser(userId) { this.transaction(() => this.db.prepare('INSERT OR IGNORE INTO users(user_id) VALUES (?)').run(id(userId))); }
@@ -133,7 +141,7 @@ export class Store {
       if (['enabled', 'dmBlocked'].includes(key) && typeof value !== 'boolean') throw new TypeError('Expected boolean');
       if (key === 'frequency' && !['daily', 'session', 'session5'].includes(value)) throw new RangeError('Invalid frequency');
       if (key === 'delivery' && !['normal', 'silent'].includes(value)) throw new RangeError('Invalid delivery');
-      if (['pausedUntil', 'breakAt', 'lastTestAt'].includes(key) && !(value === null && key !== 'pausedUntil') && (!Number.isSafeInteger(value) || value < 0)) throw new RangeError('Invalid timestamp');
+      if (['pausedUntil', 'breakAt', 'lastTestAt', 'seasonalAt'].includes(key) && !(value === null && key !== 'pausedUntil') && (!Number.isSafeInteger(value) || value < 0)) throw new RangeError('Invalid timestamp');
     }
     if (!entries.length) return this.getUser(userId);
     return this.transaction(() => {
@@ -259,10 +267,25 @@ export class Store {
     });
   }
 
+  seasonalUsers() { return this.db.prepare('SELECT user_id FROM users WHERE seasonal_at > 0').all().map(row => row.user_id); }
+
+  claimSeasonal(userId, event, now) {
+    if (!/^\d{4}:(dhul-hijjah|arafah):2$/.test(event.id) || !Number.isSafeInteger(event.at)) throw new RangeError('Invalid seasonal event');
+    return this.transaction(() => {
+      const user = this.getUser(userId);
+      if (!(user.seasonalAt > 0) || user.seasonalAt > event.at || user.dmBlocked || user.pausedUntil > now || user.pausedUntil > event.at || event.at > now || now - event.at > 2 * MINUTE) return null;
+      // Stable year/campaign/phase IDs prevent a date correction or restart from
+      // resending the same notice. Never retry an ambiguous delivery attempt.
+      const result = this.db.prepare('INSERT OR IGNORE INTO seasonal_attempts VALUES (?, ?, ?)').run(id(userId), event.id, now);
+      return result.changes ? user : null;
+    });
+  }
+
   forget(userId) { this.transaction(() => this.db.prepare('DELETE FROM users WHERE user_id = ?').run(id(userId))); }
   prune(now) { this.transaction(() => {
     this.db.prepare('DELETE FROM reminder_attempts WHERE attempted_at <= ?').run(now - 2 * DAY);
     this.db.prepare('DELETE FROM prayer_attempts WHERE attempted_at <= ?').run(now - 7 * DAY);
+    this.db.prepare('DELETE FROM seasonal_attempts WHERE attempted_at <= ?').run(now - 400 * DAY);
   }); }
 
   getPanel(guildId) { return this.db.prepare('SELECT channel_id, message_id FROM guild_panels WHERE guild_id = ?').get(id(guildId)); }

@@ -8,6 +8,7 @@ import { noticePayload, appModal, MODAL_ACTIONS } from './messages.mjs';
 import { PRAYERS } from './prayer-config.mjs';
 import { PrayerApp } from './prayer-app.mjs';
 import { PrayerScheduler } from './prayer-scheduler.mjs';
+import { SeasonalScheduler } from './seasonal-scheduler.mjs';
 import { loadPrayerSounds } from './prayer-sounds.mjs';
 import { assertReviewedContent } from './content-review.mjs';
 import { runtimeLog, safeErrorCode } from './runtime-log.mjs';
@@ -36,6 +37,7 @@ async function main() {
     isInVoice: userId => client.guilds.cache.some(guild => Boolean(guild.voiceStates.cache.get(userId)?.channelId)),
     onError: error => safeError('reminder', error) });
   engine.prayers = new PrayerScheduler({ store, queue, sounds, canSend: engine.canSend, deliver: (...args) => engine.deliver(...args), onError: error => safeError('prayer-schedule', error) });
+  engine.seasonal = new SeasonalScheduler({ store, queue, canSend: engine.canSend, deliver: (...args) => engine.deliver(...args), onError: error => safeError('seasonal-schedule', error) });
   const prayers = new PrayerApp({ store, sounds, sendDM });
   const app = new RafiqApp({ store, queue, sendDM, prayers, privacyURL: config.privacyURL, supportURL: config.supportURL, cancelUser: userId => engine.cancelUser(userId), cancelGuild: (userId, guildId) => engine.discard(userId, guildId) });
 

@@ -86,6 +86,16 @@
       "id": "daily-life",
       "checkedOn": "2026-09-20",
       "sha256": "df1c3de824dc0eba7c030a03f695151c204bc7c1961167e1c6ef74ac6f483afe"
+    },
+    {
+      "id": "seasonal-dhul-hijjah",
+      "checkedOn": "2026-09-23",
+      "sha256": "397c62d90a97325b90d37e4ee6c62ca99a98b36cf7613403598d5b0e3005452f"
+    },
+    {
+      "id": "seasonal-arafah",
+      "checkedOn": "2026-09-23",
+      "sha256": "1a98c2421fb7d4a1b7c33c46e2dd06479e49badcdcbdf6009e470949d47f8285"
     }
   ]
 }

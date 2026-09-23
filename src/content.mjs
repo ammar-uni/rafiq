@@ -131,6 +131,25 @@ export const DAILY_DHIKR = Object.freeze([
     source: { ...source('https://sunnah.com/abudawud:5068', 'رواه أبو داود', 'اعتمدنا لفظ رواية أبي داود رقم ٥٠٦٨ كما في المصدر المرتبط، بما فيه لفظ المساء، دون تركيب ألفاظ الروايات. صححه الألباني.', [citation('abudawud', '5068', 'أبو هريرة')]), checkedOn: '2026-09-20' }
   }
 ]);
+export const SEASONAL_CARDS = Object.freeze({
+  'dhul-hijjah': {
+    id: 'seasonal-dhul-hijjah', title: 'اقتربت عشر ذي الحجة',
+    context: 'قال رسول الله ﷺ:',
+    text: 'مَا مِنْ أَيَّامٍ الْعَمَلُ الصَّالِحُ فِيهَا أَحَبُّ إِلَى اللَّهِ مِنْ هَذِهِ الأَيَّامِ',
+    source: { ...source('https://sunnah.com/abudawud:2438', 'رواه البخاري، واللفظ لأبي داود',
+      'هذا صدر حديث ابن عباس في فضل العمل في أيام العشر، لا الحديث كاملًا. أصل الحديث في صحيح البخاري (٩٦٩)؛ اللفظ المعروض مطابق لرواية أبي داود (٢٤٣٨)، وفيها بعده: يعني أيام العشر. صحح الألباني رواية أبي داود. لم ننسب لفظ أبي داود إلى البخاري.',
+      [citation('bukhari', '969', 'عبد الله بن عباس'), citation('abudawud', '2438', 'عبد الله بن عباس')]), checkedOn: '2026-09-23' }
+  },
+  arafah: {
+    id: 'seasonal-arafah', title: 'اقترب يوم عرفة',
+    context: 'سُئل رسول الله ﷺ عن صوم يوم عرفة فقال:',
+    text: 'يُكَفِّرُ السَّنَةَ الْمَاضِيَةَ وَالْبَاقِيَةَ',
+    qualifier: 'تذكير بالصيام لغير الحاج.',
+    source: { ...source('https://binbaz.org.sa/fatwas/10173/صوم-التطوع-والايام-التي-يستحب-صيامها', 'رواه مسلم',
+      'الجواب المقتبس بلفظه جزء من حديث أبي قتادة في صحيح مسلم (١١٦٢)، رواية b في الرابط. الجملة التي تقدم الاقتباس تلخّص سياق السؤال، ولا تُعرض بين علامتي اقتباس. لا نركّب معه لفظ «أحتسب على الله» من رواية أخرى. التذكير بالصيام لغير الحاج كما في بيان ابن باز المرتبط.',
+      [citation('muslim', '1162b', 'أبو قتادة الأنصاري')]), checkedOn: '2026-09-23' }
+  }
+});
 export function dhikrById(id) { return DHIKR_CARDS.find(card => card.id === id); }
 export function ideaById(id) { return GOOD_DEEDS.find(card => card.id === id); }
 function freezeContent(value) {
@@ -138,3 +157,4 @@ function freezeContent(value) {
 }
 freezeContent(DHIKR_CARDS); freezeContent(GOOD_DEEDS); freezeContent(IDEA_CATEGORIES); freezeContent(OCCASION_CARDS);
 freezeContent(DAILY_DHIKR);
+freezeContent(SEASONAL_CARDS);
