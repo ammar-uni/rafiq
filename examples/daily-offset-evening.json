@@ -1,0 +1,67 @@
+{
+  "flags": 32832,
+  "allowed_mentions": {
+    "parse": [],
+    "replied_user": false
+  },
+  "components": [
+    {
+      "type": 17,
+      "accent_color": 6663305,
+      "components": [
+        {
+          "type": 10,
+          "content": "## موعد أذكار المساء\nالموعد الحالي: **بعد أذان المغرب بـ٣٠ دقيقة حسب مواقيت مدينتك.**"
+        },
+        {
+          "type": 10,
+          "content": "اختر قبل الأذان أو بعده، ثم أدخل عدد الدقائق من ١ إلى ٦٠. يمكنك أيضًا اختيار وقت الأذان نفسه.\nاختيارك لهذه الفترة فقط؛ موعد الفترة الأخرى يبقى كما هو."
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "قبل الأذان",
+              "style": 2,
+              "custom_id": "rafiq:v1:daily_offset_evening_before_modal"
+            },
+            {
+              "type": 2,
+              "label": "عند الأذان",
+              "style": 2,
+              "custom_id": "rafiq:v1:daily_offset_evening_at"
+            },
+            {
+              "type": 2,
+              "label": "بعد الأذان",
+              "style": 2,
+              "custom_id": "rafiq:v1:daily_offset_evening_after_modal"
+            }
+          ]
+        },
+        {
+          "type": 10,
+          "content": "-# التوقيت لتنظيم التنبيه؛ الاختيار المبكر تذكير مسبق. لا يحدد رفيق وقتًا شرعيًا للذكر ولا يحتاج وقت الإقامة."
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "إعادة إلى بعد الأذان بـ٣٠ دقيقة",
+              "style": 2,
+              "custom_id": "rafiq:v1:daily_offset_evening_reset"
+            },
+            {
+              "type": 2,
+              "label": "رجوع",
+              "style": 2,
+              "custom_id": "rafiq:v1:daily"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
