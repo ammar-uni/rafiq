@@ -1,0 +1,27 @@
+{
+  "content": "اقترب يوم عرفة\nسُئل رسول الله ﷺ عن صوم يوم عرفة فقال:\n«يُكَفِّرُ السَّنَةَ الْمَاضِيَةَ وَالْبَاقِيَةَ»\nرواه مسلم\nتذكير بالصيام لغير الحاج.\n\nالموعد المتوقع في السعودية: ١٥ مايو ٢٠٢٧. قد يختلف في بلدك.",
+  "flags": 0,
+  "allowed_mentions": {
+    "parse": [],
+    "replied_user": false
+  },
+  "components": [
+    {
+      "type": 1,
+      "components": [
+        {
+          "type": 2,
+          "label": "المصدر والتوضيح",
+          "style": 2,
+          "custom_id": "rafiq:v1:seasonal_source_arafah"
+        },
+        {
+          "type": 2,
+          "label": "إيقاف مواسم الخير",
+          "style": 2,
+          "custom_id": "rafiq:v1:seasonal_off"
+        }
+      ]
+    }
+  ]
+}

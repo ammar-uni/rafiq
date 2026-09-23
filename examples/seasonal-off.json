@@ -1,0 +1,75 @@
+{
+  "flags": 32832,
+  "allowed_mentions": {
+    "parse": [],
+    "replied_user": false
+  },
+  "components": [
+    {
+      "type": 17,
+      "accent_color": 13283706,
+      "components": [
+        {
+          "type": 10,
+          "content": "-# تذكيراتي / مواسم الخير\n## مواسم الخير 🌿\n**متوقفة**"
+        },
+        {
+          "type": 10,
+          "content": "حديث ثابت، في وقته. تذكير واحد لكل موسم، قبل موعده بيومين تقريبًا؛ رسائل قليلة خلال السنة."
+        },
+        {
+          "type": 10,
+          "content": "-# تعمل دون مدينة. نعتمد تقويم السعودية، مع توضيح أن الموعد متوقع حتى تثبيته، وقد يختلف في بلدك."
+        },
+        {
+          "type": 14,
+          "divider": true,
+          "spacing": 1
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "تفعيل مواسم الخير",
+              "style": 3,
+              "custom_id": "rafiq:v1:seasonal_on"
+            }
+          ]
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "شاهد نموذج رسالة",
+              "style": 2,
+              "custom_id": "rafiq:v1:seasonal_preview"
+            }
+          ]
+        },
+        {
+          "type": 10,
+          "content": "-# الإشعار: الجوال وسطح المكتب حسب إعدادات جهازك. يتبع اختيار إشعار المجلس والمؤقّت."
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "رجوع",
+              "style": 2,
+              "custom_id": "rafiq:v1:reminders"
+            },
+            {
+              "type": 2,
+              "label": "الرئيسية",
+              "style": 2,
+              "custom_id": "rafiq:v1:home"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

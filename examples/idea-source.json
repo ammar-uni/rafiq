@@ -35,7 +35,7 @@
           "components": [
             {
               "type": 2,
-              "label": "العودة للفكرة",
+              "label": "رجوع",
               "style": 2,
               "custom_id": "rafiq:v1:idea_all_0"
             },

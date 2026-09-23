@@ -71,15 +71,15 @@
           "components": [
             {
               "type": 2,
-              "label": "مواقيت صلاتي",
+              "label": "رجوع",
               "style": 2,
-              "custom_id": "rafiq:v1:prayer"
+              "custom_id": "rafiq:v1:reminders"
             },
             {
               "type": 2,
-              "label": "الجمعة والقضاء",
+              "label": "الرئيسية",
               "style": 2,
-              "custom_id": "rafiq:v1:prayer_occasions"
+              "custom_id": "rafiq:v1:home"
             }
           ]
         }

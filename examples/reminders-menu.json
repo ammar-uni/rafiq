@@ -1,0 +1,151 @@
+{
+  "flags": 32832,
+  "allowed_mentions": {
+    "parse": [],
+    "replied_user": false
+  },
+  "components": [
+    {
+      "type": 17,
+      "accent_color": 6663305,
+      "components": [
+        {
+          "type": 10,
+          "content": "-# الرئيسية / تذكيراتي\n## بماذا أذكّرك؟\nراجع تذكيراتك وعدّل ما يناسبك."
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "**اختر مدينتك للمواقيت والأذكار**\nالمجلس والمؤقّت ومواسم الخير تعمل دون مدينة."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "اختر مدينتي",
+            "style": 3,
+            "custom_id": "rafiq:v1:prayer_location"
+          }
+        },
+        {
+          "type": 14,
+          "divider": true,
+          "spacing": 1
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "**كفارة المجلس** · غير مفعّل\nبعد مغادرة المحادثة الصوتية."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "تذكير المجلس",
+            "style": 2,
+            "custom_id": "rafiq:v1:reminder_intro"
+          }
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "**الصلوات الخمس** · غير مفعّل\nعند الأذان بحسب مدينتك."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "مواقيت الصلاة",
+            "style": 2,
+            "custom_id": "rafiq:v1:prayer"
+          }
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "**أذكار الصباح والمساء** · غير مفعّلة\nاختر وقت كل فترة على حدة."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "تذكير الأذكار",
+            "style": 2,
+            "custom_id": "rafiq:v1:daily"
+          }
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "**قراءة القرآن** · غير مفعّل\nموعد يومي تختاره أنت."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "تذكير القراءة",
+            "style": 2,
+            "custom_id": "rafiq:v1:daily_quran"
+          }
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "**الجمعة وقضاء رمضان** · غير مفعّلة\nالاستعداد للجمعة، الدعاء، وقضاء الصيام."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "الجمعة والقضاء",
+            "style": 2,
+            "custom_id": "rafiq:v1:prayer_occasions"
+          }
+        },
+        {
+          "type": 9,
+          "components": [
+            {
+              "type": 10,
+              "content": "**مواسم الخير** · مفعّلة تلقائيًا عند البدء\nتنبيه واحد قبل كل موسم بيومين تقريبًا."
+            }
+          ],
+          "accessory": {
+            "type": 2,
+            "label": "مواسم الخير",
+            "style": 2,
+            "custom_id": "rafiq:v1:seasonal"
+          }
+        },
+        {
+          "type": 14,
+          "divider": true,
+          "spacing": 1
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "رجوع",
+              "style": 2,
+              "custom_id": "rafiq:v1:home"
+            },
+            {
+              "type": 2,
+              "label": "يومي",
+              "style": 2,
+              "custom_id": "rafiq:v1:today"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

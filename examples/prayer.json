@@ -27,11 +27,15 @@
         },
         {
           "type": 10,
-          "content": "-# أم القرى — مكة · التذكير غير مفعّل"
+          "content": "-# أم القرى — مكة · تذكير الصلوات الخمس غير مفعّل"
         },
         {
           "type": 10,
-          "content": "١. اختر مدينتك. ٢. طابق الجدول مع مسجدك. ٣. فعّل التذكير الذي تريده.\nتذكير الصلوات الخمس مستقل عن تذكير الجمعة والقضاء؛ حدّث المدينة عند السفر."
+          "content": "-# راجع الجدول مع مسجدك قبل التفعيل. تحديث المدينة عند السفر يضبط جميع تذكيراتك المرتبطة بالمواقيت."
+        },
+        {
+          "type": 10,
+          "content": "-# تفعيل الصلوات يشمل تذكير صلاة الجمعة قبل الظهر بـ٤٥ دقيقة. يمكنك إيقاف الجمعة وحدها من «الجمعة والقضاء»."
         },
         {
           "type": 14,
@@ -60,14 +64,14 @@
           "components": [
             {
               "type": 2,
-              "label": "راجعت الجدول؛ فعّل التذكير",
+              "label": "تفعيل الصلاة والجمعة",
               "style": 3,
-              "custom_id": "rafiq:v1:prayer_enable",
+              "custom_id": "rafiq:v1:prayer_enable_friday",
               "disabled": false
             },
             {
               "type": 2,
-              "label": "الإشعار والصوت",
+              "label": "ضبط الإشعار",
               "style": 2,
               "custom_id": "rafiq:v1:prayer_audio"
             }
@@ -78,7 +82,7 @@
           "components": [
             {
               "type": 2,
-              "label": "تذكيرات الجمعة والقضاء",
+              "label": "الجمعة والقضاء",
               "style": 2,
               "custom_id": "rafiq:v1:prayer_occasions"
             }
@@ -89,13 +93,13 @@
           "components": [
             {
               "type": 2,
-              "label": "إعداداتي العامة",
+              "label": "رجوع",
               "style": 2,
-              "custom_id": "rafiq:v1:settings"
+              "custom_id": "rafiq:v1:reminders"
             },
             {
               "type": 2,
-              "label": "مساحتي",
+              "label": "الرئيسية",
               "style": 2,
               "custom_id": "rafiq:v1:home"
             }

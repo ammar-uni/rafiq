@@ -63,7 +63,7 @@
           "components": [
             {
               "type": 2,
-              "label": "رجوع للتذكيرات",
+              "label": "رجوع",
               "style": 2,
               "custom_id": "rafiq:v1:prayer_occasions"
             }
