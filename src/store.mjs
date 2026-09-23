@@ -63,7 +63,7 @@ export class Store {
         local_day TEXT NOT NULL, prayer TEXT NOT NULL, attempted_at INTEGER NOT NULL,
         PRIMARY KEY(user_id, local_day, prayer)
       );
-      PRAGMA user_version = 5;
+      PRAGMA user_version = 6;
     `);
     try {
       if (filename !== ':memory:') {
@@ -71,7 +71,7 @@ export class Store {
         const saved = this.snapshot.read();
         if (saved) {
           const sourceTables = Object.entries(tables).filter(([name]) => saved.version !== 1 || !name.startsWith('prayer_'));
-          if (![1, 2, 3, 4, 5].includes(saved.version) || !saved.tables || Object.keys(saved.tables).length !== sourceTables.length) throw new Error('Unsupported snapshot structure');
+          if (![1, 2, 3, 4, 5, 6].includes(saved.version) || !saved.tables || Object.keys(saved.tables).length !== sourceTables.length) throw new Error('Unsupported snapshot structure');
           this.db.exec('BEGIN IMMEDIATE');
           try {
             for (const [table, names] of sourceTables) {
@@ -79,7 +79,7 @@ export class Store {
               const insert = this.db.prepare('INSERT INTO ' + table + ' (' + names.join(', ') + ') VALUES (' + names.map(() => '?').join(', ') + ')');
               for (const values of saved.tables[table]) {
                 if (!Array.isArray(values) || values.length !== names.length) throw new Error('Invalid snapshot row');
-                if (table === 'prayer_settings') values[1] = JSON.stringify(readStoredPrayer(JSON.parse(values[1])));
+                if (table === 'prayer_settings') values[1] = JSON.stringify(readStoredPrayer(JSON.parse(values[1]), saved.version));
                 insert.run(...values);
               }
             }
@@ -96,7 +96,7 @@ export class Store {
     for (const [table, names] of Object.entries(tables)) {
       saved[table] = this.db.prepare('SELECT ' + names.join(', ') + ' FROM ' + table).all().map(row => names.map(name => row[name]));
     }
-    this.snapshot.write({ version: 5, tables: saved });
+    this.snapshot.write({ version: 6, tables: saved });
   }
 
   transaction(fn) {
