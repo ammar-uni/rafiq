@@ -54,7 +54,8 @@ test('server setup enforces permissions at runtime and does not request administ
   assert.equal(INSTALL_PERMISSIONS & PermissionFlagsBits.Administrator, 0n);
   assert.equal(INSTALL_PERMISSIONS & PermissionFlagsBits.Connect, 0n);
   assert.equal(INSTALL_PERMISSIONS & PermissionFlagsBits.ManageMessages, 0n);
-  assert.equal(COMMANDS.length, 3);
+  assert.equal(COMMANDS.length, 4);
+  assert.equal(COMMANDS.find(command => command.name === 'rafiq-server').default_member_permissions, PermissionFlagsBits.ManageGuild.toString());
   assert.equal(new URL(inviteURL('123456789012345678')).searchParams.get('scope'), 'bot applications.commands');
 });
 

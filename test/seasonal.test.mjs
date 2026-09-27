@@ -172,10 +172,11 @@ test('encrypted v6 migration preserves every existing field and leaves seasonal 
   s.toggleFavorite('1', 'majlis'); s.setPrayer('1', { ...structuredClone(DEFAULT_PRAYER), city }); s.close();
   const snapshot = new EncryptedSnapshot(p.file, p.options.encryptionKey), legacy = snapshot.read();
   legacy.version = 6; delete legacy.tables.seasonal_attempts; legacy.tables.users.forEach(row => row.pop());
+  delete legacy.tables.server_settings; delete legacy.tables.server_attempts;
   snapshot.write(legacy); snapshot.close();
   const unchanged = readFileSync(p.file);
   s = p.open(); assert.equal(s.getUser('1').seasonalAt, null); assert.deepEqual(readFileSync(p.file), unchanged);
-  s.persist(); const saved = s.snapshot.read(); assert.equal(saved.version, 7);
+  s.persist(); const saved = s.snapshot.read(); assert.equal(saved.version, 8);
   for (const [name, rows] of Object.entries(legacy.tables)) assert.deepEqual(name === 'users' ? saved.tables.users.map(row => row.slice(0, -1)) : saved.tables[name], rows);
   assert.deepEqual(saved.tables.seasonal_attempts, []);
   s.close(); s = p.open(); assert.equal(s.getUser('1').seasonalAt, null);

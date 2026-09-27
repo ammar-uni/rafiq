@@ -30,6 +30,7 @@ test('v3 preferences preserve the five-per-day choice, subscriptions and attempt
   store.claimReminder('1', '10', 1800000000000); store.close();
   const snapshot = new EncryptedSnapshot(h.filename, h.options.encryptionKey);
   const saved = snapshot.read(); saved.version = 3; saved.tables.users[0][2] = 'session5';
+  delete saved.tables.server_settings; delete saved.tables.server_attempts;
   delete saved.tables.seasonal_attempts; saved.tables.users.forEach(row => row.pop());
   snapshot.write(saved); snapshot.close();
   store = h.open();
@@ -45,6 +46,7 @@ test('v2 preferences migrate without changing the existing frequency or history'
   store.toggleFavorite('1', 'guidance'); store.claimReminder('1', '10', 1800000000000); store.close();
   const snapshot = new EncryptedSnapshot(h.filename, h.options.encryptionKey);
   const saved = snapshot.read(); saved.version = 2;
+  delete saved.tables.server_settings; delete saved.tables.server_attempts;
   delete saved.tables.seasonal_attempts; saved.tables.users.forEach(row => row.pop());
   snapshot.write(saved); snapshot.close();
   store = h.open(); assert.equal(store.getUser('1').frequency, 'session');

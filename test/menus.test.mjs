@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { Store } from '../src/store.mjs';
 import { SerialQueue } from '../src/serial.mjs';
 import { RafiqApp } from '../src/app.mjs';
+import { ServerApp } from '../src/server-app.mjs';
 import { PrayerApp } from '../src/prayer-app.mjs';
 import { FLAGS } from '../src/messages.mjs';
 import { DEFAULT_PRAYER } from '../src/prayer-config.mjs';
@@ -15,7 +16,7 @@ function menus(t) {
   const sent = [], sendDM = async (...args) => sent.push(args);
   const prayers = new PrayerApp({ store, sendDM, now: () => now, lookup: async () => [city] });
   const app = new RafiqApp({store, prayers, queue: new SerialQueue(), sendDM, now: () => now});
-  return { store, sent, act: (action, values = []) => app.handle({userId:'1',guildId:'10',action,values}) };
+  return { store, sent, app, act: (action, values = []) => app.handle({userId:'1',guildId:'10',action,values}) };
 }
 function controls(payload) {
   const result = new Map();
@@ -32,6 +33,51 @@ async function back(h, payload) {
   assert.equal(choices.length, 1, 'Each submenu has one unambiguous Back button');
   return h.act(choices[0][0]);
 }
+
+test('home and guide use current guild permissions, including when the same member changes context', async t => {
+  const h = menus(t);
+  for (const [guildId, canManageServer, expected] of [
+    ['10', true, true], ['20', false, false], [null, true, false],
+    ['10', false, false], ['10', true, true], [null, false, false]
+  ]) {
+    const context = {userId:'1',guildId,canManageServer};
+    const home = await h.app.handle({...context,action:'home'});
+    assert.equal(controls(home).has('server_home'), expected);
+    assert.ok(controls(home).has('server_guide'));
+    assert.ok(controls(home).has('reminders'), 'Personal reminders remain available to every role');
+    const guide = await h.app.handle({...context,action:'server_guide'});
+    assert.equal(controls(guide).has('server_home'), expected);
+    assert.ok(controls(guide).has('home'));
+    assert.ok(home.flags & FLAGS.ephemeral);
+    assert.ok(guide.flags & FLAGS.ephemeral);
+  }
+  assert.deepEqual(h.sent, []);
+  assert.deepEqual(h.store.subscriptions('1'), []);
+  assert.equal(h.store.db.prepare('SELECT count(*) AS n FROM users').get().n, 0);
+  assert.deepEqual(h.store.postingGuilds(), []);
+});
+
+test('home, server guide and server settings form a working private journey without subscriptions or posts', async t => {
+  const h = menus(t);
+  const server = new ServerApp({store:h.store,checkTarget:async()=>assert.fail('Browsing does not prepare a post')});
+  const context = {userId:'1',guildId:'10',canManageServer:true};
+  const visit = action => action.startsWith('server_')
+    ? server.handle({...context,canManage:context.canManageServer,action})
+    : h.app.handle({...context,action});
+  let page = await visit('home');
+  for (const action of ['server_guide','server_home','home','server_home','server_guide','home']) {
+    assert.ok(controls(page).has(action), `A visible button leads to ${action}`);
+    page = await visit(controls(page).get(action).custom_id.slice(9));
+    assert.ok(page.flags & FLAGS.ephemeral);
+    assert.doesNotMatch(JSON.stringify(page), /هذا الخيار لم يعد متاحًا|انتهت هذه المعاينة/);
+  }
+  assert.equal(server.drafts.size, 0);
+  assert.deepEqual(h.store.postingGuilds(), []);
+  assert.deepEqual(h.store.subscriptions('1'), []);
+  assert.deepEqual(h.store.getPrayer('1'), DEFAULT_PRAYER);
+  assert.deepEqual(h.sent, []);
+  assert.equal(h.store.db.prepare('SELECT count(*) AS n FROM users').get().n, 0);
+});
 
 test('back walks up the reminder menus without undoing saved times or activating anything', async t => {
   const h = menus(t);
@@ -55,6 +101,45 @@ test('back walks up the reminder menus without undoing saved times or activating
   assert.deepEqual(h.store.getUser('1'), user);
   assert.deepEqual(h.store.subscriptions('1'), []);
   assert.deepEqual(h.sent, []);
+});
+
+test('every personal submenu can return home through visible navigation without replaying actions', async t => {
+  const h = menus(t);
+  h.store.setPrayer('1', {...structuredClone(DEFAULT_PRAYER),city});
+  h.store.toggleFavorite('1','guidance');
+  h.store.toggleIdeaFavorite('1','parents');
+  const changes = () => h.store.db.prepare('SELECT total_changes() AS n').get().n;
+  const before = changes();
+  const home = await h.act('home');
+  const pages = [
+    'reminders','reminder_intro','settings','preview','prayer','prayer_location','prayer_calculation',
+    'prayer_audio','prayer_occasions','prayer_occasion_sources','daily','daily_morning','daily_evening',
+    'daily_quran','daily_offset_morning','daily_offset_evening','daily_morning_read','daily_evening_read',
+    'daily_sources','daily_sources_morning','daily_sources_evening','seasonal','seasonal_preview_arafah',
+    'seasonal_preview_dhul-hijjah','seasonal_source_arafah','seasonal_source_dhul-hijjah','explore','library',
+    'favorites','saved_dhikr','source_guidance_saved','saved_ideas','idea','idea_source_parents_all',
+    'idea_source_parents_saved','help','methodology','notification_help','support','report_parents',
+    'privacy','forget','today','break','server_guide','setup','setup_choices','setup_test',
+    'setup_prayer','setup_prayer_location','setup_prayer_calculation','setup_daily_offset_evening',
+    'setup_seasonal_preview_arafah','unknown_old_button'
+  ];
+  for (const action of pages) {
+    let page = await h.act(action);
+    const visited = new Set();
+    while (JSON.stringify(page) !== JSON.stringify(home)) {
+      const candidates = [...controls(page)].filter(([,item]) => ['رجوع','الرئيسية'].includes(item.label) && !item.disabled);
+      const choice = candidates.find(([,item]) => item.label === 'رجوع') || candidates[0];
+      assert.ok(choice, `${action} has a visible way back`);
+      const next = choice[0];
+      assert.ok(!visited.has(next), `${action} loops at ${next}`);
+      visited.add(next);
+      assert.ok(visited.size <= 8, `${action} has an unexpectedly long return path`);
+      page = await h.act(next);
+      assert.ok(page.flags & FLAGS.ephemeral);
+      assert.equal(changes(), before, `Returning from ${action} changed preferences`);
+      assert.deepEqual(h.sent, [], `Returning from ${action} sent a message`);
+    }
+  }
 });
 
 test('back from sources restores the selected reading or saved card', async t => {
