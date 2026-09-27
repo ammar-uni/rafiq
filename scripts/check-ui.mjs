@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { welcomePayload, reminderPayload, enabledPayload, settingsPayload, ideaPayload, pausedPayload, disabledPayload, homePayload, libraryPayload, sourcePayload, methodologyPayload, privacyPayload, supportPayload, forgetPromptPayload, breakPayload, breakReminderPayload, FLAGS } from '../src/messages.mjs';
-import { DHIKR_CARDS, GOOD_DEEDS, IDEA_CATEGORIES } from '../src/content.mjs';
-import { reminderIntroPayload, ideaSourcePayload, favoritesPayload, notificationHelpPayload } from '../src/messages.mjs';
+import { DHIKR_CARDS, GOOD_DEEDS, PUBLIC_POSTS, IDEA_CATEGORIES } from '../src/content.mjs';
+import { publicPostSourcePayload, reminderIntroPayload, ideaSourcePayload, favoritesPayload, notificationHelpPayload } from '../src/messages.mjs';
 import { prayerPayload, prayerLocationPayload, prayerCitiesPayload, prayerCalculationPayload, prayerAudioPayload, prayerReminderPayload, prayerTestPayload } from '../src/messages.mjs';
 import { DEFAULT_PRAYER, PRAYER_METHODS } from '../src/prayer-config.mjs';
 import { prayerSchedule } from '../src/prayer-times.mjs';
@@ -12,14 +12,24 @@ import { setupStartPayload, setupChoicesPayload, setupTestPayload, setupWrapPayl
 import { remindersMenuPayload, explorePayload, helpMenuPayload, dailyDetailPayload } from '../src/messages.mjs';
 import { seasonalPayload, seasonalReminderPayload, seasonalSourcePayload } from '../src/messages.mjs';
 import { seasonalYearEvents } from '../src/seasonal-times.mjs';
+import { DEFAULT_SERVER, serverTimesForCount } from '../src/server-config.mjs';
+import { serverHomePayload, serverDraftPayload, serverSchedulePayload, serverMentionPayload, serverReviewPayload, serverGuidePayload, serverNoticePayload, serverPostPayload } from '../src/server-messages.mjs';
 loadPrayerSounds();
 const fivePerDaySamples = [settingsPayload({frequency:'session5',enabled:true}), reminderIntroPayload({frequency:'session5'}), enabledPayload({frequency:'session5'})];
 const samples = [welcomePayload(), reminderPayload(), reminderPayload({silent:false}), reminderPayload({preview:true}), reminderPayload({preview:true,enabled:false}), reminderPayload({preview:true,paused:true}), enabledPayload(), settingsPayload(), settingsPayload({frequency:'session',delivery:'silent',enabled:true,paused:true}), pausedPayload(), disabledPayload(), ...GOOD_DEEDS.map((_,i)=>ideaPayload(i)), homePayload(), homePayload({enabled:true}), homePayload({enabled:true,dmBlocked:true}), ...DHIKR_CARDS.flatMap(card=>[libraryPayload({selectedId:card.id}),sourcePayload(card.id)]), libraryPayload({onlyFavorites:true}), libraryPayload({onlyFavorites:true,favorites:['guidance'],selectedId:'guidance'}), methodologyPayload(), privacyPayload(), forgetPromptPayload(), breakPayload(), breakPayload({breakAt:1800000000000}), breakReminderPayload()];
 samples.push(privacyPayload({privacyURL:'https://rafiq.test/privacy',supportURL:'https://rafiq.test/support'}), supportPayload(), supportPayload({supportURL:'https://rafiq.test/support'}));
-samples.push(reminderIntroPayload(), reminderIntroPayload({enabled:true}), homePayload({breakAt:1800000000000,favoriteCount:5}), ...IDEA_CATEGORIES.flatMap(category => GOOD_DEEDS.filter(idea => category.id === 'all' || idea.category === category.id).flatMap(idea => [ideaPayload(GOOD_DEEDS.indexOf(idea), {category:category.id}), ideaSourcePayload(idea.id, {category:category.id})])), ...DHIKR_CARDS.map(card => sourcePayload(card.id, {onlyFavorites:true})), supportPayload({supportURL:'https://rafiq.test/support',reportCard:DHIKR_CARDS[0]}));
+samples.push(...PUBLIC_POSTS.map(card => publicPostSourcePayload(card.id)), reminderIntroPayload(), reminderIntroPayload({enabled:true}), homePayload({breakAt:1800000000000,favoriteCount:5}), ...IDEA_CATEGORIES.flatMap(category => GOOD_DEEDS.filter(idea => category.id === 'all' || idea.category === category.id).flatMap(idea => [ideaPayload(GOOD_DEEDS.indexOf(idea), {category:category.id}), ideaSourcePayload(idea.id, {category:category.id})])), ...DHIKR_CARDS.map(card => sourcePayload(card.id, {onlyFavorites:true})), supportPayload({supportURL:'https://rafiq.test/support',reportCard:DHIKR_CARDS[0]}));
 samples.push(favoritesPayload(), favoritesPayload({dhikrCount:5,ideaCount:6}), ideaPayload(0,{category:'saved'}), settingsPayload({enabled:true,inGuild:true,paused:true,pausedUntil:1800000000000}), breakPayload({paused:true}), breakPayload({dmBlocked:true}), breakPayload({breakAt:1800000000000,delivery:'normal'}));
 for (const idea of GOOD_DEEDS) samples.push(ideaPayload(GOOD_DEEDS.indexOf(idea),{category:'saved',favorites:[idea.id]}),ideaSourcePayload(idea.id,{category:'saved'}),ideaPayload(GOOD_DEEDS.indexOf(idea),{category:'saved',favorites:GOOD_DEEDS.map(item=>item.id)}));
 const p = { ...DEFAULT_PRAYER, city: { label: 'مكة المكرمة، السعودية', latitude: 21.426, longitude: 39.826, timezone: 'Asia/Riyadh' }, method: 'UmmAlQura' };
+for (const context of [{inGuild:true,canManageServer:true}, {inGuild:true,canManageServer:false}, {inGuild:false,canManageServer:true}]) {
+  for (const preferences of [DEFAULT_PRAYER, p]) {
+    for (const state of [{}, {paused:true}, {dmBlocked:true}]) {
+      const payload = homePayload({...context,preferences,...state,breakAt:1800000600000,now:1800000000000,favoriteCount:3});
+      samples.push(payload, setupWrapPayload(payload));
+    }
+  }
+}
 const today = prayerSchedule(p, '2026-09-09');
 const sound = { id: 'soft', label: 'تنبيه هادئ', filename: 'soft.mp3' };
 samples.push(prayerPayload(), prayerPayload({ preferences: p, today, next: today[0] }), prayerPayload({ preferences: { ...p, enabled: true }, today, paused: true, dmBlocked: true }), prayerPayload({ preferences: p }), prayerLocationPayload(), prayerCitiesPayload([p.city], 'test'), prayerAudioPayload(p), prayerAudioPayload({ ...p, soundId: sound.id }, [sound]), prayerReminderPayload(p, today[0]), prayerReminderPayload({ ...p, delivery: 'normal' }, today[0], sound), prayerTestPayload(p, sound), ...PRAYER_METHODS.map(([method]) => prayerCalculationPayload({ ...p, method })), prayerCalculationPayload({ ...p, ramadanIsha: true }));
@@ -51,6 +61,14 @@ for (const state of [{}, { seasonalAt: 0 }, { seasonalAt: 1800000000000 }, { sea
   for (const preferences of [DEFAULT_PRAYER, p]) samples.push(homePayload({ preferences, ...state }), todayPayload({ p: preferences, user: state }));
 }
 for (const event of seasonalYearEvents(1448)) samples.push(seasonalReminderPayload(event), seasonalReminderPayload(event, { silent: true }), seasonalReminderPayload(event, { preview: true }), setupWrapPayload(seasonalReminderPayload(event, { preview: true })), seasonalSourcePayload(event.key), setupWrapPayload(seasonalSourcePayload(event.key)));
+const serverToken = '0123456789abcdef';
+samples.push(serverGuidePayload(), serverGuidePayload(true), serverHomePayload(), serverDraftPayload(DEFAULT_SERVER, serverToken), serverNoticePayload('تنبيه', 'راجع الإعدادات.'));
+for (const dailyCount of [0, 1, 2, 3]) for (const seasonal of [false, true]) for (const mentions of [{roleId:null,mentionEveryone:false}, {roleId:'202',mentionEveryone:false}, {roleId:null,mentionEveryone:true}]) {
+  const p = { ...structuredClone(DEFAULT_SERVER), channelId: '101', ...mentions, dailyCount, seasonal, times: serverTimesForCount(dailyCount) };
+  const event = dailyCount ? { kind: 'daily', day: '2026-09-25', slot: 0 } : seasonal ? { kind: 'seasonal', campaign: seasonalYearEvents(1448)[0] } : null;
+  samples.push(serverHomePayload(p), serverDraftPayload(p, serverToken), serverSchedulePayload(p, serverToken), serverMentionPayload(p, serverToken), serverReviewPayload(p, serverToken, event));
+  if (event) samples.push(serverPostPayload(event, p.roleId, p.mentionEveryone));
+}
 for (const payload of samples) {
   const isV2 = Boolean(payload.flags & FLAGS.componentsV2);
   if (isV2) assert.equal(payload.content, undefined);
@@ -61,8 +79,13 @@ for (const payload of samples) {
     assert.ok(!(payload.flags & FLAGS.ephemeral));
   }
   assert.equal(payload.embeds, undefined);
-  assert.deepEqual(payload.allowed_mentions.parse, []);
-  const ids = new Set(); let count = 0; let characters = 0;
+  const publicEveryonePost = !(payload.flags & FLAGS.ephemeral) && payload.content?.startsWith('@everyone\n');
+  assert.deepEqual(payload.allowed_mentions.parse, publicEveryonePost ? ['everyone'] : []);
+  if (publicEveryonePost) {
+    assert.deepEqual(payload.allowed_mentions.roles, []);
+    assert.deepEqual(payload.allowed_mentions.users, []);
+  }
+  const ids = new Set(), navigation = []; let count = 0; let characters = 0;
   function visit(component, parent = 0) {
     count++;
     if (!isV2) assert.ok(parent === 0 ? component.type === 1 : parent === 1 && [2, 3].includes(component.type));
@@ -78,7 +101,7 @@ for (const payload of samples) {
     if (component.type === 1) {
       assert.ok(component.components.length >= 1 && component.components.length <= 5);
       const types=component.components.map(child=>child.type);
-      assert.ok(types.every(type=>type===2) || (types.length===1 && types[0]===3));
+      assert.ok(types.every(type=>type===2) || (types.length===1 && [3,6,8].includes(types[0])));
     }
     if (component.type === 9) {
       assert.ok(component.components.length >= 1 && component.components.length <= 3);
@@ -87,6 +110,7 @@ for (const payload of samples) {
       visit(component.accessory, 9);
     }
     if (component.type === 2) {
+      if (['رجوع', 'الرئيسية', 'إلغاء'].includes(component.label) && component.custom_id && !component.disabled) navigation.push(component);
       assert.ok([1,9].includes(parent));
       assert.ok(component.label.length <= 38);
       assert.ok([1,2,3,4,5].includes(component.style));
@@ -96,6 +120,11 @@ for (const payload of samples) {
       assert.ok(component.options.length <= 25);
       assert.equal(component.options.filter(option=>option.default).length, /^rafiq:v1:(setup_)?prayer_city_/.test(component.custom_id) ? 0 : 1);
       assert.ok(component.options.every(option => option.label.length <= 100 && option.value.length <= 100));
+    }
+    if ([6,8].includes(component.type)) {
+      assert.equal(parent, 1); assert.equal(component.min_values, 1); assert.equal(component.max_values, 1);
+      if (component.type === 8) assert.deepEqual(component.channel_types, [0]);
+      assert.ok((component.default_values || []).length <= 1);
     }
     if (component.type === 10) characters += component.content.length;
     if (component.type === 13) assert.ok(payload.attachments.some(file => component.file.url === `attachment://${file.filename}`));
@@ -110,6 +139,10 @@ for (const payload of samples) {
     component.components?.forEach(child=>visit(child,component.type));
   }
   payload.components.forEach(component=>visit(component));
+  const isHome = payload.components[0]?.components?.[0]?.content?.startsWith('-# رفيق / الرئيسية');
+  if ((payload.flags & FLAGS.ephemeral) && !isHome) {
+    assert.ok(navigation.length > 0, `Private submenu has no way back: ${payload.components[0]?.components?.[0]?.content}`);
+  }
   assert.ok(count<=40);
   assert.ok(characters<=4000);
   JSON.parse(JSON.stringify(payload));

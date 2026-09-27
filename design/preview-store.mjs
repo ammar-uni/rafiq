@@ -1,11 +1,13 @@
 /** Memory-only preview adapter. No storage, Discord connection, or personal data. */
 import { DEFAULT_PRAYER, DEFAULT_OCCASIONS, stopDaily } from '../src/prayer-config.mjs';
+import { DEFAULT_SERVER, validateServer } from '../src/server-config.mjs';
 export class PreviewStore {
   constructor() { this.reset(); }
   reset() {
     this.user = { enabled: false, frequency: 'session', delivery: 'normal', pausedUntil: 0, dmBlocked: false, breakAt: null, lastTestAt: null, seasonalAt: null };
     this.guilds = new Set(); this.cards = new Set(); this.ideas = new Set();
     this.prayer = null;
+    this.servers = new Map();
   }
   getUser() { return { ...this.user }; }
   updateUser(id, patch) { Object.assign(this.user, patch); return this.getUser(); }
@@ -17,7 +19,10 @@ export class PreviewStore {
   savedIdeas() { return [...this.ideas]; }
   toggleFavorite(id, card) { this.cards.has(card) ? this.cards.delete(card) : this.cards.add(card); }
   toggleIdeaFavorite(id, idea) { this.ideas.has(idea) ? this.ideas.delete(idea) : this.ideas.add(idea); }
-  forget() { this.reset(); }
+  forget() { const servers = this.servers; this.reset(); this.servers = servers; }
+  getPanel() { return undefined; }
+  getServer(guildId) { return structuredClone(this.servers.get(guildId) || DEFAULT_SERVER); }
+  setServer(guildId, p) { validateServer(p); this.servers.set(guildId, structuredClone(p)); return this.getServer(guildId); }
   transaction(fn) { return fn(); }
   getPrayer() { return structuredClone(this.prayer || DEFAULT_PRAYER); }
   setPrayer(id, p) { this.prayer = structuredClone(p); return this.getPrayer(); }

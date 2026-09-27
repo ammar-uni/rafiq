@@ -1,4 +1,4 @@
-import { DHIKR_CARDS, GOOD_DEEDS, OCCASION_CARDS, DAILY_DHIKR, SEASONAL_CARDS, IDEA_CATEGORIES, dhikrById, ideaById } from './content.mjs';
+import { DHIKR_CARDS, GOOD_DEEDS, OCCASION_CARDS, DAILY_DHIKR, SEASONAL_CARDS, PUBLIC_POSTS, IDEA_CATEGORIES, dhikrById, ideaById } from './content.mjs';
 import { DEFAULT_PRAYER, DAILY_REMINDERS, DEFAULT_ADHKAR_OFFSET_MINUTES, OCCASIONS, PRAYERS, PRAYER_METHODS, PRAYER_HIGH_LATITUDE } from './prayer-config.mjs';
 import { prayerClock } from './prayer-times.mjs';
 /** Native Discord REST payloads. Rendering only; these functions never send messages. */
@@ -44,7 +44,8 @@ export function welcomePayload() {
       text(`## ${COPY.welcomeTitle}\n${COPY.welcomeBody}`),
       text(`-# ${COPY.welcomeDetail}`),
       separator(),
-      row(button('ابدأ مع رفيق', 'setup_start', 3), button('أقرأ الآن', 'explore'))
+      row(button('ابدأ مع رفيق', 'setup_start', 3), button('أقرأ الآن', 'explore')),
+      row(button('دليل إعداد السيرفر', 'server_guide'))
     ], { silent: true }),
     attachments: [{ id: '0', filename: BRAND.banner, description: 'غلاف رفيق' }]
   };
@@ -148,6 +149,22 @@ export function seasonalReminderPayload(event, { silent = false, preview = false
     row(backButton('seasonal'))
   ], { ephemeral: true, accent: BRAND.gold });
   return notification(content, [row(button('المصدر والتوضيح', `seasonal_source_${event.key}`), button('إيقاف مواسم الخير', 'seasonal_off'))], { silent });
+}
+
+export function publicPostSourcePayload(id) {
+  const card = PUBLIC_POSTS.find(post => post.id === id);
+  if (!card) throw new RangeError('Unknown public post');
+  const ref = card.source.citations[0];
+  return envelope([
+    text(`## مصدر المنشور
+${card.title}
+[${ref.book} (${arabicNumber(ref.number.replace(/[a-z]$/, ''))})](${ref.url})
+${card.narratorLine}`),
+    text(card.source.note),
+    text('-# العنوان وتقديم الاقتباس من صياغة رفيق. مواعيد النشر لتنظيم الرسائل، ولا تخصّص للحديث وقتًا تعبديًا أو عددًا.'),
+    row(linkButton('افتح المصدر', card.source.url), button('ملاحظة على المحتوى', 'support')),
+    row(button('الرئيسية', 'home'))
+  ], { ephemeral: true });
 }
 
 export function seasonalSourcePayload(key) {
@@ -318,6 +335,8 @@ export function setupWrapPayload(payload) {
   const visit = item => {
     if (item.custom_id?.startsWith('rafiq:v1:') && !item.custom_id.startsWith('rafiq:v1:setup_')) {
       const action = item.custom_id.slice(9);
+      // Server controls keep their own router and fresh guild-permission checks.
+      if (action.startsWith('server_')) return;
       item.custom_id = ['home', 'cancel', 'reminders'].includes(action) ? 'rafiq:v1:setup_choices' : `rafiq:v1:setup_${action}`;
     }
     item.components?.forEach(visit);
@@ -534,11 +553,18 @@ function reminderCount(p, user = {}) {
     + OCCASIONS.filter(([key]) => p.occasions[key]).length + Number(user.seasonalAt > 0);
 }
 const reminderStatus = active => active ? 'مفعّل' : 'غير مفعّل';
-export function homePayload({ preferences: p = DEFAULT_PRAYER, enabled = false, subscribedHere = true, paused = false, dmBlocked = false, breakAt = null, favoriteCount = 0, seasonalAt = null, now = Date.now() } = {}) {
+export function homePayload({ preferences: p = DEFAULT_PRAYER, enabled = false, subscribedHere = true, paused = false, dmBlocked = false, breakAt = null, favoriteCount = 0, seasonalAt = null, inGuild = false, canManageServer = false, now = Date.now() } = {}) {
   const count = reminderCount(p, { enabled, subscribedHere, seasonalAt });
   const timerActive = breakAt > now;
+  const showServer = inGuild && canManageServer;
   return envelope([
     text('-# رفيق / الرئيسية\n## خيرٌ يرافقك. 🌿\nمساحة صغيرة لذكرٍ وخيرٍ في يومك.'),
+    ...(showServer ? [
+      section('### إدارة هذا السيرفر\nمنشورات القناة، مواعيدها والمنشن الاختياري.', button('إعدادات هذا السيرفر', 'server_home', 3)),
+      row(button('دليل إعداد السيرفر', 'server_guide')),
+      separator(),
+      text('### مساحتك الشخصية\nتذكيراتك الخاصة واختياراتك أنت.')
+    ] : []),
     ...(dmBlocked ? [section('**تعذّر وصول رسائل التذكير**\nاختبر الخاص لتستأنف الرسائل.', button('إصلاح وصول الخاص', 'settings', 3))]
       : paused ? [section('**التذكيرات متوقفة مؤقتًا**\nاختياراتك محفوظة.', button('استئناف التنبيهات', 'resume', 3))] : []),
     section(p.city ? `**${p.city.label}**\nمواقيتك والتذكير القادم في «يومي».` : `**أول مرة هنا؟ أهلًا بك**\n${seasonalAt === null ? 'عند البدء تتفعّل «مواسم الخير» تلقائيًا: تذكيرات قليلة في الخاص، ويمكنك إيقافها. اختيار المدينة لاحقًا متاح.' : 'تابع إعداد مدينتك وتذكيراتك. يبقى اختيارك لمواسم الخير محفوظًا.'}`, button(p.city ? 'يومي' : seasonalAt === null ? 'ابدأ مع رفيق' : 'متابعة الإعداد', p.city ? 'today' : seasonalAt === null ? 'setup_start' : 'setup', 3)),
@@ -550,7 +576,8 @@ export function homePayload({ preferences: p = DEFAULT_PRAYER, enabled = false, 
     separator(),
     ...(timerActive ? [text(`-# مؤقّت الاستراحة يعمل · <t:${Math.floor(breakAt / 1000)}:R>`)] : []),
     row(button(timerActive ? 'إدارة المؤقّت' : 'مؤقّت استراحة', 'break'), button(favoriteCount ? `محفوظاتي · ${arabicNumber(favoriteCount)}` : 'محفوظاتي', 'favorites')),
-    row(button('المساعدة', 'help'), button('بياناتي وخصوصيتي', 'privacy'))
+    row(button('المساعدة', 'help'), button('بياناتي وخصوصيتي', 'privacy')),
+    ...(!showServer ? [row(button('دليل إعداد السيرفر', 'server_guide'))] : [])
   ], { ephemeral: true });
 }
 

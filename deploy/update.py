@@ -23,7 +23,7 @@ BASE = Path('/opt/rafiq')
 RELEASES = BASE / 'releases'
 META = Path('/var/opt/rafiq-deploy')
 STATUS = Path('/run/rafiq/status.json')
-SCHEMA = '7'
+SCHEMA = '8'
 
 
 def run(*args, **kwargs):

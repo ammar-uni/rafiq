@@ -152,9 +152,245 @@ export const SEASONAL_CARDS = Object.freeze({
 });
 export function dhikrById(id) { return DHIKR_CARDS.find(card => card.id === id); }
 export function ideaById(id) { return GOOD_DEEDS.find(card => card.id === id); }
+// Public channel texts approved in docs/reminder-posts.md on 2026-09-27.
+export const PUBLIC_POSTS = [
+  {
+    "id": "post-two-words",
+    "editorialNumber": 1,
+    "title": "كلمتان خفيفتان",
+    "body": "قال النبي ﷺ:\n«كلمتان حبيبتان إلى الرحمن، خفيفتان على اللسان، ثقيلتان في الميزان: سبحان الله وبحمده، سبحان الله العظيم».",
+    "narratorLine": "أبو هريرة رضي الله عنه.",
+    "source": {
+      "url": "https://sunnah.com/bukhari:7563",
+      "reference": "رواه البخاري.",
+      "note": "حدود النقل: المتن النبوي كاملًا في هذه الرواية، دون الإسناد. ترتيب الصفات مطابق لهذه الرواية.\nملاحظة المراجعة: لا نضيف عددًا للتكرار أو وقتًا تعبديًا لهذا الذكر.",
+      "citations": [
+        {
+          "collection": "bukhari",
+          "number": "7563",
+          "narrator": "أبو هريرة",
+          "book": "صحيح البخاري",
+          "url": "https://sunnah.com/bukhari:7563"
+        }
+      ],
+      "publisher": "نص كتاب الحديث على Sunnah.com",
+      "checkedOn": "2026-09-27"
+    }
+  },
+  {
+    "id": "post-four-words",
+    "editorialNumber": 2,
+    "title": "أربع كلمات",
+    "body": "قال رسول الله ﷺ:\n«أحب الكلام إلى الله أربع: سبحان الله، والحمد لله، ولا إله إلا الله، والله أكبر. لا يضرك بأيهن بدأت».",
+    "narratorLine": "سمرة بن جندب رضي الله عنه.",
+    "source": {
+      "url": "https://sunnah.com/muslim:2137a",
+      "reference": "رواه مسلم — مقتطف من الحديث.",
+      "note": "حدود النقل: أول الحديث إلى «لا يضرك بأيهن بدأت». تتمة الرواية تتناول التسمية بأسماء معينة؛ لم تُضم إلى المنشور.\nملاحظة المراجعة: أبقينا جملة «لا يضرك بأيهن بدأت» كما وردت، دون فرض ترتيب أو عدد من التطبيق.",
+      "citations": [
+        {
+          "collection": "muslim",
+          "number": "2137a",
+          "narrator": "سمرة بن جندب",
+          "book": "صحيح مسلم",
+          "url": "https://sunnah.com/muslim:2137a"
+        }
+      ],
+      "publisher": "نص كتاب الحديث على Sunnah.com",
+      "checkedOn": "2026-09-27"
+    }
+  },
+  {
+    "id": "post-hawqala",
+    "editorialNumber": 3,
+    "title": "كنز من كنوز الجنة",
+    "body": "قال النبي ﷺ:\n«قل لا حول ولا قوة إلا بالله».",
+    "narratorLine": "أبو موسى الأشعري رضي الله عنه.",
+    "source": {
+      "url": "https://sunnah.com/muslim:2704a",
+      "reference": "رواه مسلم — مقتطف من الحديث.",
+      "note": "حدود النقل: الجملة النبوية الأخيرة في الرواية. يسبقها سؤال النبي ﷺ لأبي موسى عن دلالته على كنز من كنوز الجنة، ثم جواب أبي موسى؛ ومن هذا السياق أخذ العنوان.\nملاحظة المراجعة: استخدمنا لفظ مسلم وحده، ولم نركّب السؤال والجواب في جملة نبوية واحدة.",
+      "citations": [
+        {
+          "collection": "muslim",
+          "number": "2704a",
+          "narrator": "أبو موسى الأشعري",
+          "book": "صحيح مسلم",
+          "url": "https://sunnah.com/muslim:2704a"
+        }
+      ],
+      "publisher": "نص كتاب الحديث على Sunnah.com",
+      "checkedOn": "2026-09-27"
+    }
+  },
+  {
+    "id": "post-guidance",
+    "editorialNumber": 4,
+    "title": "دعاء جامع",
+    "body": "كان النبي ﷺ يقول:\n«اللهم إني أسألك الهدى والتقى والعفاف والغنى».",
+    "narratorLine": "عبد الله بن مسعود رضي الله عنه.",
+    "source": {
+      "url": "https://sunnah.com/muslim:2721a",
+      "reference": "رواه مسلم.",
+      "note": "حدود النقل: الدعاء كاملًا كما في الرواية. ورد اسم الصحابي في سندها «عبد الله»، وتعيينه بابن مسعود موافق لـ[شرح ابن باز لهذا الحديث](https://binbaz.org.sa/audios/2168/30-من-حديث-اللهم-اني-اسالك-الهدى-والتقى-والعفاف-والغنى).\nملاحظة المراجعة: لا نربط الدعاء بوقت أو عدد مخصوص.",
+      "citations": [
+        {
+          "collection": "muslim",
+          "number": "2721a",
+          "narrator": "عبد الله بن مسعود",
+          "book": "صحيح مسلم",
+          "url": "https://sunnah.com/muslim:2721a"
+        }
+      ],
+      "publisher": "نص كتاب الحديث على Sunnah.com",
+      "checkedOn": "2026-09-27"
+    }
+  },
+  {
+    "id": "post-parents",
+    "editorialNumber": 5,
+    "title": "حسن صحبة الوالدين",
+    "body": "عن أبي هريرة رضي الله عنه، قال:\nجاء رجل إلى رسول الله ﷺ فقال: يا رسول الله، من أحق بحسن صحابتي؟ قال: «أمك». قال: ثم من؟ قال: «أمك». قال: ثم من؟ قال: «أمك». قال: ثم من؟ قال: «ثم أبوك».",
+    "narratorLine": "أبو هريرة رضي الله عنه.",
+    "source": {
+      "url": "https://sunnah.com/bukhari:5971",
+      "reference": "رواه البخاري.",
+      "note": "حدود النقل: رواية السؤال والجواب كاملة، دون الإسناد أو التعقيب على طرق الرواية. السؤال بلفظ «من أحق بحسن صحابتي؟»، والجواب الأخير «ثم أبوك» كما في هذا المرجع.\nملاحظة المراجعة: الأسئلة من كلام الرجل؛ وضعنا أجوبة النبي ﷺ وحدها بين علامتي الاقتباس.",
+      "citations": [
+        {
+          "collection": "bukhari",
+          "number": "5971",
+          "narrator": "أبو هريرة",
+          "book": "صحيح البخاري",
+          "url": "https://sunnah.com/bukhari:5971"
+        }
+      ],
+      "publisher": "نص كتاب الحديث على Sunnah.com",
+      "checkedOn": "2026-09-27"
+    }
+  },
+  {
+    "id": "post-help",
+    "editorialNumber": 6,
+    "title": "الدلالة على الخير",
+    "body": "قال رسول الله ﷺ:\n«من دل على خير فله مثل أجر فاعله».",
+    "narratorLine": "أبو مسعود الأنصاري رضي الله عنه.",
+    "source": {
+      "url": "https://sunnah.com/muslim:1893a",
+      "reference": "رواه مسلم — مقتطف من الحديث.",
+      "note": "حدود النقل: الجملة النبوية الأخيرة كاملة في ختام خبر الرجل الذي احتاج إلى ما يركبه، ودلالة رجل آخر له على من يعينه. هي مقتطف من الرواية الأطول، وليست جميع الحوار الوارد فيها.\nملاحظة المراجعة: لا نربط الفضل بضغط زر أو إعادة نشر رسالة البوت.",
+      "citations": [
+        {
+          "collection": "muslim",
+          "number": "1893a",
+          "narrator": "أبو مسعود الأنصاري",
+          "book": "صحيح مسلم",
+          "url": "https://sunnah.com/muslim:1893a"
+        }
+      ],
+      "publisher": "نص كتاب الحديث على Sunnah.com",
+      "checkedOn": "2026-09-27"
+    }
+  },
+  {
+    "id": "post-kind-word",
+    "editorialNumber": 7,
+    "title": "قل خيرًا",
+    "body": "قال رسول الله ﷺ:\n«من كان يؤمن بالله واليوم الآخر فليقل خيرًا أو ليصمت».",
+    "narratorLine": "أبو هريرة رضي الله عنه.",
+    "source": {
+      "url": "https://sunnah.com/bukhari:6475",
+      "reference": "رواه البخاري — مقتطف من الحديث.",
+      "note": "حدود النقل: الجملة الأولى؛ يتبعها في الرواية النهي عن إيذاء الجار والأمر بإكرام الضيف.\nملاحظة المراجعة: يصلح للتذكير بحفظ اللسان في عموم الكلام، دون تخصيص الحديث باللعب.",
+      "citations": [
+        {
+          "collection": "bukhari",
+          "number": "6475",
+          "narrator": "أبو هريرة",
+          "book": "صحيح البخاري",
+          "url": "https://sunnah.com/bukhari:6475"
+        }
+      ],
+      "publisher": "نص كتاب الحديث على Sunnah.com",
+      "checkedOn": "2026-09-27"
+    }
+  },
+  {
+    "id": "post-calm",
+    "editorialNumber": 8,
+    "title": "عند الغضب",
+    "body": "قال رسول الله ﷺ:\n«ليس الشديد بالصُّرَعَة، إنما الشديد الذي يملك نفسه عند الغضب».",
+    "narratorLine": "أبو هريرة رضي الله عنه.",
+    "source": {
+      "url": "https://sunnah.com/bukhari:6114",
+      "reference": "رواه البخاري.",
+      "note": "حدود النقل: المتن النبوي كاملًا، دون الإسناد.\nملاحظة المراجعة: ضُبطت كلمة «الصُّرَعَة» بحسب لفظ المصدر؛ بقية النص دون تشكيل للتيسير.",
+      "citations": [
+        {
+          "collection": "bukhari",
+          "number": "6114",
+          "narrator": "أبو هريرة",
+          "book": "صحيح البخاري",
+          "url": "https://sunnah.com/bukhari:6114"
+        }
+      ],
+      "publisher": "نص كتاب الحديث على Sunnah.com",
+      "checkedOn": "2026-09-27"
+    }
+  },
+  {
+    "id": "post-kinship",
+    "editorialNumber": 9,
+    "title": "صلة الرحم",
+    "body": "قال رسول الله ﷺ:\n«من أحب أن يُبسط له في رزقه، ويُنسأ له في أثره، فليصل رحمه».",
+    "narratorLine": "أنس بن مالك رضي الله عنه.",
+    "source": {
+      "url": "https://sunnah.com/bukhari:5986",
+      "reference": "رواه البخاري.",
+      "note": "حدود النقل: المتن النبوي كاملًا، دون الإسناد.\nملاحظة المراجعة: نكتفي باللفظ النبوي، دون تحويله إلى وعد بمبلغ مالي أو مدة عمر يحددها التطبيق.",
+      "citations": [
+        {
+          "collection": "bukhari",
+          "number": "5986",
+          "narrator": "أنس بن مالك",
+          "book": "صحيح البخاري",
+          "url": "https://sunnah.com/bukhari:5986"
+        }
+      ],
+      "publisher": "نص كتاب الحديث على Sunnah.com",
+      "checkedOn": "2026-09-27"
+    }
+  },
+  {
+    "id": "post-no-insult",
+    "editorialNumber": 10,
+    "title": "سلامة اللسان واليد",
+    "body": "قال النبي ﷺ:\n«المسلم من سلم المسلمون من لسانه ويده».",
+    "narratorLine": "عبد الله بن عمرو رضي الله عنهما.",
+    "source": {
+      "url": "https://sunnah.com/bukhari:10",
+      "reference": "رواه البخاري — مقتطف من الحديث.",
+      "note": "حدود النقل: الجملة الأولى؛ تتمة الحديث تتناول المهاجر الذي يهجر ما نهى الله عنه.\nملاحظة المراجعة: تبقى الصياغة كما وردت، دون إلحاق أحكام على أشخاص أو تعليقات على مواقف أعضاء السيرفر.",
+      "citations": [
+        {
+          "collection": "bukhari",
+          "number": "10",
+          "narrator": "عبد الله بن عمرو",
+          "book": "صحيح البخاري",
+          "url": "https://sunnah.com/bukhari:10"
+        }
+      ],
+      "publisher": "نص كتاب الحديث على Sunnah.com",
+      "checkedOn": "2026-09-27"
+    }
+  }
+];
+
 function freezeContent(value) {
   if (value && typeof value === 'object') { Object.values(value).forEach(freezeContent); Object.freeze(value); }
 }
 freezeContent(DHIKR_CARDS); freezeContent(GOOD_DEEDS); freezeContent(IDEA_CATEGORIES); freezeContent(OCCASION_CARDS);
 freezeContent(DAILY_DHIKR);
 freezeContent(SEASONAL_CARDS);
+
+freezeContent(PUBLIC_POSTS);

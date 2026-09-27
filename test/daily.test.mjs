@@ -173,6 +173,7 @@ test('v4 migration preserves old preferences, keeps additions off and persists e
   store.subscribe('1', '10'); store.updateUser('1', { delivery: 'silent', frequency: 'daily' }); store.toggleFavorite('1', 'majlis');
   store.setPrayer('1', { ...prefs(), enabled: true, activatedAt: start, delivery: 'silent' }); store.close();
   const snapshot = new EncryptedSnapshot(file, encryptionKey), legacy = snapshot.read(); legacy.version = 4;
+  delete legacy.tables.server_settings; delete legacy.tables.server_attempts;
   delete legacy.tables.seasonal_attempts; legacy.tables.users.forEach(row => row.pop());
   const p = JSON.parse(legacy.tables.prayer_settings[0][1]); delete p.daily;
   legacy.tables.prayer_settings[0][1] = JSON.stringify(p); snapshot.write(legacy); snapshot.close();
@@ -186,7 +187,7 @@ test('v4 migration preserves old preferences, keeps additions off and persists e
   store = new Store(file, { encryptionKey }); t.after(() => store.close());
   assert.equal(store.claimPrayer('1', prefs(), event, event.at + 1000), null);
   for (const value of [city.label, 'offsetMinutes', '20:30']) assert.equal(readFileSync(file).includes(Buffer.from(value)), false);
-  assert.equal(store.snapshot.read().version, 7);
+  assert.equal(store.snapshot.read().version, 8);
   store.forget('1'); store.close(); store = new Store(file, { encryptionKey });
   assert.deepEqual(store.getPrayer('1'), DEFAULT_PRAYER); store.close();
 });
@@ -288,6 +289,7 @@ test('v5 migration retains all opt-ins and non-daily data; signed offsets persis
   store.setPrayer('1', prefs()); store.close();
   const snapshot = new EncryptedSnapshot(file, encryptionKey), old = snapshot.read();
   old.version = 5;
+  delete old.tables.server_settings; delete old.tables.server_attempts;
   delete old.tables.seasonal_attempts; old.tables.users.forEach(row => row.pop());
   const previous = JSON.parse(old.tables.prayer_settings[0][1]);
   previous.daily.morning = { activatedAt: start, iqamaMinutes: 90 };
@@ -299,7 +301,7 @@ test('v5 migration retains all opt-ins and non-daily data; signed offsets persis
   assert.deepEqual(migrated.daily.evening, { activatedAt: 0, offsetMinutes: 30 });
   assert.deepEqual({ ...migrated, daily: previous.daily }, previous);
   store.persist();
-  const actual = store.snapshot.read(); assert.equal(actual.version, 7);
+  const actual = store.snapshot.read(); assert.equal(actual.version, 8);
   for (const name of Object.keys(old.tables).filter(n => n !== 'prayer_settings')) assert.deepEqual(name === 'users' ? actual.tables[name].map(row => row.slice(0, -1)) : actual.tables[name], old.tables[name]);
   assert.equal(store.getUser('1').seasonalAt, null);
   migrated.daily.morning.offsetMinutes = -60; migrated.daily.evening.offsetMinutes = 60;

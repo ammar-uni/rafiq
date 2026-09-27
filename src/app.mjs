@@ -1,9 +1,10 @@
-import { DHIKR_CARDS, GOOD_DEEDS, IDEA_CATEGORIES, dhikrById, ideaById } from './content.mjs';
+import { DHIKR_CARDS, GOOD_DEEDS, PUBLIC_POSTS, IDEA_CATEGORIES, dhikrById, ideaById } from './content.mjs';
 import { DAY, MINUTE } from './store.mjs';
 import * as ui from './messages.mjs';
 import { hasPrayerReminders, renewPrayerActivation } from './prayer-config.mjs';
 import { DailyApp } from './daily-app.mjs';
 import { seasonalPreviewEvent } from './seasonal-times.mjs';
+import { serverGuidePayload } from './server-messages.mjs';
 
 export class RafiqApp {
   constructor({ store, queue, sendDM, privacyURL, supportURL, prayers = null, now = Date.now, cancelUser = () => {}, cancelGuild = () => {} }) {
@@ -16,7 +17,9 @@ export class RafiqApp {
   }
   handle(input) { return this.queue.run(input.userId, () => this.route(input)); }
 
-  async route({ userId, guildId = null, action = 'home', values = [] }) {
+  async route({ userId, guildId = null, canManageServer = false, action = 'home', values = [] }) {
+    if (action.startsWith('post_source_') && PUBLIC_POSTS.some(card => card.id === action.slice(12))) return ui.publicPostSourcePayload(action.slice(12));
+    if (action === 'server_guide') return serverGuidePayload(Boolean(guildId && canManageServer));
     if (action === 'setup_start') {
       // Only this newly disclosed start button includes seasonal permission.
       // Legacy setup/enable buttons and repeated visits preserve prior choices.
@@ -35,7 +38,7 @@ export class RafiqApp {
     if (action.startsWith('setup_')) {
       const raw = action.slice(6);
       if (raw.startsWith('setup_')) return ui.setupStartPayload(this.store.getPrayer(userId));
-      return ui.setupWrapPayload(await this.route({ userId, guildId, action: raw, values }));
+      return ui.setupWrapPayload(await this.route({ userId, guildId, canManageServer, action: raw, values }));
     }
     if (action === 'today' || action === 'daily' || action.startsWith('daily_')) return this.daily.route(userId, action, values);
     if (action === 'prayer' || action.startsWith('prayer_')) return this.prayers ? this.prayers.route(userId, action, values) : ui.noticePayload('مواقيت الصلاة', 'تحتاج هذه الميزة إلى تشغيل النسخة المحدّثة من رفيق.');
@@ -53,7 +56,7 @@ export class RafiqApp {
     const settings = notice => ui.settingsPayload({ ...this.state(userId, guildId), notice });
     const library = (selectedId, onlyFavorites = false) => ui.libraryPayload({ selectedId, onlyFavorites, favorites: this.store.favorites(userId) });
     const idea = (index = 0, category = 'all') => ui.ideaPayload(index, { category, favorites: this.store.savedIdeas(userId) });
-    if (action === 'home' || action === 'cancel') return ui.homePayload({ ...user, preferences: this.store.getPrayer(userId), now: this.now() });
+    if (action === 'home' || action === 'cancel') return ui.homePayload({ ...user, canManageServer, preferences: this.store.getPrayer(userId), now: this.now() });
     if (action === 'reminders') return ui.remindersMenuPayload(this.store.getPrayer(userId), user);
     if (action === 'explore') return ui.explorePayload();
     if (action === 'help') return ui.helpMenuPayload();

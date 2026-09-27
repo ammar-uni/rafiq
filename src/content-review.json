@@ -96,6 +96,56 @@
       "id": "seasonal-arafah",
       "checkedOn": "2026-09-23",
       "sha256": "1a98c2421fb7d4a1b7c33c46e2dd06479e49badcdcbdf6009e470949d47f8285"
+    },
+    {
+      "id": "post-two-words",
+      "checkedOn": "2026-09-27",
+      "sha256": "cbfa9f1032de09fbd1d38df11b1f43aae235cf2ef0bcea25aad35448de2f9094"
+    },
+    {
+      "id": "post-four-words",
+      "checkedOn": "2026-09-27",
+      "sha256": "ee7637e2d7a82e739f1e80ca92528566308e133f23a7e62e75416627c57b398d"
+    },
+    {
+      "id": "post-hawqala",
+      "checkedOn": "2026-09-27",
+      "sha256": "57f04822ac069589897fe786f1660b26fcc2623084b8b06f2b5812db16a679a0"
+    },
+    {
+      "id": "post-guidance",
+      "checkedOn": "2026-09-27",
+      "sha256": "6b205bbc62d3f372d1d90719dc17553af2ba04e3b02221e9a8c1652fb4d5e001"
+    },
+    {
+      "id": "post-parents",
+      "checkedOn": "2026-09-27",
+      "sha256": "dc19d61e592d1f8f03c0e029c59f671bf65c93977851c30d1be0b2cfb135cd45"
+    },
+    {
+      "id": "post-help",
+      "checkedOn": "2026-09-27",
+      "sha256": "6760a874a8236cf69901a461e865b8cb94c8d94796b968292dfcfbc826ccd6a8"
+    },
+    {
+      "id": "post-kind-word",
+      "checkedOn": "2026-09-27",
+      "sha256": "326170bd21337cfd193aeff9f067a10da2fe6063b9e453302357189b63d6fb83"
+    },
+    {
+      "id": "post-calm",
+      "checkedOn": "2026-09-27",
+      "sha256": "ac64a1cb9a8430dfc71131706a11a9c031060bddbe1644d6493473a54f0b29c3"
+    },
+    {
+      "id": "post-kinship",
+      "checkedOn": "2026-09-27",
+      "sha256": "e6dcaf9f2c0a7f714541572f9a87f1855c8d8038ee8ab28f7f6459b3634c7774"
+    },
+    {
+      "id": "post-no-insult",
+      "checkedOn": "2026-09-27",
+      "sha256": "3d72640ff75220fd07707f0fb95b82f7ee50c52d996f01d1f493a6cd1ff9e26c"
     }
   ]
 }

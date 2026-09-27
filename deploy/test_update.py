@@ -93,6 +93,34 @@ class UpdateTests(unittest.TestCase):
             self.assertTrue((meta / ('failed-' + commit)).exists())
             self.assertEqual(sum(call.args == ('systemctl','start','rafiq.service') for call in run.call_args_list), 2)
 
+    def test_schema_upgrade_is_rejected_before_touching_the_running_service(self):
+        with tempfile.TemporaryDirectory() as temp:
+            base = Path(temp) / 'app'
+            releases = base / 'releases'
+            previous = releases / ('a' * 40)
+            previous.mkdir(parents=True)
+            (base / 'current').symlink_to(previous)
+            meta = Path(temp) / 'meta'
+            commit = 'b' * 40
+            run_info = dict(head_sha=commit, head_branch='main', event='push', run_number=1,
+                            status='completed', conclusion='success')
+            def extract(_archive, code):
+                (code / 'deploy').mkdir()
+                (code / 'deploy/schema-version').write_text('8')
+            with patch.multiple(updater, BASE=base, RELEASES=releases, META=meta, SCHEMA='7'), \
+                 patch.object(updater, 'api', side_effect=[{'sha':commit}, {'workflow_runs':[run_info]}]), \
+                 patch.object(updater, 'request', return_value=io.BytesIO(b'archive')), \
+                 patch.object(updater, 'safe_extract', side_effect=extract), \
+                 patch.object(updater, 'build') as build, patch.object(updater, 'run') as run, \
+                 patch.object(updater, 'wait_ready') as wait_ready:
+                with self.assertRaisesRegex(RuntimeError, 'Storage migration needs operator review'):
+                    updater.main()
+                build.assert_not_called()
+                run.assert_not_called()
+                wait_ready.assert_not_called()
+            self.assertEqual((base / 'current').resolve(), previous)
+            self.assertFalse((releases / commit).exists())
+
 
 if __name__ == '__main__':
     unittest.main()

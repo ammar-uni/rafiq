@@ -277,6 +277,7 @@ test('encrypted v3 migration preserves old choices, new choices stay private, de
   const folder = temp(t), file = join(folder, 'state.enc'), encryptionKey = randomBytes(32).toString('hex');
   let store = new Store(file, { encryptionKey }); store.setPrayer('1', p({ enabled: true, activatedAt: start })); store.toggleFavorite('1', 'majlis'); store.close();
   const snapshot = new EncryptedSnapshot(file, encryptionKey), legacy = snapshot.read(); legacy.version = 3;
+  delete legacy.tables.server_settings; delete legacy.tables.server_attempts;
   delete legacy.tables.seasonal_attempts; legacy.tables.users.forEach(row => row.pop());
   const settings = JSON.parse(legacy.tables.prayer_settings[0][1]); delete settings.occasions;
   legacy.tables.prayer_settings[0][1] = JSON.stringify(settings); snapshot.write(legacy); snapshot.close();
