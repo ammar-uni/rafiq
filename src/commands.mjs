@@ -12,13 +12,17 @@ export const COMMANDS = [
         { name: 'مؤقّت استراحة', value: 'break' }, { name: 'إعداد تذكير المجلس', value: 'settings' },
         { name: 'مواقيت الصلاة', value: 'prayer' },
         { name: 'مكتبة الأذكار', value: 'library' }, { name: 'بياناتي وخصوصيتي', value: 'privacy' }, { name: 'المصادر والمنهج', value: 'methodology' },
-        { name: 'دليل الاستخدام', value: 'help' }, { name: 'تواصل وإبلاغ', value: 'support' }
+        { name: 'دليل الاستخدام', value: 'help' }, { name: 'دليل إعداد السيرفر', value: 'server_guide' }, { name: 'تواصل وإبلاغ', value: 'support' }
       ] }]
   },
   {
     name: 'rafiq-setup', description: 'نشر بطاقة رفيق أو تحديثها في قناة السيرفر',
     default_member_permissions: PermissionFlagsBits.ManageGuild.toString(), contexts: [0], integration_types: [0],
     options: [{ type: ApplicationCommandOptionType.Channel, name: 'channel', description: 'قناة بطاقة الترحيب', required: true, channel_types: [ChannelType.GuildText] }]
+  },
+  {
+    name: 'rafiq-server', description: 'إعداد منشورات السيرفر: القناة والتذكيرات والمواعيد والمنشن',
+    default_member_permissions: PermissionFlagsBits.ManageGuild.toString(), contexts: [0], integration_types: [0]
   },
   {
     name: 'rafiq-status', description: 'حالة إعداد رفيق في السيرفر للمشرف',

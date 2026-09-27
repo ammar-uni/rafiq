@@ -12,7 +12,10 @@ import { SeasonalScheduler } from './seasonal-scheduler.mjs';
 import { loadPrayerSounds } from './prayer-sounds.mjs';
 import { assertReviewedContent } from './content-review.mjs';
 import { runtimeLog, safeErrorCode } from './runtime-log.mjs';
-import { acknowledgePrivate, makeSendDM, setupPanel, statusPayload, toDiscord } from './discord-adapter.mjs';
+import { acknowledgePrivate, makeSendDM, setupPanel, statusPayload, toDiscord, canManageGuild } from './discord-adapter.mjs';
+import { ServerApp } from './server-app.mjs';
+import { ServerScheduler } from './server-scheduler.mjs';
+import { makeCheckServerTarget, makeSendServer } from './server-discord.mjs';
 
 function safeError(context, error) {
   runtimeLog(context, { code: safeErrorCode(error) });
@@ -38,6 +41,8 @@ async function main() {
     onError: error => safeError('reminder', error) });
   engine.prayers = new PrayerScheduler({ store, queue, sounds, canSend: engine.canSend, deliver: (...args) => engine.deliver(...args), onError: error => safeError('prayer-schedule', error) });
   engine.seasonal = new SeasonalScheduler({ store, queue, canSend: engine.canSend, deliver: (...args) => engine.deliver(...args), onError: error => safeError('seasonal-schedule', error) });
+  engine.servers = new ServerScheduler({ store, queue, canSend: engine.canSend, send: makeSendServer(client), onError: error => safeError('server-schedule', error) });
+  const serverApp = new ServerApp({ store, checkTarget: makeCheckServerTarget(client) });
   const prayers = new PrayerApp({ store, sounds, sendDM });
   const app = new RafiqApp({ store, queue, sendDM, prayers, privacyURL: config.privacyURL, supportURL: config.supportURL, cancelUser: userId => engine.cancelUser(userId), cancelGuild: (userId, guildId) => engine.discard(userId, guildId) });
 
@@ -92,18 +97,29 @@ async function main() {
   client.on(Events.ShardReconnecting, () => { connected = false; engine.clearVoice(); runtimeLog('gateway-reconnecting'); reportHealth(); });
   client.on(Events.ShardResume, () => { connected = true; seedAll(); runtimeLog('gateway-resumed'); reportHealth(); });
   client.on(Events.ShardReady, () => { if (client.isReady()) { connected = true; seedAll(); } });
-  client.on(Events.GuildDelete, guild => { engine.removeGuild(guild.id); store.removeGuild(guild.id); });
+  client.on(Events.GuildDelete, guild => { engine.removeGuild(guild.id); serverApp.forgetGuild(guild.id); store.removeGuild(guild.id); });
   client.on(Events.GuildUnavailable, guild => engine.removeGuild(guild.id));
   client.on(Events.Error, error => safeError('discord', error));
   client.on(Events.Warn, () => runtimeLog('gateway-warning'));
   client.on(Events.InteractionCreate, async interaction => {
     if (stopping || !identityVerified) return;
-    const isCommand = interaction.isChatInputCommand() && ['rafiq', 'rafiq-setup', 'rafiq-status'].includes(interaction.commandName);
+    const isCommand = interaction.isChatInputCommand() && ['rafiq', 'rafiq-setup', 'rafiq-status', 'rafiq-server'].includes(interaction.commandName);
     const isComponent = interaction.isMessageComponent() && interaction.customId.startsWith('rafiq:v1:');
-    const isModal = interaction.isModalSubmit() && /^rafiq:v1:(setup_)?(prayer_search|prayer_adjust|daily_time_(morning|evening|quran)|daily_offset_(morning|evening)_(before|after))$/.test(interaction.customId);
+    const isServerModal = interaction.isModalSubmit() && /^rafiq:v1:server_[a-f0-9]{16}_(time_save|zone_save)$/.test(interaction.customId);
+    const isModal = isServerModal || interaction.isModalSubmit() && /^rafiq:v1:(setup_)?(prayer_search|prayer_adjust|daily_time_(morning|evening|quran)|daily_offset_(morning|evening)_(before|after))$/.test(interaction.customId);
     if (!isCommand && !isComponent && !isModal) return;
     try {
-      const action = isCommand ? interaction.options.getString('section') || 'home' : interaction.customId.slice('rafiq:v1:'.length);
+      const action = isCommand ? interaction.commandName === 'rafiq-server' ? 'server_home' : interaction.options.getString('section') || 'home' : interaction.customId.slice('rafiq:v1:'.length);
+      if (action.startsWith('server_')) {
+        const input = { guildId: interaction.guildId, userId: interaction.user.id, canManage: canManageGuild(interaction), action };
+        const modal = isComponent ? serverApp.modal(input) : null;
+        if (modal) { await interaction.showModal(modal); return; }
+        await acknowledgePrivate(interaction);
+        const values = isServerModal ? (action.endsWith('_zone_save') ? [interaction.fields.getTextInputValue('zone')] : ['time0', 'time1', 'time2'].filter(key => interaction.fields.fields.has(key)).map(key => interaction.fields.getTextInputValue(key))) : interaction.isAnySelectMenu() ? interaction.values : [];
+        const payload = await queue.run(`guild:${interaction.guildId}`, () => serverApp.handle({ ...input, values }));
+        await interaction.editReply(toDiscord(payload, { forEdit: true }));
+        return;
+      }
       const rawAction = action.startsWith('setup_') ? action.slice(6) : action;
       if (isComponent && MODAL_ACTIONS.includes(rawAction)) {
         await interaction.showModal(appModal(action, store.getPrayer(interaction.user.id)));
@@ -117,7 +133,7 @@ async function main() {
         payload = statusPayload(interaction, store);
       } else {
         const values = isModal ? (rawAction === 'prayer_search' ? [interaction.fields.getTextInputValue('city')] : rawAction.startsWith('daily_offset_') ? [interaction.fields.getTextInputValue('minutes')] : rawAction.startsWith('daily_time_') ? [interaction.fields.getTextInputValue('time')] : PRAYERS.map(([key]) => interaction.fields.getTextInputValue(key))) : interaction.isStringSelectMenu() ? interaction.values : [];
-        payload = await app.handle({ userId: interaction.user.id, guildId: interaction.guildId, action, values });
+        payload = await app.handle({ userId: interaction.user.id, guildId: interaction.guildId, canManageServer: canManageGuild(interaction), action, values });
         if (['enable', 'resume', 'test_dm'].includes(rawAction)) seedUser(interaction.user.id);
       }
       await interaction.editReply(toDiscord(payload, { forEdit: true }));
@@ -129,7 +145,7 @@ async function main() {
     }
   });
   let tickPromise = Promise.resolve();
-  const timer = setInterval(() => { prayers.prune(); if (!engine.running) tickPromise = engine.tick().catch(error => safeError('scheduler', error)); }, 5000);
+  const timer = setInterval(() => { prayers.prune(); serverApp.prune(); if (!engine.running) tickPromise = engine.tick().catch(error => safeError('scheduler', error)); }, 5000);
   function reportHealth() {
     if (process.connected) process.send({ type: 'rafiq:health', ready: identityVerified && connected && !stopping && client.isReady() }, () => {});
   }

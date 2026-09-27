@@ -2,6 +2,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { dhikrById, ideaById } from './content.mjs';
 import { EncryptedSnapshot } from './encrypted-snapshot.mjs';
 import { DEFAULT_PRAYER, DEFAULT_OCCASIONS, PRAYERS, DAILY_REMINDERS, stopDaily, validatePrayer, readStoredPrayer } from './prayer-config.mjs';
+import { DEFAULT_SERVER, validateServer, readStoredServer } from './server-config.mjs';
 
 export const MINUTE = 60_000;
 export const DAY = 24 * 60 * MINUTE;
@@ -13,7 +14,9 @@ const tables = {
   subscriptions: ['user_id', 'guild_id'], favorites: ['user_id', 'card_id'],
   reminder_attempts: ['user_id', 'attempted_at'], guild_panels: ['guild_id', 'channel_id', 'message_id'],
   prayer_settings: ['user_id', 'settings'], prayer_attempts: ['user_id', 'local_day', 'prayer', 'attempted_at'],
-  seasonal_attempts: ['user_id', 'campaign_id', 'attempted_at']
+  seasonal_attempts: ['user_id', 'campaign_id', 'attempted_at'],
+  server_settings: ['guild_id', 'settings'],
+  server_attempts: ['guild_id', 'event_id', 'local_day', 'slot', 'attempted_at']
 };
 
 export class Store {
@@ -70,16 +73,26 @@ export class Store {
         campaign_id TEXT NOT NULL, attempted_at INTEGER NOT NULL,
         PRIMARY KEY(user_id, campaign_id)
       );
-      PRAGMA user_version = 7;
+      CREATE TABLE server_settings (
+        guild_id TEXT PRIMARY KEY, settings TEXT NOT NULL
+      );
+      CREATE TABLE server_attempts (
+        guild_id TEXT NOT NULL REFERENCES server_settings(guild_id) ON DELETE CASCADE,
+        event_id TEXT NOT NULL, local_day TEXT NOT NULL,
+        slot INTEGER NOT NULL CHECK(slot BETWEEN 0 AND 2), attempted_at INTEGER NOT NULL,
+        PRIMARY KEY(guild_id, event_id), UNIQUE(guild_id, local_day, slot)
+      );
+      CREATE INDEX server_attempts_recent ON server_attempts(guild_id, attempted_at);
+      PRAGMA user_version = 8;
     `);
     try {
       if (filename !== ':memory:') {
         this.snapshot = new EncryptedSnapshot(filename, encryptionKey);
         const saved = this.snapshot.read();
         if (saved) {
-          const sourceTables = Object.entries(tables).filter(([name]) => (saved.version !== 1 || !name.startsWith('prayer_')) && (saved.version >= 7 || name !== 'seasonal_attempts'))
+          const sourceTables = Object.entries(tables).filter(([name]) => (saved.version !== 1 || !name.startsWith('prayer_')) && (saved.version >= 7 || name !== 'seasonal_attempts') && (saved.version >= 8 || !name.startsWith('server_')))
             .map(([name, names]) => [name, name === 'users' && saved.version < 7 ? names.slice(0, -1) : names]);
-          if (![1, 2, 3, 4, 5, 6, 7].includes(saved.version) || !saved.tables || Object.keys(saved.tables).length !== sourceTables.length) throw new Error('Unsupported snapshot structure');
+          if (![1, 2, 3, 4, 5, 6, 7, 8].includes(saved.version) || !saved.tables || Object.keys(saved.tables).length !== sourceTables.length) throw new Error('Unsupported snapshot structure');
           this.db.exec('BEGIN IMMEDIATE');
           try {
             for (const [table, names] of sourceTables) {
@@ -88,6 +101,7 @@ export class Store {
               for (const values of saved.tables[table]) {
                 if (!Array.isArray(values) || values.length !== names.length) throw new Error('Invalid snapshot row');
                 if (table === 'prayer_settings') values[1] = JSON.stringify(readStoredPrayer(JSON.parse(values[1]), saved.version));
+                if (table === 'server_settings') values[1] = JSON.stringify(readStoredServer(JSON.parse(values[1])));
                 insert.run(...values);
               }
             }
@@ -104,7 +118,7 @@ export class Store {
     for (const [table, names] of Object.entries(tables)) {
       saved[table] = this.db.prepare('SELECT ' + names.join(', ') + ' FROM ' + table).all().map(row => names.map(name => row[name]));
     }
-    this.snapshot.write({ version: 7, tables: saved });
+    this.snapshot.write({ version: 8, tables: saved });
   }
 
   transaction(fn) {
@@ -286,7 +300,39 @@ export class Store {
     this.db.prepare('DELETE FROM reminder_attempts WHERE attempted_at <= ?').run(now - 2 * DAY);
     this.db.prepare('DELETE FROM prayer_attempts WHERE attempted_at <= ?').run(now - 7 * DAY);
     this.db.prepare('DELETE FROM seasonal_attempts WHERE attempted_at <= ?').run(now - 400 * DAY);
+    this.db.prepare("DELETE FROM server_attempts WHERE attempted_at <= ? OR (event_id LIKE 'daily:%' AND attempted_at <= ?)").run(now - 400 * DAY, now - 7 * DAY);
   }); }
+
+  getServer(guildId) {
+    const row = this.db.prepare('SELECT settings FROM server_settings WHERE guild_id = ?').get(id(guildId));
+    return row ? validateServer(JSON.parse(row.settings)) : structuredClone(DEFAULT_SERVER);
+  }
+
+  setServer(guildId, preferences) {
+    validateServer(preferences);
+    if (preferences.roleId === guildId) throw new RangeError('Use the explicit everyone option, not the guild role');
+    return this.transaction(() => {
+      this.db.prepare('INSERT INTO server_settings VALUES (?, ?) ON CONFLICT(guild_id) DO UPDATE SET settings = excluded.settings').run(id(guildId), JSON.stringify(preferences));
+      return this.getServer(guildId);
+    });
+  }
+
+  postingGuilds() { return this.db.prepare('SELECT guild_id FROM server_settings').all().map(row => row.guild_id); }
+
+  claimServer(guildId, expected, event, now) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(event.day) || !Number.isSafeInteger(event.at) || !Number.isInteger(event.slot) || event.slot < 0 || event.slot > 2 ||
+        !(event.kind === 'daily' && event.id === `daily:${event.day}:${event.slot}` || event.kind === 'seasonal' && /^seasonal:\d{4}:(dhul-hijjah|arafah):2$/.test(event.id))) throw new RangeError('Invalid server event');
+    return this.transaction(() => {
+      const p = this.getServer(guildId);
+      if (!p.enabled || JSON.stringify(p) !== JSON.stringify(expected) || p.activatedAt > event.at || event.at > now || now - event.at > 2 * MINUTE ||
+          (event.kind === 'daily' ? event.slot >= p.dailyCount : !p.seasonal || event.slot !== 0)) return null;
+      const recent = this.db.prepare('SELECT local_day, attempted_at FROM server_attempts WHERE guild_id = ? AND (attempted_at > ? OR local_day = ?)').all(id(guildId), now - DAY, event.day);
+      // A changed timezone, clock, role or channel never resets the send budget.
+      if (recent.filter(row => row.attempted_at > now - DAY).length >= 3 || recent.filter(row => row.local_day === event.day).length >= Math.max(1, p.dailyCount) || recent.some(row => now - row.attempted_at < 60 * MINUTE)) return null;
+      const result = this.db.prepare('INSERT OR IGNORE INTO server_attempts VALUES (?, ?, ?, ?, ?)').run(id(guildId), event.id, event.day, event.slot, now);
+      return result.changes ? p : null;
+    });
+  }
 
   getPanel(guildId) { return this.db.prepare('SELECT channel_id, message_id FROM guild_panels WHERE guild_id = ?').get(id(guildId)); }
 
@@ -299,13 +345,14 @@ export class Store {
     this.transaction(() => {
       this.db.prepare('DELETE FROM subscriptions WHERE guild_id = ?').run(id(guildId));
       this.db.prepare('DELETE FROM guild_panels WHERE guild_id = ?').run(guildId);
+      this.db.prepare('DELETE FROM server_settings WHERE guild_id = ?').run(guildId);
     });
   }
 
   reconcileGuilds(guildIds) {
     const current = new Set(guildIds.map(id));
     this.transaction(() => {
-      const stored = this.db.prepare('SELECT guild_id FROM subscriptions UNION SELECT guild_id FROM guild_panels').all();
+      const stored = this.db.prepare('SELECT guild_id FROM subscriptions UNION SELECT guild_id FROM guild_panels UNION SELECT guild_id FROM server_settings').all();
       for (const row of stored) if (!current.has(row.guild_id)) this.removeGuild(row.guild_id);
     });
   }
