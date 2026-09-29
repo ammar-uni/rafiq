@@ -32,7 +32,7 @@ export function serverPostPayload(event, roleId = null, mentionEveryone = false)
 }
 export function serverHomePayload(p = DEFAULT_SERVER, notice = '') {
   return serverEnvelope([
-    serverText(`-# إعدادات المشرف · تظهر لك وحدك\n## رفيق في سيرفرك\nتذكيرات قصيرة يختار محتواها رفيق من عشرة منشورات معتمدة بأحاديث من الصحيحين.`),
+    serverText(`-# إعدادات المشرف · تظهر لك وحدك\n## رفيق في سيرفرك\nتذكيرات قصيرة يختار محتواها رفيق من عشرين منشورًا معتمدًا بأحاديث من الصحيحين.`),
     ...(notice ? [serverText(notice)] : []),
     serverText(`**النشر ${p.enabled ? 'مفعّل' : 'متوقف'}**${p.issue ? '\n' + (p.issue === 'permissions' ? 'توقف النشر بسبب صلاحيات القناة أو المنشن. راجعها ثم أعد التفعيل.' : 'تعذّر إرسال أحد المنشورات؛ لن نكرر محاولة إرساله.') : ''}`),
     serverDivider(),

@@ -152,7 +152,7 @@ export const SEASONAL_CARDS = Object.freeze({
 });
 export function dhikrById(id) { return DHIKR_CARDS.find(card => card.id === id); }
 export function ideaById(id) { return GOOD_DEEDS.find(card => card.id === id); }
-// Public channel texts approved in docs/reminder-posts.md on 2026-09-27.
+// Public channel texts approved in docs/reminder-posts.md on 2026-09-27 and 2026-09-29.
 export const PUBLIC_POSTS = [
   {
     "id": "post-two-words",
@@ -382,6 +382,236 @@ export const PUBLIC_POSTS = [
       ],
       "publisher": "نص كتاب الحديث على Sunnah.com",
       "checkedOn": "2026-09-27"
+    }
+  },
+  {
+    "id": "post-gentleness",
+    "editorialNumber": 11,
+    "title": "الرفق زينة",
+    "body": "قال النبي ﷺ:\n«إن الرفق لا يكون في شيء إلا زانه، ولا يُنزع من شيء إلا شانه».",
+    "narratorLine": "عائشة أم المؤمنين رضي الله عنها.",
+    "source": {
+      "url": "https://sunnah.com/muslim:2594a",
+      "reference": "رواه مسلم.",
+      "note": "حدود النقل: المتن النبوي كاملًا في هذه الرواية، دون الإسناد.\nملاحظة المراجعة: ضُبطت «يُنزع»؛ العنوان من صياغة رفيق، والنص بين علامتي الاقتباس هو الحديث.",
+      "citations": [
+        {
+          "collection": "muslim",
+          "number": "2594a",
+          "narrator": "عائشة أم المؤمنين",
+          "book": "صحيح مسلم",
+          "url": "https://sunnah.com/muslim:2594a"
+        }
+      ],
+      "publisher": "نص كتاب الحديث على Sunnah.com",
+      "checkedOn": "2026-09-29"
+    }
+  },
+  {
+    "id": "post-ease",
+    "editorialNumber": 12,
+    "title": "التيسير والتبشير",
+    "body": "قال النبي ﷺ:\n«يسّروا ولا تعسّروا، وبشّروا ولا تنفّروا».",
+    "narratorLine": "أنس بن مالك رضي الله عنه.",
+    "source": {
+      "url": "https://sunnah.com/bukhari:69",
+      "reference": "رواه البخاري.",
+      "note": "حدود النقل: المتن النبوي كاملًا في هذه الرواية، دون الإسناد.\nملاحظة المراجعة: أُبقيت الجمل الأربع بالترتيب الوارد في رواية البخاري هذه. لا نضيف إلى الاقتباس شرحًا للتيسير من صياغتنا.",
+      "citations": [
+        {
+          "collection": "bukhari",
+          "number": "69",
+          "narrator": "أنس بن مالك",
+          "book": "صحيح البخاري",
+          "url": "https://sunnah.com/bukhari:69"
+        }
+      ],
+      "publisher": "نص كتاب الحديث على Sunnah.com",
+      "checkedOn": "2026-09-29"
+    }
+  },
+  {
+    "id": "post-cheerful-face",
+    "editorialNumber": 13,
+    "title": "لا تستصغر المعروف",
+    "body": "قال النبي ﷺ:\n«لا تحقرنّ من المعروف شيئًا، ولو أن تلقى أخاك بوجه طَلْق».",
+    "narratorLine": "أبو ذر رضي الله عنه.",
+    "source": {
+      "url": "https://sunnah.com/muslim:2626",
+      "reference": "رواه مسلم.",
+      "note": "حدود النقل: المتن النبوي كاملًا في هذه الرواية. يقول أبو ذر في سياقها: «قال لي النبي ﷺ».\nملاحظة المراجعة: ضُبطت «طَلْق» كما في المصدر. لا نُلحق به نص «تبسمك في وجه أخيك صدقة»، فهو ليس ضمن هذه الرواية.",
+      "citations": [
+        {
+          "collection": "muslim",
+          "number": "2626",
+          "narrator": "أبو ذر",
+          "book": "صحيح مسلم",
+          "url": "https://sunnah.com/muslim:2626"
+        }
+      ],
+      "publisher": "نص كتاب الحديث على Sunnah.com",
+      "checkedOn": "2026-09-29"
+    }
+  },
+  {
+    "id": "post-mercy",
+    "editorialNumber": 14,
+    "title": "الرحمة بالخلق",
+    "body": "قال النبي ﷺ:\n«من لا يَرحَم لا يُرحَم».",
+    "narratorLine": "جرير بن عبد الله رضي الله عنه.",
+    "source": {
+      "url": "https://sunnah.com/bukhari:6013",
+      "reference": "رواه البخاري.",
+      "note": "حدود النقل: المتن النبوي كاملًا في هذه الرواية، دون الإسناد.\nملاحظة المراجعة: ضُبط الفرق بين «يَرحَم» و«يُرحَم». العزو والراوي لهذه الرواية المحددة؛ لا تُضاف ألفاظ روايات أخرى إلى نصها.",
+      "citations": [
+        {
+          "collection": "bukhari",
+          "number": "6013",
+          "narrator": "جرير بن عبد الله",
+          "book": "صحيح البخاري",
+          "url": "https://sunnah.com/bukhari:6013"
+        }
+      ],
+      "publisher": "نص كتاب الحديث على Sunnah.com",
+      "checkedOn": "2026-09-29"
+    }
+  },
+  {
+    "id": "post-food-and-salam",
+    "editorialNumber": 15,
+    "title": "إطعام الطعام وإفشاء السلام",
+    "body": "عن عبد الله بن عمرو رضي الله عنهما:\nأن رجلًا سأل النبي ﷺ: أي الإسلام خير؟ قال: «تطعم الطعام، وتقرأ السلام على من عرفت ومن لم تعرف».",
+    "narratorLine": "عبد الله بن عمرو رضي الله عنهما.",
+    "source": {
+      "url": "https://sunnah.com/bukhari:12",
+      "reference": "رواه البخاري.",
+      "note": "حدود النقل: خبر السؤال والجواب كاملًا، دون الإسناد. جواب النبي ﷺ وحده بين علامتي الاقتباس؛ السؤال من كلام الرجل.\nملاحظة المراجعة: الراوي عبد الله بن عمرو، لا ابن عمر. أُبقي لفظ «وتقرأ السلام» كما ورد، ولم يُستبدل به شرح المعنى داخل الاقتباس.",
+      "citations": [
+        {
+          "collection": "bukhari",
+          "number": "12",
+          "narrator": "عبد الله بن عمرو",
+          "book": "صحيح البخاري",
+          "url": "https://sunnah.com/bukhari:12"
+        }
+      ],
+      "publisher": "نص كتاب الحديث على Sunnah.com",
+      "checkedOn": "2026-09-29"
+    }
+  },
+  {
+    "id": "post-dua-for-others",
+    "editorialNumber": 16,
+    "title": "الدعاء لأخيك",
+    "body": "قال رسول الله ﷺ:\n«ما من عبد مسلم يدعو لأخيه بظهر الغيب إلا قال المَلَك: ولك بمثل».",
+    "narratorLine": "أبو الدرداء رضي الله عنه.",
+    "source": {
+      "url": "https://sunnah.com/muslim:2732a",
+      "reference": "رواه مسلم.",
+      "note": "حدود النقل: المتن النبوي كاملًا في هذه الرواية، دون الإسناد.\nملاحظة المراجعة: أُبقي قيد «بظهر الغيب»، ولفظ «ولك بمثل» دون إضافة «آمين» من رواية أخرى. الراوي أبو الدرداء، كما في سند النص العربي و[أصل صحيح مسلم في الدرر السنية](https://dorar.net/h/I3QjuIoR?osoul=1).",
+      "citations": [
+        {
+          "collection": "muslim",
+          "number": "2732a",
+          "narrator": "أبو الدرداء",
+          "book": "صحيح مسلم",
+          "url": "https://sunnah.com/muslim:2732a"
+        }
+      ],
+      "publisher": "نص كتاب الحديث على Sunnah.com",
+      "checkedOn": "2026-09-29"
+    }
+  },
+  {
+    "id": "post-helping-others",
+    "editorialNumber": 17,
+    "title": "عون الآخرين",
+    "body": "قال رسول الله ﷺ:\n«والله في عون العبد ما كان العبد في عون أخيه».",
+    "narratorLine": "أبو هريرة رضي الله عنه.",
+    "source": {
+      "url": "https://sunnah.com/muslim:2699a",
+      "reference": "رواه مسلم — مقتطف من الحديث.",
+      "note": "حدود النقل: جملة متصلة من حديث أطول؛ تسبقها فضائل تنفيس الكرب والتيسير على المعسر والستر، وتتلوها فضائل طلب العلم ومدارسة القرآن وخاتمة في العمل والنسب.\nملاحظة المراجعة: أُبقيت الواو في أول الاقتباس وقيد «ما كان العبد في عون أخيه»، ولم تُركّب الجملة من روايات مختلفة.",
+      "citations": [
+        {
+          "collection": "muslim",
+          "number": "2699a",
+          "narrator": "أبو هريرة",
+          "book": "صحيح مسلم",
+          "url": "https://sunnah.com/muslim:2699a"
+        }
+      ],
+      "publisher": "نص كتاب الحديث على Sunnah.com",
+      "checkedOn": "2026-09-29"
+    }
+  },
+  {
+    "id": "post-charity-and-humility",
+    "editorialNumber": 18,
+    "title": "الصدقة والعفو والتواضع",
+    "body": "قال رسول الله ﷺ:\n«ما نقصت صدقة من مال، وما زاد الله عبدًا بعفو إلا عزًّا، وما تواضع أحد لله إلا رفعه الله».",
+    "narratorLine": "أبو هريرة رضي الله عنه.",
+    "source": {
+      "url": "https://sunnah.com/muslim:2588",
+      "reference": "رواه مسلم.",
+      "note": "حدود النقل: المتن النبوي كاملًا في هذه الرواية، بجمله الثلاث، دون الإسناد.\nملاحظة المراجعة: أُبقي قيد «لله» في التواضع. لا تُضاف وعود بمبلغ مالي أو موعد تعويض يحدده التطبيق.",
+      "citations": [
+        {
+          "collection": "muslim",
+          "number": "2588",
+          "narrator": "أبو هريرة",
+          "book": "صحيح مسلم",
+          "url": "https://sunnah.com/muslim:2588"
+        }
+      ],
+      "publisher": "نص كتاب الحديث على Sunnah.com",
+      "checkedOn": "2026-09-29"
+    }
+  },
+  {
+    "id": "post-consistency",
+    "editorialNumber": 19,
+    "title": "المداومة على الخير",
+    "body": "عن عائشة رضي الله عنها، قالت:\nسُئل النبي ﷺ: أي الأعمال أحب إلى الله؟ قال: «أدومها وإن قل». وقال: «اكلفوا من الأعمال ما تطيقون».",
+    "narratorLine": "عائشة أم المؤمنين رضي الله عنها.",
+    "source": {
+      "url": "https://sunnah.com/bukhari:6465",
+      "reference": "رواه البخاري.",
+      "note": "حدود النقل: خبر السؤال والجواب والقول الذي يليه كاملًا في هذه الرواية، دون الإسناد.\nملاحظة المراجعة: لم نُحوّل السؤال والجواب إلى حديث بصياغة جديدة. لفظ هذه الرواية «أي الأعمال» ثم «أدومها»، وتتمتها «اكلفوا من الأعمال ما تطيقون».",
+      "citations": [
+        {
+          "collection": "bukhari",
+          "number": "6465",
+          "narrator": "عائشة أم المؤمنين",
+          "book": "صحيح البخاري",
+          "url": "https://sunnah.com/bukhari:6465"
+        }
+      ],
+      "publisher": "نص كتاب الحديث على Sunnah.com",
+      "checkedOn": "2026-09-29"
+    }
+  },
+  {
+    "id": "post-salawat",
+    "editorialNumber": 20,
+    "title": "الصلاة على النبي ﷺ",
+    "body": "قال رسول الله ﷺ:\n«من صلى عليَّ واحدة صلى الله عليه عشرًا».",
+    "narratorLine": "أبو هريرة رضي الله عنه.",
+    "source": {
+      "url": "https://sunnah.com/muslim:408",
+      "reference": "رواه مسلم.",
+      "note": "حدود النقل: المتن النبوي كاملًا في هذه الرواية، دون الإسناد.\nملاحظة المراجعة: لفظ «واحدة» وارد في هذه الرواية. لا نُضيف إلى الحديث وقتًا أو عددًا للتكرار، ولا نطلب من أعضاء القناة ترديدًا جماعيًا.",
+      "citations": [
+        {
+          "collection": "muslim",
+          "number": "408",
+          "narrator": "أبو هريرة",
+          "book": "صحيح مسلم",
+          "url": "https://sunnah.com/muslim:408"
+        }
+      ],
+      "publisher": "نص كتاب الحديث على Sunnah.com",
+      "checkedOn": "2026-09-29"
     }
   }
 ];
