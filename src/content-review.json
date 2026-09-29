@@ -146,6 +146,56 @@
       "id": "post-no-insult",
       "checkedOn": "2026-09-27",
       "sha256": "3d72640ff75220fd07707f0fb95b82f7ee50c52d996f01d1f493a6cd1ff9e26c"
+    },
+    {
+      "id": "post-gentleness",
+      "checkedOn": "2026-09-29",
+      "sha256": "dddafaca7da4b78dbda650435fac22011d3d3e8feaf6706ef28d1a861fe2b407"
+    },
+    {
+      "id": "post-ease",
+      "checkedOn": "2026-09-29",
+      "sha256": "bf69865fb1a222940ed7805331dfe765d4bc6aaecf46d64a06e25bf65cc96aeb"
+    },
+    {
+      "id": "post-cheerful-face",
+      "checkedOn": "2026-09-29",
+      "sha256": "47918443ef698bec9d05b105ad4405d9499398c8779276bee8c2f465d86e9360"
+    },
+    {
+      "id": "post-mercy",
+      "checkedOn": "2026-09-29",
+      "sha256": "cb3028a15344285d53e1bc0ffea7078e6a7adf25735a7be4e29c1696570f658d"
+    },
+    {
+      "id": "post-food-and-salam",
+      "checkedOn": "2026-09-29",
+      "sha256": "c0879d505ffc2f9d5d695a87fc516bb95de1b1c549c2f34906759d3a9f70d2b5"
+    },
+    {
+      "id": "post-dua-for-others",
+      "checkedOn": "2026-09-29",
+      "sha256": "426f48b8449014d972aa044e4a05ab5a4ff78a116b8e80ff5003eb8d333bd661"
+    },
+    {
+      "id": "post-helping-others",
+      "checkedOn": "2026-09-29",
+      "sha256": "1d46debd8a14cbe66a7d1871148b0272958acc748e5ab137a65e7486b09d82bb"
+    },
+    {
+      "id": "post-charity-and-humility",
+      "checkedOn": "2026-09-29",
+      "sha256": "6979ca1fbce91f13f7de090be9e58be3d4cb6c311aaf862fc7e0b0a1c9afe66a"
+    },
+    {
+      "id": "post-consistency",
+      "checkedOn": "2026-09-29",
+      "sha256": "7b621a15bfd56c9ba4e05f5b95d41a0e4fceadf405f54181a63aa14abf8ee4eb"
+    },
+    {
+      "id": "post-salawat",
+      "checkedOn": "2026-09-29",
+      "sha256": "68330d02690bf284eb4d61f5d214a7dad23e8a5915f90173d8e13cc6367fbc9c"
     }
   ]
 }
