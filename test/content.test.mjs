@@ -4,7 +4,7 @@ import { DHIKR_CARDS, GOOD_DEEDS, OCCASION_CARDS, DAILY_DHIKR, SEASONAL_CARDS, P
 import { assertReviewedContent } from '../src/content-review.mjs';
 
 test('the shipped religious content matches its source review', () => {
-  assert.equal(assertReviewedContent(), 29);
+  assert.equal(assertReviewedContent(), 39);
   assert.throws(() => { DHIKR_CARDS[0].text = 'changed'; }, TypeError);
   assert.throws(() => { DHIKR_CARDS[0].source.citations[0].number = '1'; }, TypeError);
   assert.throws(() => { OCCASION_CARDS.fridayDua.body = 'changed'; }, TypeError);
@@ -21,7 +21,7 @@ test('changes to wording, attribution, narrators or explanations require another
   ];
   for (const change of changes) {
     const cards = structuredClone([...DHIKR_CARDS, ...GOOD_DEEDS, ...Object.values(OCCASION_CARDS), ...DAILY_DHIKR, ...Object.values(SEASONAL_CARDS), ...PUBLIC_POSTS]);
-    assert.equal(assertReviewedContent(cards), 29);
+    assert.equal(assertReviewedContent(cards), 39);
     change(cards[0]);
     assert.throws(() => assertReviewedContent(cards), { code: 'CONTENT_REVIEW_REQUIRED' });
   }
