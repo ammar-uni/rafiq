@@ -111,6 +111,12 @@
             },
             {
               "type": 2,
+              "label": "اقتراح",
+              "style": 2,
+              "custom_id": "rafiq:v1:feedback_suggestion"
+            },
+            {
+              "type": 2,
               "label": "بياناتي وخصوصيتي",
               "style": 2,
               "custom_id": "rafiq:v1:privacy"

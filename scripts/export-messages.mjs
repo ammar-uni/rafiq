@@ -15,6 +15,8 @@ import { serverHomePayload, serverDraftPayload, serverGuidePayload, serverReview
 const destination = new URL('../examples/', import.meta.url);
 await mkdir(destination, { recursive:true });
 const payloads = {welcome:welcomePayload(),reminder:reminderPayload(),enabled:enabledPayload(),settings:settingsPayload(),idea:ideaPayload(),home:homePayload(),library:libraryPayload(),break:breakPayload(),methodology:methodologyPayload(),privacy:privacyPayload(),support:supportPayload(),'reminder-intro':reminderIntroPayload(),source:sourcePayload('majlis'),'idea-source':ideaSourcePayload('parents')};
+payloads['feedback-help'] = supportPayload({feedbackEnabled:true});
+payloads['feedback-suggestion'] = supportPayload({feedbackEnabled:true,suggestion:true});
 payloads.favorites = favoritesPayload({dhikrCount:1,ideaCount:1});
 payloads['home-admin'] = homePayload({inGuild:true,canManageServer:true});
 const serverExample = { ...structuredClone(DEFAULT_SERVER), channelId: '101' };

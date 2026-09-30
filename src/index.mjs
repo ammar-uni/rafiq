@@ -16,6 +16,8 @@ import { acknowledgePrivate, makeSendDM, setupPanel, statusPayload, toDiscord, c
 import { ServerApp } from './server-app.mjs';
 import { ServerScheduler } from './server-scheduler.mjs';
 import { makeCheckServerTarget, makeSendServer } from './server-discord.mjs';
+import { FeedbackApp, isFeedbackSubmit } from './feedback.mjs';
+import { makeSendFeedback } from './feedback-discord.mjs';
 
 function safeError(context, error) {
   runtimeLog(context, { code: safeErrorCode(error) });
@@ -44,7 +46,8 @@ async function main() {
   engine.servers = new ServerScheduler({ store, queue, canSend: engine.canSend, send: makeSendServer(client), onError: error => safeError('server-schedule', error) });
   const serverApp = new ServerApp({ store, checkTarget: makeCheckServerTarget(client) });
   const prayers = new PrayerApp({ store, sounds, sendDM });
-  const app = new RafiqApp({ store, queue, sendDM, prayers, privacyURL: config.privacyURL, supportURL: config.supportURL, cancelUser: userId => engine.cancelUser(userId), cancelGuild: (userId, guildId) => engine.discard(userId, guildId) });
+  const feedback = new FeedbackApp({ send: makeSendFeedback(client, config), onError: error => safeError('feedback', error) });
+  const app = new RafiqApp({ store, queue, sendDM, prayers, feedback, privacyURL: config.privacyURL, supportURL: config.supportURL, cancelUser: userId => engine.cancelUser(userId), cancelGuild: (userId, guildId) => engine.discard(userId, guildId) });
 
   function observe(state) {
     if (!state.channelId || state.member?.user.bot) return;
@@ -106,7 +109,8 @@ async function main() {
     const isCommand = interaction.isChatInputCommand() && ['rafiq', 'rafiq-setup', 'rafiq-status', 'rafiq-server'].includes(interaction.commandName);
     const isComponent = interaction.isMessageComponent() && interaction.customId.startsWith('rafiq:v1:');
     const isServerModal = interaction.isModalSubmit() && /^rafiq:v1:server_[a-f0-9]{16}_(time_save|zone_save)$/.test(interaction.customId);
-    const isModal = isServerModal || interaction.isModalSubmit() && /^rafiq:v1:(setup_)?(prayer_search|prayer_adjust|daily_time_(morning|evening|quran)|daily_offset_(morning|evening)_(before|after))$/.test(interaction.customId);
+    const isFeedbackModal = interaction.isModalSubmit() && interaction.customId.startsWith('rafiq:v1:') && isFeedbackSubmit(interaction.customId.slice('rafiq:v1:'.length));
+    const isModal = isFeedbackModal || isServerModal || interaction.isModalSubmit() && /^rafiq:v1:(setup_)?(prayer_search|prayer_adjust|daily_time_(morning|evening|quran)|daily_offset_(morning|evening)_(before|after))$/.test(interaction.customId);
     if (!isCommand && !isComponent && !isModal) return;
     try {
       const action = isCommand ? interaction.commandName === 'rafiq-server' ? 'server_home' : interaction.options.getString('section') || 'home' : interaction.customId.slice('rafiq:v1:'.length);
@@ -121,6 +125,8 @@ async function main() {
         return;
       }
       const rawAction = action.startsWith('setup_') ? action.slice(6) : action;
+      const feedbackForm = isComponent ? feedback.modal({ userId: interaction.user.id, action }) : null;
+      if (feedbackForm) { await interaction.showModal(feedbackForm); return; }
       if (isComponent && MODAL_ACTIONS.includes(rawAction)) {
         await interaction.showModal(appModal(action, store.getPrayer(interaction.user.id)));
         return;
@@ -132,7 +138,7 @@ async function main() {
       } else if (isCommand && interaction.commandName === 'rafiq-status') {
         payload = statusPayload(interaction, store);
       } else {
-        const values = isModal ? (rawAction === 'prayer_search' ? [interaction.fields.getTextInputValue('city')] : rawAction.startsWith('daily_offset_') ? [interaction.fields.getTextInputValue('minutes')] : rawAction.startsWith('daily_time_') ? [interaction.fields.getTextInputValue('time')] : PRAYERS.map(([key]) => interaction.fields.getTextInputValue(key))) : interaction.isStringSelectMenu() ? interaction.values : [];
+        const values = isFeedbackModal ? ['feedback_body', 'feedback_source'].filter(key => interaction.fields.fields.has(key)).map(key => interaction.fields.getTextInputValue(key)) : isModal ? (rawAction === 'prayer_search' ? [interaction.fields.getTextInputValue('city')] : rawAction.startsWith('daily_offset_') ? [interaction.fields.getTextInputValue('minutes')] : rawAction.startsWith('daily_time_') ? [interaction.fields.getTextInputValue('time')] : PRAYERS.map(([key]) => interaction.fields.getTextInputValue(key))) : interaction.isStringSelectMenu() ? interaction.values : [];
         payload = await app.handle({ userId: interaction.user.id, guildId: interaction.guildId, canManageServer: canManageGuild(interaction), action, values });
         if (['enable', 'resume', 'test_dm'].includes(rawAction)) seedUser(interaction.user.id);
       }
@@ -145,7 +151,7 @@ async function main() {
     }
   });
   let tickPromise = Promise.resolve();
-  const timer = setInterval(() => { prayers.prune(); serverApp.prune(); if (!engine.running) tickPromise = engine.tick().catch(error => safeError('scheduler', error)); }, 5000);
+  const timer = setInterval(() => { prayers.prune(); serverApp.prune(); feedback.prune(); if (!engine.running) tickPromise = engine.tick().catch(error => safeError('scheduler', error)); }, 5000);
   function reportHealth() {
     if (process.connected) process.send({ type: 'rafiq:health', ready: identityVerified && connected && !stopping && client.isReady() }, () => {});
   }

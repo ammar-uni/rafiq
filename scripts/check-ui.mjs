@@ -50,6 +50,7 @@ for (const key of ['morning','evening']) for (const offsetMinutes of [-60, 0, 60
   samples.push(dailyOffsetPayload(preferences,key), setupWrapPayload(dailyOffsetPayload(preferences,key)),dailySettingsPayload(preferences),dailyReminderPayload(preferences,{key}));
 }
 samples.push(explorePayload(), helpMenuPayload(), setupWrapPayload(explorePayload()));
+samples.push(supportPayload({feedbackEnabled:true}), supportPayload({feedbackEnabled:true,suggestion:true}), ...PUBLIC_POSTS.map(reportCard=>supportPayload({feedbackEnabled:true,reportCard})));
 for (const preferences of [DEFAULT_PRAYER, p, { ...p, enabled: true, occasions, daily: { morning: { activatedAt: 1800000000000, offsetMinutes: -10 }, evening: { activatedAt: 1800000000000, offsetMinutes: 60 }, quran: { activatedAt: 1800000000000, time: '20:30' } } }]) {
   for (const state of [{}, { paused: true }, { dmBlocked: true }]) {
     samples.push(homePayload({preferences, ...state}), remindersMenuPayload(preferences,state), setupWrapPayload(remindersMenuPayload(preferences,state)));

@@ -57,6 +57,12 @@
               "label": "تواصل وإبلاغ",
               "style": 2,
               "custom_id": "rafiq:v1:support"
+            },
+            {
+              "type": 2,
+              "label": "اقتراح",
+              "style": 2,
+              "custom_id": "rafiq:v1:feedback_suggestion"
             }
           ]
         },
