@@ -100,7 +100,7 @@ export function occasionsPayload({ preferences: p = DEFAULT_PRAYER, next = [], r
 export function occasionSourcesPayload() {
   return envelope([
     text('## مصادر تذكيراتك\nرسائل التذكير من صياغة رفيق، وليست نقلًا لألفاظ الأحاديث.'),
-    ...Object.values(OCCASION_CARDS).flatMap(card => [text(`### ${card.title}\n${sourceDetails(card.source)}\n${card.source.note}`), row(linkButton('افتح المصدر', card.source.url))]),
+    ...Object.values(OCCASION_CARDS).flatMap(card => [text(`### ${card.title}\n${sourceDetails(card.source)}\n${card.source.note}`), row(linkButton('افتح المصدر', card.source.url), button('بلّغ عن خطأ', `report_${card.id}`))]),
     row(backButton('prayer_occasions'))
   ], { ephemeral: true, accent: BRAND.blue });
 }
@@ -162,7 +162,7 @@ ${card.title}
 ${card.narratorLine}`),
     text(card.source.note),
     text('-# العنوان وتقديم الاقتباس من صياغة رفيق. مواعيد النشر لتنظيم الرسائل، ولا تخصّص للحديث وقتًا تعبديًا أو عددًا.'),
-    row(linkButton('افتح المصدر', card.source.url), button('ملاحظة على المحتوى', 'support')),
+    row(linkButton('افتح المصدر', card.source.url), button('بلّغ عن خطأ', `report_${card.id}`)),
     row(button('الرئيسية', 'home'))
   ], { ephemeral: true });
 }
@@ -174,7 +174,7 @@ export function seasonalSourcePayload(key) {
     text(`## مصدر التذكير\n${card.title}\n${sourceDetails(card.source)}`),
     text(card.source.note),
     text('-# العنوان والتاريخ وتقديم الاقتباس من صياغة رفيق. الإرسال قبل يومين تنظيم للتذكير، وليس توقيتًا تعبديًا. تقويم السعودية مرجع للتنبيه المبكر، وقد يختلف إعلان بلدك.'),
-    row(linkButton('افتح المصدر', card.source.url), button('ملاحظة على المحتوى', 'support')),
+    row(linkButton('افتح المصدر', card.source.url), button('بلّغ عن خطأ', `report_${card.id}`)),
     row(backButton('seasonal'), button('الرئيسية', 'home'))
   ], { ephemeral: true, accent: BRAND.gold });
 }
@@ -409,7 +409,7 @@ export function dailySourcesPayload(period = null) {
   if (period !== null && !['morning', 'evening'].includes(period)) throw new RangeError('Unknown period');
   return envelope([
     text('## مصادر الأذكار المختارة'),
-    ...DAILY_DHIKR.map(card => text(`**${card.title}**\n${sourceDetails(card.source)}\n${card.source.note}`)),
+    ...DAILY_DHIKR.flatMap(card => [text(`**${card.title}**\n${sourceDetails(card.source)}\n${card.source.note}`), row(button('بلّغ عن خطأ', `report_${card.id}`))]),
     text('الثلاثة اختصار للمحتوى، وليست حصرًا للأذكار المشروعة. توقيت الإشعار الذي تختاره تنظيم للتذكير، وليس وقتًا شرعيًا مخصوصًا للذكر. [بيان وقت أذكار الصباح والمساء — ابن باز](https://binbaz.org.sa/fatwas/14478/وقت-اذكار-الصباح-والمساء).'),
     row(button('تذكير الأذكار', 'daily')),
     row(backButton(period ? `daily_${period}_read` : 'explore'), button('الرئيسية', 'home'))
@@ -529,7 +529,7 @@ export function ideaSourcePayload(id, { category = 'all' } = {}) {
     text(`## دليل الفكرة\n${idea.title}\n${idea.evidence}`),
     text(sourceDetails(idea.source)), text(idea.source.note),
     text(`-# طابَقنا المادة مع المصادر بتاريخ ${idea.source.checkedOn}.`),
-    separator(), row(backButton(`idea_${category}_${GOOD_DEEDS.indexOf(idea)}`), button('ملاحظة على المحتوى', `report_${id}`))
+    separator(), row(backButton(`idea_${category}_${GOOD_DEEDS.indexOf(idea)}`), button('بلّغ عن خطأ', `report_${id}`))
   ], { ephemeral: true, accent: BRAND.gold });
 }
 export function pausedPayload() {
@@ -576,7 +576,7 @@ export function homePayload({ preferences: p = DEFAULT_PRAYER, enabled = false, 
     separator(),
     ...(timerActive ? [text(`-# مؤقّت الاستراحة يعمل · <t:${Math.floor(breakAt / 1000)}:R>`)] : []),
     row(button(timerActive ? 'إدارة المؤقّت' : 'مؤقّت استراحة', 'break'), button(favoriteCount ? `محفوظاتي · ${arabicNumber(favoriteCount)}` : 'محفوظاتي', 'favorites')),
-    row(button('المساعدة', 'help'), button('بياناتي وخصوصيتي', 'privacy')),
+    row(button('المساعدة', 'help'), button('اقتراح', 'feedback_suggestion'), button('بياناتي وخصوصيتي', 'privacy')),
     ...(!showServer ? [row(button('دليل إعداد السيرفر', 'server_guide'))] : [])
   ], { ephemeral: true });
 }
@@ -618,7 +618,7 @@ export function helpMenuPayload() {
     text('**١ · اضبط مدينتك**\nاختيارها لأول مرة يفعّل دعاء الجمعة وقضاء قبل رمضان في الخاص. راجع مواقيتها، وأوقف أي تذكير لا تحتاجه من «الجمعة والقضاء».\n\n**٢ · اختر بقية تذكيراتك**\nزر «تفعيل الصلاة والجمعة» يشغّلهما معًا. الأذكار والقراءة والمجلس تحتاج تفعيلًا مستقلًا؛ حفظ موعدها وحده لا يفعّلها.\n\n**٣ · جرّب الإشعار**\nالتذكيرات تصل في الخاص. ظهورها على هاتفك يتبع إعدادات ديسكورد والجهاز.'),
     row(button('ابدأ مع رفيق', 'setup_start', 3), button('مساعدة الإشعارات', 'notification_help')),
     separator(),
-    row(button('المصادر والمنهج', 'methodology'), button('تواصل وإبلاغ', 'support')),
+    row(button('المصادر والمنهج', 'methodology'), button('تواصل وإبلاغ', 'support'), button('اقتراح', 'feedback_suggestion')),
     row(backButton('home'), button('بياناتي وخصوصيتي', 'privacy'))
   ], { ephemeral: true });
 }
@@ -658,7 +658,7 @@ export function sourcePayload(id, { onlyFavorites = false } = {}) {
   return envelope([
     text(`## مصدر ${card.title}\n${card.source.reference}`), text(sourceDetails(card.source)), text(card.source.note),
     text(`[شرح الشيخ ابن باز](${card.source.url})\n-# طابَقنا المادة مع المصادر بتاريخ ${card.source.checkedOn}.`),
-    row(button('منهج المحتوى', 'methodology'), button('ملاحظة على المحتوى', `report_${id}`)),
+    row(button('منهج المحتوى', 'methodology'), button('بلّغ عن خطأ', `report_${id}`)),
     separator(), row(backButton(`card_${id}${onlyFavorites ? '_saved' : ''}`), button('الرئيسية', 'home'))
   ], { ephemeral: true });
 }
@@ -705,17 +705,20 @@ export function privacyPayload({ privacyURL, supportURL } = {}) {
     text('## بياناتك واختياراتك\nنحفظ معرّفك في ديسكورد، واختياراتك، والسيرفرات التي فعّلت فيها التذكير، ومحفوظاتك ومؤقّتك. عند إعداد الصلاة نحفظ المدينة التي تختارها وإحداثيات مركزها ومنطقتها الزمنية وطريقة الحساب والتعديلات واختيار الإشعار والصوت. نحفظ أيضًا التذكيرات الاختيارية للجمعة والقضاء والأذكار والقرآن، ووقت تفعيلها ومواعيدها، ومنها الدقائق التي تختارها قبل الأذان أو بعده للأذكار؛ لا نسأل عن عدد أيام القضاء أو سببه، ولا نسجّل أداء عبادتك.'),
     text('لا نقرأ محتوى المحادثات ولا نسجّل الصوت. توقيت المجلس يبقى في الذاكرة أثناء التشغيل، وتُحفظ أوقات محاولات التذكير مؤقتًا لمنع التكرار. حذف بياناتك يوقف التنبيهات ويمحو سجلك من قاعدة البوت؛ الرسائل الموجودة في ديسكورد تبقى عندك.'),
     text('مواسم الخير لا تحتاج مدينة. نحفظ اختيار الاشتراك ووقت تفعيله، ومعرّف الموسم والسنة ووقت محاولة الإرسال مدة تصل إلى ٤٠٠ يوم لمنع التكرار السنوي، بما فيه بعد تصحيح التاريخ. لا نسجّل الصيام أو عملك بالمناسبة. الإيقاف العام والحذف يشملانها.'),
+    text('البلاغ والاقتراح اختياريان. عند الإرسال فقط، تصل الملاحظة وما تضيفه من رابط، ومعرّف المادة ومصدرها عند اختيارها، لقناة خاصة بفريق رفيق في ديسكورد. لا نرفق اسم حسابك أو معرّفك أو مدينتك تلقائيًا. تبقى الملاحظة في ديسكورد للمراجعة؛ لطلب حذفها تواصل مع الدعم برقمها. لا يشملها زر حذف تفضيلاتك.'),
     text('-# بيانات التشغيل المحفوظة مشفّرة. ننظّف محاولات المجلس والمؤقّت بعد ٤٨ ساعة، ومحاولات الصلاة والجمعة والقضاء بعد ٧ أيام، ومحاولات مواسم الخير بعد ٤٠٠ يوم، ونزيل اشتراك السيرفر إذا أُزيل منه البوت.'),
     ...(privacyURL ? [row(linkButton('سياسة الخصوصية', privacyURL), ...(supportURL ? [linkButton('المساعدة والإبلاغ', supportURL)] : []))] : []),
     separator(), row(backButton('home'), button('حذف بياناتي', 'forget'))
   ], { ephemeral: true });
 }
 
-export function supportPayload({ supportURL, reportCard = null } = {}) {
+export function supportPayload({ supportURL, reportCard = null, feedbackEnabled = false, suggestion = false } = {}) {
   return envelope([
-    text('## مساعدة وإبلاغ\nللإبلاغ عن خلل، أو محتوى يحتاج مراجعة، أو مشكلة خصوصية، تواصل مع مشغّل رفيق من الرابط أدناه.'),
-    text('اذكر الخيار الذي واجهت فيه المشكلة وما حدث. لا ترسل كلمات مرور أو رموز دخول أو معلومات خاصة عن غيرك. يمكنك تعديل اختياراتك أو حذف بياناتك من «بياناتي».'),
-    ...(reportCard ? [text(`ملاحظتك عن: ${reportCard.title}\nانسخ اسم المادة مع ملاحظتك ورابط الدليل إن توفر. فتح هذه الصفحة لا يرسل بلاغًا تلقائيًا.`)] : []),
+    text(suggestion ? '## اقتراح لرفيق 🌿\nأخبرنا بتحسين بسيط يساعدك على استخدام رفيق.' : '## مساعدة وإبلاغ\nبلّغ عن خلل أو محتوى يحتاج مراجعة، أو اقترح تحسينًا.'),
+    ...(reportCard ? [text(`ملاحظتك عن: **${reportCard.title}**\nنرفق رقم المادة ومصدرها تلقائيًا. فتح هذه الصفحة لا يرسل بلاغًا.`)] : []),
+    ...(feedbackEnabled ? [text('بعد ضغط «إرسال» في النموذج، تصل ملاحظتك لقناة خاصة بفريق رفيق في سيرفر الدعم. لا نرفق اسم حسابك أو معرّفك أو مدينتك تلقائيًا. نحفظ الملاحظة في ديسكورد للمراجعة؛ لطلب حذفها تواصل برقمها.'),
+      row(...(!suggestion ? [button('اكتب البلاغ', `feedback_form_report${reportCard ? `_${reportCard.id}` : ''}`, 3)] : []), button('اكتب اقتراحًا', 'feedback_form_suggestion', suggestion ? 3 : 2))] : [text('النماذج غير متاحة الآن. تواصل من رابط الدعم أدناه.')]),
+    text('-# لا ترسل كلمات مرور أو رموز دخول أو معلومات حساسة. لا يتغير المحتوى تلقائيًا بعد البلاغ.'),
     ...(supportURL ? [row(linkButton('تواصل مع مشغّل رفيق', supportURL))] : [text('-# المعاينة فقط: يضبط المشغّل رابط الدعم قبل تشغيل البوت.')]),
     row(button('بياناتي', 'privacy')),
     separator(), row(backButton('help'), button('الرئيسية', 'home'))

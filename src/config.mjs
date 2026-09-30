@@ -7,10 +7,13 @@ export function readConfig(env = process.env, { requireToken = true, requireRunt
   const encryptionKey = env.RAFIQ_DATA_KEY?.trim();
   const privacyURL = env.RAFIQ_PRIVACY_URL?.trim();
   const supportURL = env.RAFIQ_SUPPORT_URL?.trim();
+  const feedbackGuildId = env.RAFIQ_FEEDBACK_GUILD_ID?.trim() || null;
+  const feedbackChannelId = env.RAFIQ_FEEDBACK_CHANNEL_ID?.trim() || null;
   const errors = [];
   if (!applicationId || !/^\d{17,20}$/.test(applicationId)) errors.push('Set DISCORD_APPLICATION_ID to your Discord application ID in .env.');
   if (requireToken && (!token || /^(replace|your|paste|example)/i.test(token))) errors.push('Set DISCORD_TOKEN locally in .env. Never commit or share it.');
   if (guildId && !/^\d{17,20}$/.test(guildId)) errors.push('DISCORD_GUILD_ID must be a Discord server ID, or empty for global commands.');
+  if (Boolean(feedbackGuildId) !== Boolean(feedbackChannelId) || [feedbackGuildId, feedbackChannelId].some(value => value && !/^\d{17,20}$/.test(value))) errors.push('Set RAFIQ_FEEDBACK_GUILD_ID and RAFIQ_FEEDBACK_CHANNEL_ID together to valid Discord IDs, or leave both empty.');
   if (requireRuntime) {
     if (!encryptionKey || !/^[a-f0-9]{64}$/i.test(encryptionKey)) errors.push('Run npm run setup:local to prepare RAFIQ_DATA_KEY. Keep it private and separate from data backups.');
     for (const [field, value] of [['RAFIQ_PRIVACY_URL', privacyURL], ['RAFIQ_SUPPORT_URL', supportURL]]) {
@@ -21,5 +24,5 @@ export function readConfig(env = process.env, { requireToken = true, requireRunt
     }
   }
   if (errors.length) throw Object.assign(new Error(errors.join('\n')), { code: 'RAF_CONFIG' });
-  return { applicationId, token, guildId, encryptionKey, privacyURL, supportURL, databasePath: resolve(env.RAFIQ_DATABASE_PATH || 'data/rafiq.enc') };
+  return { applicationId, token, guildId, encryptionKey, privacyURL, supportURL, feedbackGuildId, feedbackChannelId, databasePath: resolve(env.RAFIQ_DATABASE_PATH || 'data/rafiq.enc') };
 }

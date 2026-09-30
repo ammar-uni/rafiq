@@ -5,10 +5,11 @@ import { hasPrayerReminders, renewPrayerActivation } from './prayer-config.mjs';
 import { DailyApp } from './daily-app.mjs';
 import { seasonalPreviewEvent } from './seasonal-times.mjs';
 import { serverGuidePayload } from './server-messages.mjs';
+import { feedbackCard, isFeedbackSubmit } from './feedback.mjs';
 
 export class RafiqApp {
-  constructor({ store, queue, sendDM, privacyURL, supportURL, prayers = null, now = Date.now, cancelUser = () => {}, cancelGuild = () => {} }) {
-    Object.assign(this, { store, queue, sendDM, privacyURL, supportURL, prayers, now, cancelUser, cancelGuild });
+  constructor({ store, queue, sendDM, privacyURL, supportURL, prayers = null, feedback = null, now = Date.now, cancelUser = () => {}, cancelGuild = () => {} }) {
+    Object.assign(this, { store, queue, sendDM, privacyURL, supportURL, prayers, feedback, now, cancelUser, cancelGuild });
     this.daily = new DailyApp({ store, now });
   }
   state(userId, guildId = null) {
@@ -18,6 +19,8 @@ export class RafiqApp {
   handle(input) { return this.queue.run(input.userId, () => this.route(input)); }
 
   async route({ userId, guildId = null, canManageServer = false, action = 'home', values = [] }) {
+    if (isFeedbackSubmit(action)) return this.feedback ? this.feedback.submit({ userId, action, values }) : ui.supportPayload({ supportURL: this.supportURL });
+    if (action.startsWith('feedback_form_')) return ui.noticePayload('الإرسال غير متاح الآن', 'ارجع إلى المساعدة واستخدم رابط الدعم.');
     if (action.startsWith('post_source_') && PUBLIC_POSTS.some(card => card.id === action.slice(12))) return ui.publicPostSourcePayload(action.slice(12));
     if (action === 'server_guide') return serverGuidePayload(Boolean(guildId && canManageServer));
     if (action === 'setup_start') {
@@ -70,11 +73,12 @@ export class RafiqApp {
     if (action === 'saved_ideas') return idea(0, 'saved');
     if (action === 'methodology') return ui.methodologyPayload();
     if (action === 'privacy') return ui.privacyPayload({ privacyURL: this.privacyURL, supportURL: this.supportURL });
-    if (action === 'support') return ui.supportPayload({ supportURL: this.supportURL });
+    if (action === 'support' || action === 'feedback_suggestion') return ui.supportPayload({ supportURL: this.supportURL, feedbackEnabled: this.feedback?.enabled, suggestion: action === 'feedback_suggestion' });
     if (action === 'forget') return ui.forgetPromptPayload();
     if (action === 'forget_confirm') {
       this.cancelUser(userId);
       this.prayers?.forget(userId);
+      this.feedback?.forget(userId);
       this.store.forget(userId);
       return ui.noticePayload('حُذفت بياناتك', 'توقفت التنبيهات، ومُحيت تفضيلاتك ومحفوظاتك من قاعدة البوت. لن يُنشأ اشتراك جديد إلا باختيارك.');
     }
@@ -128,8 +132,8 @@ export class RafiqApp {
       return library(cardId, Boolean(saved));
     }
     if (action.startsWith('report_')) {
-      const reportCard = dhikrById(action.slice(7)) || ideaById(action.slice(7));
-      if (reportCard) return ui.supportPayload({ supportURL: this.supportURL, reportCard });
+      const reportCard = feedbackCard(action.slice(7));
+      if (reportCard) return ui.supportPayload({ supportURL: this.supportURL, reportCard, feedbackEnabled: this.feedback?.enabled });
     }
     if (action === 'idea_category') {
       if (values.length === 1 && (values[0] === 'saved' || IDEA_CATEGORIES.some(item => item.id === values[0]))) return idea(0, values[0]);
