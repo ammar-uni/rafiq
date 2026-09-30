@@ -1,4 +1,5 @@
 import { ChannelType, PermissionFlagsBits } from 'discord.js';
+import { FeedbackRetention } from './feedback-retention.mjs';
 
 const failure = () => Object.assign(new Error('Feedback destination unavailable or not private'), { code: 'RAF_FEEDBACK_TARGET' });
 
@@ -7,7 +8,7 @@ export async function resolveFeedbackChannel(client, { feedbackGuildId, feedback
   const guild = await client.guilds.fetch({ guild: feedbackGuildId, force: true });
   if (!guild?.available || guild.id !== feedbackGuildId) throw failure();
   const channel = await guild.channels.fetch(feedbackChannelId, { force: true });
-  if (!channel || channel.guildId !== feedbackGuildId || channel.type !== ChannelType.GuildText) throw failure();
+  if (!channel || channel.id !== feedbackChannelId || channel.guildId !== feedbackGuildId || channel.type !== ChannelType.GuildText) throw failure();
   const roles = await guild.roles.fetch();
   const me = await guild.members.fetchMe({ force: true });
   const allowed = new Set([guild.ownerId, me.id]);
@@ -28,4 +29,14 @@ export function makeSendFeedback(client, config) {
     const channel = await resolveFeedbackChannel(client, config);
     return channel.send({ ...payload, nonce: ticket, enforceNonce: true });
   };
+}
+
+export function makeFeedbackRetention(client, config, options = {}) {
+  return new FeedbackRetention({ ...options, botId: () => client.user?.id,
+    resolveChannel: config.feedbackGuildId && config.feedbackChannelId ? async () => {
+      const channel = await resolveFeedbackChannel(client, config);
+      if (!channel.permissionsFor(client.user)?.has(PermissionFlagsBits.ReadMessageHistory)) throw failure();
+      return channel;
+    } : null
+  });
 }
