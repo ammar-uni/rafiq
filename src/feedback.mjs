@@ -70,7 +70,7 @@ export class FeedbackApp {
     if (!/^[a-f0-9]{24}$/.test(token) || this.pending.has(token)) throw new Error('Invalid form token');
     this.pending.set(token, { userId, reporter, kind, card, expiresAt: this.now() + FORM_TTL });
     return { custom_id: `rafiq:v1:feedback_submit_${token}`, title: kind === 'report' ? 'بلاغ للمراجعة' : 'اقتراح لرفيق', components: [
-      { type: 18, label: kind === 'report' ? 'ما الخطأ الذي لاحظته؟' : 'ما التحسين الذي تقترحه؟', description: 'يُرفق اسم حسابك ومعرّفه عند الإرسال لفريق رفيق. ليست مجهولة المرسل؛ لا تكتب معلومات حساسة.', component: { type: 4, custom_id: 'feedback_body', style: 2, min_length: 10, max_length: 1000, required: true, placeholder: card ? `ملاحظتك على «${card.title}»` : 'اشرح باختصار ما لاحظته أو ما تقترحه.' } },
+      { type: 18, label: kind === 'report' ? 'ما الخطأ الذي لاحظته؟' : 'ما التحسين الذي تقترحه؟', description: 'يُرفق اسم حسابك ومعرّفه؛ ليست مجهولة. تُحذف بعد ٩٠ يومًا. لا تكتب بيانات حساسة.', component: { type: 4, custom_id: 'feedback_body', style: 2, min_length: 10, max_length: 1000, required: true, placeholder: card ? `ملاحظتك على «${card.title}»` : 'اشرح باختصار ما لاحظته أو ما تقترحه.' } },
       ...(kind === 'report' ? [{ type: 18, label: 'رابط دليل أو مصدر — اختياري', component: { type: 4, custom_id: 'feedback_source', style: 1, max_length: 250, required: false, placeholder: 'https://' } }] : [])
     ] };
   }

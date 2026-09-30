@@ -17,7 +17,7 @@ import { ServerApp } from './server-app.mjs';
 import { ServerScheduler } from './server-scheduler.mjs';
 import { makeCheckServerTarget, makeSendServer } from './server-discord.mjs';
 import { FeedbackApp, isFeedbackSubmit } from './feedback.mjs';
-import { makeSendFeedback } from './feedback-discord.mjs';
+import { makeSendFeedback, makeFeedbackRetention } from './feedback-discord.mjs';
 
 function safeError(context, error) {
   runtimeLog(context, { code: safeErrorCode(error) });
@@ -47,6 +47,10 @@ async function main() {
   const serverApp = new ServerApp({ store, checkTarget: makeCheckServerTarget(client) });
   const prayers = new PrayerApp({ store, sounds, sendDM });
   const feedback = new FeedbackApp({ send: makeSendFeedback(client, config), onError: error => safeError('feedback', error) });
+  const feedbackRetention = makeFeedbackRetention(client, config, {
+    canRun: engine.canSend, onError: error => safeError('feedback-retention', error),
+    onResult: result => runtimeLog('feedback-retention', { code: result.complete ? 'RAF_RETENTION_DONE' : 'RAF_RETENTION_MORE' })
+  });
   const app = new RafiqApp({ store, queue, sendDM, prayers, feedback, privacyURL: config.privacyURL, supportURL: config.supportURL, cancelUser: userId => engine.cancelUser(userId), cancelGuild: (userId, guildId) => engine.discard(userId, guildId) });
 
   function observe(state) {
@@ -151,7 +155,7 @@ async function main() {
     }
   });
   let tickPromise = Promise.resolve();
-  const timer = setInterval(() => { prayers.prune(); serverApp.prune(); feedback.prune(); if (!engine.running) tickPromise = engine.tick().catch(error => safeError('scheduler', error)); }, 5000);
+  const timer = setInterval(() => { prayers.prune(); serverApp.prune(); feedback.prune(); void feedbackRetention.tick(); if (!engine.running) tickPromise = engine.tick().catch(error => safeError('scheduler', error)); }, 5000);
   function reportHealth() {
     if (process.connected) process.send({ type: 'rafiq:health', ready: identityVerified && connected && !stopping && client.isReady() }, () => {});
   }
@@ -165,6 +169,7 @@ async function main() {
     clearInterval(heartbeat);
     engine.clearVoice();
     await tickPromise;
+    await feedbackRetention.drain();
     await queue.drain();
     await client.destroy();
     store.close();

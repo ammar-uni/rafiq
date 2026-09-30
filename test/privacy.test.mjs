@@ -180,6 +180,8 @@ test('privacy and issue reporting are available without creating a user record o
   assert.ok(JSON.stringify(privacy).includes('rafiq:v1:support'));
   assert.ok(JSON.stringify(support).includes('rafiq:v1:feedback_form_report'));
   assert.ok(JSON.stringify(support).includes('rafiq:v1:feedback_form_suggestion'));
+  assert.ok(JSON.stringify(support).includes('https://rafiq.test/privacy'));
+  assert.ok(JSON.stringify(support).includes('٩٠ يومًا'));
   assert.ok(!JSON.stringify([privacy, support]).includes('https://rafiq.test/support'));
   app.feedback = null;
   const unavailable = await app.handle({ userId: '1', action: 'support' });

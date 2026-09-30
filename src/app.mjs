@@ -19,7 +19,7 @@ export class RafiqApp {
   handle(input) { return this.queue.run(input.userId, () => this.route(input)); }
 
   async route({ userId, guildId = null, canManageServer = false, action = 'home', values = [] }) {
-    if (isFeedbackSubmit(action)) return this.feedback ? this.feedback.submit({ userId, action, values }) : ui.supportPayload({ supportURL: this.supportURL });
+    if (isFeedbackSubmit(action)) return this.feedback ? this.feedback.submit({ userId, action, values }) : ui.supportPayload({ supportURL: this.supportURL, privacyURL: this.privacyURL });
     if (action.startsWith('feedback_form_')) return ui.noticePayload('الإرسال غير متاح الآن', 'جرّب فتح نموذج جديد من صفحة المساعدة لاحقًا.');
     if (action.startsWith('post_source_') && PUBLIC_POSTS.some(card => card.id === action.slice(12))) return ui.publicPostSourcePayload(action.slice(12));
     if (action === 'server_guide') return serverGuidePayload(Boolean(guildId && canManageServer));
@@ -73,7 +73,7 @@ export class RafiqApp {
     if (action === 'saved_ideas') return idea(0, 'saved');
     if (action === 'methodology') return ui.methodologyPayload();
     if (action === 'privacy') return ui.privacyPayload({ privacyURL: this.privacyURL, supportURL: this.supportURL });
-    if (action === 'support' || action === 'feedback_suggestion') return ui.supportPayload({ supportURL: this.supportURL, feedbackEnabled: this.feedback?.enabled, suggestion: action === 'feedback_suggestion' });
+    if (action === 'support' || action === 'feedback_suggestion') return ui.supportPayload({ supportURL: this.supportURL, privacyURL: this.privacyURL, feedbackEnabled: this.feedback?.enabled, suggestion: action === 'feedback_suggestion' });
     if (action === 'forget') return ui.forgetPromptPayload();
     if (action === 'forget_confirm') {
       this.cancelUser(userId);
@@ -133,7 +133,7 @@ export class RafiqApp {
     }
     if (action.startsWith('report_')) {
       const reportCard = feedbackCard(action.slice(7));
-      if (reportCard) return ui.supportPayload({ supportURL: this.supportURL, reportCard, feedbackEnabled: this.feedback?.enabled });
+      if (reportCard) return ui.supportPayload({ supportURL: this.supportURL, privacyURL: this.privacyURL, reportCard, feedbackEnabled: this.feedback?.enabled });
     }
     if (action === 'idea_category') {
       if (values.length === 1 && (values[0] === 'saved' || IDEA_CATEGORIES.some(item => item.id === values[0]))) return idea(0, values[0]);
