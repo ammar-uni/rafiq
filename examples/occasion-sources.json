@@ -25,6 +25,12 @@
               "label": "افتح المصدر",
               "style": 5,
               "url": "https://sunnah.com/bukhari:881"
+            },
+            {
+              "type": 2,
+              "label": "بلّغ عن خطأ",
+              "style": 2,
+              "custom_id": "rafiq:v1:report_friday-prayer"
             }
           ]
         },
@@ -40,6 +46,12 @@
               "label": "افتح المصدر",
               "style": 5,
               "url": "https://binbaz.org.sa/fatwas/21354/متى-ساعة-الاجابة-يوم-الجمعة-وكيفية-الدعاء"
+            },
+            {
+              "type": 2,
+              "label": "بلّغ عن خطأ",
+              "style": 2,
+              "custom_id": "rafiq:v1:report_friday-dua"
             }
           ]
         },
@@ -55,6 +67,12 @@
               "label": "افتح المصدر",
               "style": 5,
               "url": "https://binbaz.org.sa/fatwas/12340/جاء-رمضان-وعليه-ايام-من-رمضان-سابق-هل-يكون-اثما"
+            },
+            {
+              "type": 2,
+              "label": "بلّغ عن خطأ",
+              "style": 2,
+              "custom_id": "rafiq:v1:report_ramadan-qada"
             }
           ]
         },

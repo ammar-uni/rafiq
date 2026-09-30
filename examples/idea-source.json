@@ -41,7 +41,7 @@
             },
             {
               "type": 2,
-              "label": "ملاحظة على المحتوى",
+              "label": "بلّغ عن خطأ",
               "style": 2,
               "custom_id": "rafiq:v1:report_parents"
             }
