@@ -125,7 +125,7 @@ async function main() {
         return;
       }
       const rawAction = action.startsWith('setup_') ? action.slice(6) : action;
-      const feedbackForm = isComponent ? feedback.modal({ userId: interaction.user.id, action }) : null;
+      const feedbackForm = isComponent ? feedback.modal({ userId: interaction.user.id, username: interaction.user.username, action }) : null;
       if (feedbackForm) { await interaction.showModal(feedbackForm); return; }
       if (isComponent && MODAL_ACTIONS.includes(rawAction)) {
         await interaction.showModal(appModal(action, store.getPrayer(interaction.user.id)));
