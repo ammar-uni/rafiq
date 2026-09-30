@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Client, Collection, MessagePayload, ModalBuilder, PermissionsBitField, PermissionFlagsBits as P } from 'discord.js';
 import { FeedbackApp, feedbackCard, feedbackReviewMessage } from '../src/feedback.mjs';
-import { resolveFeedbackChannel, makeSendFeedback } from '../src/feedback-discord.mjs';
+import { resolveFeedbackChannel, makeSendFeedback, makeFeedbackRetention } from '../src/feedback-discord.mjs';
 import { Store } from '../src/store.mjs';
 import { SerialQueue } from '../src/serial.mjs';
 import { RafiqApp } from '../src/app.mjs';
@@ -170,6 +170,7 @@ test('fixed private channel is checked before every send, with no new permission
 
 test('public channels, extra readers, administrators, wrong targets and lost permissions fail closed', async () => {
   const changes = [
+    f => { f.channel.id = 'other'; },
     f => { f.channel.guildId = 'other'; }, f => { f.channel.type = 2; }, f => { f.guild.available = false; },
     f => f.channel.permissionOverwrites.cache.get('10').allow.add(P.ViewChannel),
     f => f.channel.permissionOverwrites.cache.set('reader', f.overwrite('reader', 1, P.ViewChannel)),
@@ -179,6 +180,24 @@ test('public channels, extra readers, administrators, wrong targets and lost per
   ];
   for (const change of changes) { const f = channelFixture(); change(f); await assert.rejects(resolveFeedbackChannel(f.client, f.config), { code: 'RAF_FEEDBACK_TARGET' }); }
   assert.equal(makeSendFeedback({}, {}), null);
+});
+
+test('retention requires the private destination and history access, without manage-messages permission', async () => {
+  const f = channelFixture(), errors = [];
+  f.client.user = { id: 'bot' };
+  let fetched = 0;
+  f.channel.messages = { fetch: async () => { fetched++; return new Collection(); } };
+  const options = { onError: error => errors.push(error.code) };
+  assert.deepEqual(await makeFeedbackRetention(f.client, f.config, options).tick(), { ok: false });
+  assert.equal(fetched, 0);
+  f.permissions.add(P.ReadMessageHistory);
+  assert.equal(f.permissions.has(P.ManageMessages), false);
+  assert.equal((await makeFeedbackRetention(f.client, f.config, options).tick()).ok, true);
+  assert.equal(fetched, 1);
+  f.channel.permissionOverwrites.cache.get('10').deny.remove(P.ViewChannel);
+  assert.deepEqual(await makeFeedbackRetention(f.client, f.config, options).tick(), { ok: false });
+  assert.equal(fetched, 1);
+  assert.equal(makeFeedbackRetention({}, {}).enabled, false);
 });
 
 test('configuration uses a complete optional destination pair and never exposes values on error', () => {
