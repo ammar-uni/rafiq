@@ -173,10 +173,17 @@ test('startup reconciliation removes only servers that no longer contain the bot
 
 test('privacy and issue reporting are available without creating a user record or sending a message', async t => {
   const store = new Store(':memory:'); t.after(() => store.close());
-  const app = new RafiqApp({ store, queue: new SerialQueue(), sendDM: () => assert.fail('no unsolicited contact'), privacyURL: 'https://rafiq.test/privacy', supportURL: 'https://rafiq.test/support' });
+  const app = new RafiqApp({ store, queue: new SerialQueue(), sendDM: () => assert.fail('no unsolicited contact'), privacyURL: 'https://rafiq.test/privacy', supportURL: 'https://rafiq.test/support', feedback: { enabled: true } });
   const privacy = await app.handle({ userId: '1', action: 'privacy' });
   const support = await app.handle({ userId: '1', action: 'support' });
   assert.ok(JSON.stringify(privacy).includes('https://rafiq.test/privacy'));
-  assert.ok(JSON.stringify(support).includes('https://rafiq.test/support'));
+  assert.ok(JSON.stringify(privacy).includes('rafiq:v1:support'));
+  assert.ok(JSON.stringify(support).includes('rafiq:v1:feedback_form_report'));
+  assert.ok(JSON.stringify(support).includes('rafiq:v1:feedback_form_suggestion'));
+  assert.ok(!JSON.stringify([privacy, support]).includes('https://rafiq.test/support'));
+  app.feedback = null;
+  const unavailable = await app.handle({ userId: '1', action: 'support' });
+  assert.ok(JSON.stringify(unavailable).includes('النماذج غير متاحة الآن'));
+  assert.ok(!JSON.stringify(unavailable).includes('https://rafiq.test/support'));
   assert.equal(store.db.prepare('SELECT count(*) AS n FROM users').get().n, 0);
 });

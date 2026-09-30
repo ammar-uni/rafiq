@@ -10,27 +10,43 @@ import { readConfig } from '../src/config.mjs';
 import { DHIKR_CARDS, GOOD_DEEDS, PUBLIC_POSTS, DAILY_DHIKR, SEASONAL_CARDS, OCCASION_CARDS } from '../src/content.mjs';
 
 const string = payload => JSON.stringify(payload);
+const REPORTER = { id: '123456789012345678', username: 'reporter_account' };
 function fixture(send) {
   let clock = 1_800_000_000_000, count = 0;
   const messages = [];
   const app = new FeedbackApp({ now: () => clock, token: () => (++count).toString(16).padStart(24, '0'), send: send || (async (payload, ticket) => messages.push({ payload, ticket })) });
-  const open = (userId = 'reporter-private-id', action = 'feedback_form_report_majlis') => app.modal({ userId, action }).custom_id.slice(9);
-  const submit = (action, values = ['ملاحظة تجريبية للمراجعة', ''], userId = 'reporter-private-id') => app.submit({ userId, action, values });
+  const open = (userId = REPORTER.id, action = 'feedback_form_report_majlis') => app.modal({ userId, username: REPORTER.username, action }).custom_id.slice(9);
+  const submit = (action, values = ['ملاحظة تجريبية للمراجعة', ''], userId = REPORTER.id) => app.submit({ userId, action, values });
   return { app, messages, open, submit, advance: ms => { clock += ms; } };
 }
 
-test('reports and suggestions only send on submit, with validated context and no reporter identity', async () => {
+test('reports and suggestions only send on submit, with validated context and disclosed account identity', async () => {
   const f = fixture(), action = f.open();
   assert.equal(f.messages.length, 0);
   assert.match(string(await f.submit(action)), /وصلت ملاحظتك/);
   assert.equal(f.messages.length, 1);
   assert.match(f.messages[0].payload.content, /majlis/);
   assert.match(f.messages[0].payload.content, /https:\/\/sunnah.com\/abudawud:4859/);
-  assert.ok(!string(f.messages).includes('reporter-private-id'));
-  const suggestion = f.open('other-private-id', 'feedback_form_suggestion');
-  await f.submit(suggestion, ['تحسين بسيط للشاشة الرئيسية'], 'other-private-id');
+  assert.ok(string(f.messages).includes(REPORTER.id));
+  assert.ok(string(f.messages).includes(REPORTER.username));
+  const suggestion = f.open('223456789012345678', 'feedback_form_suggestion');
+  await f.submit(suggestion, ['تحسين بسيط للشاشة الرئيسية'], '223456789012345678');
   assert.match(f.messages[1].payload.content, /اقتراح لرفيق/);
   assert.ok(!f.messages[1].payload.content.includes('majlis'));
+});
+
+test('sender identity is required at form opening and cannot be replaced by submission fields', async () => {
+  const f = fixture();
+  for (const identity of [{ userId: REPORTER.id }, { userId: 'not-an-account', username: REPORTER.username }, { userId: REPORTER.id, username: 'x'.repeat(33) }]) {
+    assert.equal(f.app.modal({ ...identity, action: 'feedback_form_report' }), null);
+  }
+  const modal = f.app.modal({ userId: REPORTER.id, username: REPORTER.username, action: 'feedback_form_suggestion' });
+  assert.equal(f.messages.length, 0);
+  await f.app.submit({ userId: REPORTER.id, action: modal.custom_id.slice(9), values: ['ملاحظة للمراجعة كاملة'], reporter: { id: '999', username: 'forged_sender' } });
+  assert.equal(f.messages.length, 1);
+  assert.ok(f.messages[0].payload.content.includes('معرّف الحساب: `' + REPORTER.id + '`'));
+  assert.ok(!f.messages[0].payload.content.includes('forged_sender'));
+  assert.deepEqual(f.messages[0].payload.allowedMentions.parse, []);
 });
 
 test('another user, an expired form, an abandoned form and a replay cannot send', async () => {
@@ -59,10 +75,11 @@ test('native Discord modal serialization accepts every content context and the o
   const f = fixture();
   const cards = [...DHIKR_CARDS, ...GOOD_DEEDS, ...PUBLIC_POSTS, ...DAILY_DHIKR, ...Object.values(SEASONAL_CARDS), ...Object.values(OCCASION_CARDS)];
   for (const action of ['feedback_form_suggestion', 'feedback_form_report', ...cards.map(card => `feedback_form_report_${card.id}`)]) {
-    const modal = new ModalBuilder(f.app.modal({ userId: '1', action })).toJSON();
+    const modal = new ModalBuilder(f.app.modal({ userId: '1', username: REPORTER.username, action })).toJSON();
     assert.ok(modal.custom_id.length <= 100);
     assert.equal(modal.components[0].type, 18);
     assert.equal(modal.components[0].component.style, 2);
+    assert.match(modal.components[0].description, /يُرفق اسم حسابك ومعرّفه/);
     if (modal.components[1]) assert.equal(modal.components[1].component.required, false);
   }
 });
@@ -71,8 +88,8 @@ test('bad content and unsafe source links are rejected before a send', async () 
   const f = fixture();
   for (const values of [['قصير', ''], ['x'.repeat(1001), ''], ['ملاحظة للمراجعة كاملة', 'javascript:alert(1)'], ['ملاحظة للمراجعة كاملة', 'https://user:secret@site.test/'], ['ملاحظة للمراجعة كاملة', 'https://site.test/<>'], ['ملاحظة للمراجعة كاملة', 'x'.repeat(251)], ['ملاحظة للمراجعة كاملة', '', 'extra']]) await f.submit(f.open(), values);
   assert.equal(f.messages.length, 0);
-  assert.equal(f.app.modal({ userId: '1', action: 'feedback_form_report_forged-post' }), null);
-  assert.equal(f.app.modal({ userId: '1', action: 'feedback_form_suggestion_extra' }), null);
+  assert.equal(f.app.modal({ userId: '1', username: REPORTER.username, action: 'feedback_form_report_forged-post' }), null);
+  assert.equal(f.app.modal({ userId: '1', username: REPORTER.username, action: 'feedback_form_suggestion_extra' }), null);
   const result = await f.submit(f.open(), ['ملاحظة للمراجعة كاملة', 'https://sunnah.com/muslim:2694']);
   assert.match(string(result), /وصلت ملاحظتك/);
 });
@@ -83,7 +100,7 @@ test('per-user and global quotas bound submissions, and memory is pruned', async
   for (let i = 0; i < 2; i++) { f.advance(10 * 60_000); await f.submit(f.open()); }
   f.advance(10 * 60_000); await f.submit(f.open()); assert.equal(f.messages.length, 3);
   f.advance(86_400_000); f.app.prune(); assert.equal(f.app.attempts.size, 0);
-  for (let i = 0; i < 31; i++) { const userId = `user${i}`; await f.submit(f.open(userId), ['ملاحظة للمراجعة كاملة', ''], userId); }
+  for (let i = 0; i < 31; i++) { const userId = String(100 + i); await f.submit(f.open(userId), ['ملاحظة للمراجعة كاملة', ''], userId); }
   assert.equal(f.messages.length, 33);
   f.advance(86_400_000); f.app.prune();
   assert.equal(f.app.pending.size, 0); assert.equal(f.app.globalAttempts.length, 0);
@@ -105,7 +122,7 @@ test('every reviewed card has a resolvable context, and review messages fit Disc
   const client = new Client({ intents: [] }); t.after(() => client.destroy());
   for (const card of cards) {
     assert.equal(feedbackCard(card.id), card);
-    const payload = feedbackReviewMessage({ ticket: 'a'.repeat(24), kind: 'report', card, body: '@everyone ```' + 'x'.repeat(980), sourceURL: 'https://site.test/' + 'x'.repeat(232) });
+    const payload = feedbackReviewMessage({ ticket: 'a'.repeat(24), kind: 'report', card, body: '@everyone ```' + 'x'.repeat(980), sourceURL: 'https://site.test/' + 'x'.repeat(232), reporter: { id: '12345678901234567890', username: '🌿'.repeat(32) } });
     assert.ok(payload.content.length <= 2000);
     const resolved = MessagePayload.create({ client }, payload).resolveBody().body;
     assert.deepEqual(resolved.allowed_mentions, { parse: [], users: [], roles: [], replied_user: false });
@@ -123,7 +140,7 @@ test('opening/submitting feedback preserves all legacy preferences and creates n
   const app = new RafiqApp({ store, queue: new SerialQueue(), feedback: f.app, sendDM: () => assert.fail('no DMs') });
   for (const userId of ['1', '2']) {
     for (const action of ['support', 'feedback_suggestion', 'report_majlis', `report_${PUBLIC_POSTS[0].id}`]) await app.handle({ userId, action });
-    const modal = f.app.modal({ userId, action: 'feedback_form_suggestion' });
+    const modal = f.app.modal({ userId, username: REPORTER.username, action: 'feedback_form_suggestion' });
     await app.handle({ userId, action: modal.custom_id.slice(9), values: ['تحسين بسيط على المساعدة'] });
   }
   assert.deepEqual(tables(), before);
@@ -143,7 +160,7 @@ function channelFixture() {
 test('fixed private channel is checked before every send, with no new permissions required', async () => {
   const f = channelFixture();
   assert.equal(await resolveFeedbackChannel(f.client, f.config), f.channel);
-  const send = makeSendFeedback(f.client, f.config), payload = feedbackReviewMessage({ ticket: 'b'.repeat(24), kind: 'suggestion', body: 'ملاحظة تشغيل تجريبية' });
+  const send = makeSendFeedback(f.client, f.config), payload = feedbackReviewMessage({ ticket: 'b'.repeat(24), kind: 'suggestion', body: 'ملاحظة تشغيل تجريبية', reporter: REPORTER });
   await send(payload, 'b'.repeat(24)); assert.equal(f.sends.length, 1);
   assert.equal(f.sends[0].enforceNonce, true);
   f.channel.permissionOverwrites.cache.get('10').deny.remove(P.ViewChannel);
