@@ -20,7 +20,7 @@ export class RafiqApp {
 
   async route({ userId, guildId = null, canManageServer = false, action = 'home', values = [] }) {
     if (isFeedbackSubmit(action)) return this.feedback ? this.feedback.submit({ userId, action, values }) : ui.supportPayload({ supportURL: this.supportURL });
-    if (action.startsWith('feedback_form_')) return ui.noticePayload('الإرسال غير متاح الآن', 'ارجع إلى المساعدة واستخدم رابط الدعم.');
+    if (action.startsWith('feedback_form_')) return ui.noticePayload('الإرسال غير متاح الآن', 'جرّب فتح نموذج جديد من صفحة المساعدة لاحقًا.');
     if (action.startsWith('post_source_') && PUBLIC_POSTS.some(card => card.id === action.slice(12))) return ui.publicPostSourcePayload(action.slice(12));
     if (action === 'server_guide') return serverGuidePayload(Boolean(guildId && canManageServer));
     if (action === 'setup_start') {
