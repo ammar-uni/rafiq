@@ -196,6 +196,106 @@
       "id": "post-salawat",
       "checkedOn": "2026-09-29",
       "sha256": "68330d02690bf284eb4d61f5d214a7dad23e8a5915f90173d8e13cc6367fbc9c"
+    },
+    {
+      "id": "post-love-for-brother",
+      "checkedOn": "2026-10-04",
+      "sha256": "973209a49a33db0d6211c36eb8a443745c1e7166399bce7a78b3361e7375b0e6"
+    },
+    {
+      "id": "post-good-word",
+      "checkedOn": "2026-10-04",
+      "sha256": "48ec6bf572cbc6b3b350564645e70962fecee8444dfa9d53e19d0b9c3cae533b"
+    },
+    {
+      "id": "post-small-charity",
+      "checkedOn": "2026-10-04",
+      "sha256": "ba712a1e510cc706788b68fed7559b80f85b56eb376bba1857ff1d34f48f0046"
+    },
+    {
+      "id": "post-guidance-and-soundness",
+      "checkedOn": "2026-10-04",
+      "sha256": "13e01a88b82821b53fbf66cf1d60318e36902d0e561354476e23151c8eff7397"
+    },
+    {
+      "id": "post-do-not-be-angry",
+      "checkedOn": "2026-10-04",
+      "sha256": "6a9bcd79dbe0eab99358deec5b729ccffe96439ad902ec415f4625c31c446899"
+    },
+    {
+      "id": "post-sincere-counsel",
+      "checkedOn": "2026-10-04",
+      "sha256": "0c66597fd4b1da6d08f40a641ad1dc569601cf8c2d9238b3dec002e0565f762d"
+    },
+    {
+      "id": "post-learn-quran",
+      "checkedOn": "2026-10-04",
+      "sha256": "d2df3b938c9efa74553650ea169f530d25c63f7b6db867ff69a3440744b7db7f"
+    },
+    {
+      "id": "post-understand-religion",
+      "checkedOn": "2026-10-04",
+      "sha256": "459616fd3f2642b00f0f3261dc27630e7df1653ea6c467a3910532626475a67e"
+    },
+    {
+      "id": "post-purification-and-praise",
+      "checkedOn": "2026-10-04",
+      "sha256": "ee6fcbfec03b98b610046d055da4bbc9d483c7f02efe6a2dfb39a970c0b07d97"
+    },
+    {
+      "id": "post-greet-first",
+      "checkedOn": "2026-10-04",
+      "sha256": "455b30d82fb657cbd25545a38d5e7b032dd2300e203b0f13a9199c434113feaf"
+    },
+    {
+      "id": "post-backbiting",
+      "checkedOn": "2026-10-04",
+      "sha256": "0c79b3803a48d53d620c7b1f358b4ce2c5932a2be7f1132fb6a9c02897d57e96"
+    },
+    {
+      "id": "post-health-and-leisure",
+      "checkedOn": "2026-10-04",
+      "sha256": "28c612da5d0dd260831c077b8e018332e05f3e0d25c30d7b233a8e8d5e0c38b5"
+    },
+    {
+      "id": "post-benefit-and-help",
+      "checkedOn": "2026-10-04",
+      "sha256": "290e0ead0b3be0e15c888dfb53682804fe73fd590183e56dd14e6994936f2114"
+    },
+    {
+      "id": "post-patience",
+      "checkedOn": "2026-10-04",
+      "sha256": "2be59f6b5b7b4846b270203f6602d31a7a7e45af44b4716b7e9df8c79a1fb46e"
+    },
+    {
+      "id": "post-du-a-at-stopping-place",
+      "checkedOn": "2026-10-04",
+      "sha256": "d6699193ef71ba26cd1eeaadcff8699b04ace9e4e8aa82e5217ee93074831315"
+    },
+    {
+      "id": "post-praise-after-food",
+      "checkedOn": "2026-10-04",
+      "sha256": "524af87c9d043753521aa5046f1c0565258667b8695fb8e69f74a9276b7a989b"
+    },
+    {
+      "id": "post-affliction-expiation",
+      "checkedOn": "2026-10-04",
+      "sha256": "c93a054b65c7463817425a7aec031c755c5e9f8489a0808c3eb9a4d95c5ef67a"
+    },
+    {
+      "id": "post-seek-forgiveness",
+      "checkedOn": "2026-10-04",
+      "sha256": "602bc8e08beb841742c5450d692064fd2d3047e0a2b31d2e33c56bbe997b0287"
+    },
+    {
+      "id": "post-refuge-in-pleasure",
+      "checkedOn": "2026-10-04",
+      "sha256": "0da3c295a1793c4b2a127ad8ae427d7978ed53ea007dc1362a4abb4ad6627414"
+    },
+    {
+      "id": "post-every-good-deed",
+      "checkedOn": "2026-10-04",
+      "sha256": "5f10e9b67cee5fbf438236b7f86ad0da54b91468cd8742f9db55197d99b51440"
     }
   ]
 }
