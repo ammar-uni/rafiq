@@ -5,30 +5,32 @@ import { PUBLIC_POSTS } from '../src/content.mjs';
 import { serverCardForEvent, serverPostPayload } from '../src/server-messages.mjs';
 import { publicPostSourcePayload } from '../src/messages.mjs';
 
-test('all twenty public messages exactly match the approved editorial text and source', () => {
-  const document = readFileSync(new URL('../docs/reminder-posts.md', import.meta.url), 'utf8').replaceAll('\r\n', '\n');
-  const sections = [...document.matchAll(/^#{2,3} ([٠-٩]+) · (.+)\n([\s\S]*?)(?=^#{2,3} |$(?![\s\S]))/gm)];
-  assert.equal(PUBLIC_POSTS.length, 20);
+test('all forty public messages exactly match the approved editorial text and source', () => {
+  const documents = ['reminder-posts.md', 'reminder-posts-21-40.md'].map(file => readFileSync(new URL(`../docs/${file}`, import.meta.url), 'utf8').replaceAll('\r\n', '\n'));
+  const sections = documents.flatMap(document => [...document.matchAll(/^#{2,3} ([٠-٩]+) · (.+)\n([\s\S]*?)(?=^#{2,3} |$(?![\s\S]))/gm)]);
+  assert.equal(PUBLIC_POSTS.length, 40);
   assert.equal(sections.length, PUBLIC_POSTS.length);
+  assert.deepEqual(PUBLIC_POSTS.map(card => card.editorialNumber), Array.from({ length: 40 }, (_, index) => index + 1));
+  assert.equal(new Set(PUBLIC_POSTS.map(card => card.id)).size, 40);
   const seen = new Set();
-  for (let day = 0; day < 20; day++) {
+  for (let day = 0; day < 40; day++) {
     const event = { kind: 'daily', day: new Date(Date.UTC(2026, 8, 20 + day)).toISOString().slice(0, 10), slot: 0 };
     const card = serverCardForEvent(event), section = sections[card.editorialNumber - 1];
     const lines = section[3].split('\n').filter(line => line.startsWith('>')).map(line => line.replace(/^> ?/, '')).filter(Boolean);
     assert.equal(serverPostPayload(event).content, lines.join('\n'), card.id);
     assert.ok(section[3].includes(`(${card.source.url})`), card.id);
-    assert.equal(section[3].match(/^- الصحابي(?:ة)?: (.+)$/m)?.[1], card.narratorLine, card.id);
+    assert.equal(section[3].match(/^- الصحابي(?:ة|ان)?: (.+)$/m)?.[1], card.narratorLine, card.id);
     assert.ok(card.source.citations.every(ref => ['bukhari', 'muslim'].includes(ref.collection)));
     seen.add(card.id);
   }
-  assert.equal(seen.size, 20, 'Every approved post appears in the rotation');
+  assert.equal(seen.size, 40, 'Every approved post appears in the rotation');
   assert.throws(() => { PUBLIC_POSTS[0].body = 'changed'; }, TypeError);
 });
 
-test('one, two and three daily slots rotate through all twenty posts across month boundaries', () => {
+test('one, two and three daily slots rotate through all forty posts across month boundaries', () => {
   for (const count of [1, 2, 3]) {
     const slots = Array.from({length: count}, () => new Set());
-    for (let day = 0; day < 20; day++) {
+    for (let day = 0; day < 40; day++) {
       const date = new Date(Date.UTC(2026, 8, 20 + day)).toISOString().slice(0, 10);
       const today = slots.map((seen, slot) => {
         const card = serverCardForEvent({kind: 'daily', day: date, slot});
