@@ -6,6 +6,28 @@ const canonical = value => Array.isArray(value) ? value.map(canonical) : value &
   ? Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])])) : value;
 export const contentFingerprint = card => createHash('sha256').update(JSON.stringify(canonical(card))).digest('hex');
 
+export function assertBalancedQuotationMarks(text, label = 'content') {
+  const closing = { '«': '»', '“': '”' };
+  const expected = [];
+  const reject = () => {
+    const error = new Error(`Unbalanced quotation marks in ${label}`);
+    error.code = 'CONTENT_QUOTATION_INVALID';
+    throw error;
+  };
+  for (const character of text) {
+    if (Object.hasOwn(closing, character)) expected.push(closing[character]);
+    else if ((character === '»' || character === '”') && expected.pop() !== character) reject();
+  }
+  if (expected.length) reject();
+}
+
+function checkQuotationMarks(value, label) {
+  if (typeof value === 'string') assertBalancedQuotationMarks(value, label);
+  else if (value && typeof value === 'object') {
+    for (const [key, child] of Object.entries(value)) checkQuotationMarks(child, `${label}.${key}`);
+  }
+}
+
 // A change detector, not a hadith authenticator. Update the review record only
 // after comparing wording, narrators and references with the actual sources.
 export function assertReviewedContent(cards = [...DHIKR_CARDS, ...GOOD_DEEDS, ...Object.values(OCCASION_CARDS), ...DAILY_DHIKR, ...Object.values(SEASONAL_CARDS), ...PUBLIC_POSTS], review = JSON.parse(readFileSync(new URL('./content-review.json', import.meta.url), 'utf8'))) {
@@ -17,6 +39,7 @@ export function assertReviewedContent(cards = [...DHIKR_CARDS, ...GOOD_DEEDS, ..
     ids.add(card.id);
     const record = review.entries.filter(entry => entry.id === card.id);
     if (record.length !== 1 || record[0].sha256 !== contentFingerprint(card) || record[0].checkedOn !== card.source?.checkedOn) reject();
+    checkQuotationMarks(card, card.id);
     if (!card.source?.citations?.length) reject();
     for (const ref of card.source.citations) {
       if (!Object.hasOwn(HADITH_BOOKS, ref.collection) || ref.book !== HADITH_BOOKS[ref.collection] || !/^\d+[a-z]?$/.test(ref.number) || !ref.narrator || ref.url !== `https://sunnah.com/${ref.collection}:${ref.number}`) reject();

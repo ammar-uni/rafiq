@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { DHIKR_CARDS, GOOD_DEEDS, OCCASION_CARDS, DAILY_DHIKR, SEASONAL_CARDS, PUBLIC_POSTS } from '../src/content.mjs';
-import { assertReviewedContent } from '../src/content-review.mjs';
+import { assertReviewedContent, assertBalancedQuotationMarks } from '../src/content-review.mjs';
 assertReviewedContent();
+for (const file of ['reminder-posts.md', 'reminder-posts-21-40.md', 'reminder-posts-41-60.md']) {
+  assertBalancedQuotationMarks(readFileSync(new URL(`../docs/${file}`, import.meta.url), 'utf8'), `docs/${file}`);
+}
 const ids = new Set();
 for (const card of [...DHIKR_CARDS, ...GOOD_DEEDS, ...Object.values(OCCASION_CARDS), ...DAILY_DHIKR, ...Object.values(SEASONAL_CARDS), ...PUBLIC_POSTS]) {
   assert.ok(!ids.has(card.id)); ids.add(card.id);
@@ -14,4 +18,4 @@ for (const card of [...DHIKR_CARDS, ...GOOD_DEEDS, ...Object.values(OCCASION_CAR
   if (url.hostname === 'binbaz.org.sa') assert.ok(/^\/(fatwas|audios)\/\d+\//.test(url.pathname));
   else assert.ok(card.source.citations.some(ref => ref.url === card.source.url));
 }
-console.log(`${DHIKR_CARDS.length} dhikr cards, ${GOOD_DEEDS.length} good-deed suggestions ${Object.keys(OCCASION_CARDS).length} occasion reminders and ${DAILY_DHIKR.length} morning/evening selections and ${Object.keys(SEASONAL_CARDS).length} seasonal cards and ${PUBLIC_POSTS.length} approved public posts match the source-review record. This detects unreviewed changes, not religious authenticity.`);
+console.log(`${DHIKR_CARDS.length} dhikr cards, ${GOOD_DEEDS.length} good-deed suggestions ${Object.keys(OCCASION_CARDS).length} occasion reminders and ${DAILY_DHIKR.length} morning/evening selections and ${Object.keys(SEASONAL_CARDS).length} seasonal cards and ${PUBLIC_POSTS.length} source-reviewed public posts match the source-review record. This detects unreviewed changes, not religious authenticity.`);

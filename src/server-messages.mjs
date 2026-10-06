@@ -16,8 +16,13 @@ const serverScheduleLabel = p => `${p.times.join(' · ')}\nبتوقيت ${server
 const serverMentionLabel = p => p.mentionEveryone ? '@everyone · جميع أعضاء القناة' : p.roleId ? `<@&${p.roleId}>` : 'بدون منشن';
 export const SERVER_GENERAL_CARDS = Object.freeze(PUBLIC_POSTS.map(card => Object.freeze({ ...card, action: `post_source_${card.id}` })));
 export function serverCardForEvent(event) {
-  const index = Math.floor(Date.parse(event.day + 'T00:00:00Z') / 86400000) * 3 + event.slot;
-  return SERVER_GENERAL_CARDS[((index % SERVER_GENERAL_CARDS.length) + SERVER_GENERAL_CARDS.length) % SERVER_GENERAL_CARDS.length];
+  const day = Math.floor(Date.parse(event.day + 'T00:00:00Z') / 86400000);
+  const size = SERVER_GENERAL_CARDS.length;
+  const position = ((day % size) + size) % size;
+  // A stride of three alone reaches only one third of a pool divisible by three.
+  const phase = size % 3 === 0 ? Math.floor(position / (size / 3)) : 0;
+  const index = day * 3 + phase + event.slot;
+  return SERVER_GENERAL_CARDS[((index % size) + size) % size];
 }
 export function serverPostPayload(event, roleId = null, mentionEveryone = false) {
   if (roleId !== null && !serverId(roleId)) throw new RangeError('Invalid mention role');
@@ -32,7 +37,7 @@ export function serverPostPayload(event, roleId = null, mentionEveryone = false)
 }
 export function serverHomePayload(p = DEFAULT_SERVER, notice = '') {
   return serverEnvelope([
-    serverText(`-# إعدادات المشرف · تظهر لك وحدك\n## رفيق في سيرفرك\nتذكيرات قصيرة يختار محتواها رفيق من أربعين منشورًا معتمدًا بأحاديث من الصحيحين.`),
+    serverText(`-# إعدادات المشرف · تظهر لك وحدك\n## رفيق في سيرفرك\nتذكيرات قصيرة يختار محتواها رفيق من ${PUBLIC_POSTS.length.toLocaleString('ar')} منشورًا بأحاديث من الصحيحين، مع مصادرها المراجعة.`),
     ...(notice ? [serverText(notice)] : []),
     serverText(`**النشر ${p.enabled ? 'مفعّل' : 'متوقف'}**${p.issue ? '\n' + (p.issue === 'permissions' ? 'توقف النشر بسبب صلاحيات القناة أو المنشن. راجعها ثم أعد التفعيل.' : 'تعذّر إرسال أحد المنشورات؛ لن نكرر محاولة إرساله.') : ''}`),
     serverDivider(),
