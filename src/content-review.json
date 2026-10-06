@@ -296,6 +296,106 @@
       "id": "post-every-good-deed",
       "checkedOn": "2026-10-04",
       "sha256": "5f10e9b67cee5fbf438236b7f86ad0da54b91468cd8742f9db55197d99b51440"
+    },
+    {
+      "id": "post-good-character",
+      "checkedOn": "2026-10-06",
+      "sha256": "2ad60741a8c409c371faab6f294b7cbbc56aecc7d553694edf7f49d17b8340e2"
+    },
+    {
+      "id": "post-modesty",
+      "checkedOn": "2026-10-06",
+      "sha256": "7db63f06d03747dc70d3b3882ac23868645c1d70f179b5e52b97ec845dd22ae7"
+    },
+    {
+      "id": "post-truthfulness",
+      "checkedOn": "2026-10-06",
+      "sha256": "14e28b91a3e698e861c8c4f09acea30faf7da5857fcd215e6fd55ec9347bd178"
+    },
+    {
+      "id": "post-neighbour",
+      "checkedOn": "2026-10-06",
+      "sha256": "543182ed2ddccf6966df9dfbebbcd4f49080e437bc15398ba48e6124787e94d0"
+    },
+    {
+      "id": "post-believers-building",
+      "checkedOn": "2026-10-06",
+      "sha256": "b284ed603e94d17f2d86bcad09dc8ca047d5f58a42ce059517c356a9d6ce2aae"
+    },
+    {
+      "id": "post-believers-body",
+      "checkedOn": "2026-10-06",
+      "sha256": "87491f22b7dec0e639da12a84a45a9501d0dfcc612fe93a0587cad4e7e05cb80"
+    },
+    {
+      "id": "post-avoid-suspicion",
+      "checkedOn": "2026-10-06",
+      "sha256": "c60dab0dfda3b8dad49b243451a5381ba0c5b7e9123013c33e6cf5f544a503c4"
+    },
+    {
+      "id": "post-trust-and-promises",
+      "checkedOn": "2026-10-06",
+      "sha256": "37e4876a219f38894d04a9eab5ab698d370432d98cfe6c062d8d258e11e02f4c"
+    },
+    {
+      "id": "post-value-blessings",
+      "checkedOn": "2026-10-06",
+      "sha256": "23787e829859f159b1037f5c906145b1629347c813b5ffe7676161aa0877f763"
+    },
+    {
+      "id": "post-planting",
+      "checkedOn": "2026-10-06",
+      "sha256": "67c2d6ce229f58264c12aafd9cbb510dc9a434017c126780b4a9b7de1a75cb8d"
+    },
+    {
+      "id": "post-kindness-to-animals",
+      "checkedOn": "2026-10-06",
+      "sha256": "c8a714bc54cb3bd8561c615cf8a74e788b1a98c1921951fe7c9f3b9606f1cc57"
+    },
+    {
+      "id": "post-branches-of-faith",
+      "checkedOn": "2026-10-06",
+      "sha256": "e6f7056800752eacc81c6ba9b8c65efc8fde77fdcd91b56dd3e203014b845814"
+    },
+    {
+      "id": "post-answer-adhan",
+      "checkedOn": "2026-10-06",
+      "sha256": "1c6966bd7e0ac27130cc140cdda89b5cb444fd71b7e77500ca3ddf7b24e07e4c"
+    },
+    {
+      "id": "post-distress-supplication",
+      "checkedOn": "2026-10-06",
+      "sha256": "c08d65b5f319d60024cd84212a0a2fbc3e5603e8755de793276e12f4dcd8cf5a"
+    },
+    {
+      "id": "post-worry-supplication",
+      "checkedOn": "2026-10-06",
+      "sha256": "e19c98b6cbea0ff007ff5e66e87351837a0960be25c3a001d889433e6ef43b1d"
+    },
+    {
+      "id": "post-patience-in-supplication",
+      "checkedOn": "2026-10-06",
+      "sha256": "7470416a049c993415953c0f128e1e81796aeaf686ba18e2c17c6e869b8e6f93"
+    },
+    {
+      "id": "post-joy-in-repentance",
+      "checkedOn": "2026-10-06",
+      "sha256": "3efaad14391b78abc77598ea557317acf88f9a2694aa20ff59680c3f645c1ba3"
+    },
+    {
+      "id": "post-widow-and-poor",
+      "checkedOn": "2026-10-06",
+      "sha256": "5515c8cc011125559df1b0227f1c0692485043f2bd31c610dd4ad9f9423ce6b9"
+    },
+    {
+      "id": "post-remembrance-life",
+      "checkedOn": "2026-10-06",
+      "sha256": "1efdef4b0ea86450afe89cf4c4dd320d275e9326f34970e48200bd64e8cd900c"
+    },
+    {
+      "id": "post-quran-intercession",
+      "checkedOn": "2026-10-06",
+      "sha256": "303e1bc3244af1cf5eb1e69ece329fbe3dbe8fb706ecc7a889523566b605c43c"
     }
   ]
 }
