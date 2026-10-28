@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { DHIKR_CARDS, GOOD_DEEDS, OCCASION_CARDS, DAILY_DHIKR, SEASONAL_CARDS, PUBLIC_POSTS } from '../src/content.mjs';
 import { assertReviewedContent, assertBalancedQuotationMarks } from '../src/content-review.mjs';
 assertReviewedContent();
-for (const file of ['reminder-posts.md', 'reminder-posts-21-40.md', 'reminder-posts-41-60.md']) {
+for (const file of ['reminder-posts.md', 'reminder-posts-21-40.md', 'reminder-posts-41-60.md', 'reminder-posts-61-85.md', 'reminder-posts-86-110.md', 'reminder-posts-111-160.md', 'reminder-posts-161-210.md', 'reminder-posts-211-260.md', 'reminder-posts-261-310.md', 'reminder-posts-311-360.md', 'hadith-reaudit-2026-10-28.md']) {
   assertBalancedQuotationMarks(readFileSync(new URL(`../docs/${file}`, import.meta.url), 'utf8'), `docs/${file}`);
 }
 const ids = new Set();

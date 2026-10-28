@@ -140,7 +140,7 @@ export function seasonalReminderPayload(event, { silent = false, preview = false
   const card = SEASONAL_CARDS[event.key];
   if (!card) throw new RangeError('Unknown seasonal reminder');
   const date = new Intl.DateTimeFormat('ar-SA-u-ca-gregory', { timeZone: 'Asia/Riyadh', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(event.referenceDay + 'T09:00:00Z'));
-  const content = [card.title, card.context, `«${card.text}»`, card.source.reference,
+  const content = [card.title, card.context, card.text, card.source.reference,
     ...(card.qualifier ? [card.qualifier] : []),
     `\n${event.confirmed ? 'الموعد في السعودية' : 'الموعد المتوقع في السعودية'}: ${date}. قد يختلف في بلدك.`].join('\n');
   if (preview) return envelope([
