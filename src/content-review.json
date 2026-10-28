@@ -34,13 +34,13 @@
     },
     {
       "id": "help",
-      "checkedOn": "2026-09-08",
-      "sha256": "fea0ac6b016993b6921744186b6328581900403616e8818f0d147bd50f38ba64"
+      "checkedOn": "2026-10-28",
+      "sha256": "6f2c0d3890a6d60fd1063152bfe95b548db3ca576ddd2fbe20d09852c775434f"
     },
     {
       "id": "kind-word",
-      "checkedOn": "2026-09-08",
-      "sha256": "2f0d48700844759a91b210c00188c47ae5fdc2bb28a6ca75bfc1590ae91e7cff"
+      "checkedOn": "2026-10-28",
+      "sha256": "0ea1a0df7772220d48d3389176559526c3a96fa1585d4b3a003332a4d0dced8d"
     },
     {
       "id": "calm",
@@ -89,213 +89,213 @@
     },
     {
       "id": "seasonal-dhul-hijjah",
-      "checkedOn": "2026-09-23",
-      "sha256": "397c62d90a97325b90d37e4ee6c62ca99a98b36cf7613403598d5b0e3005452f"
+      "checkedOn": "2026-10-28",
+      "sha256": "54630ed993998f809041debf39324ad8e681d90e98c7c4d73a011843140a5177"
     },
     {
       "id": "seasonal-arafah",
-      "checkedOn": "2026-09-23",
-      "sha256": "1a98c2421fb7d4a1b7c33c46e2dd06479e49badcdcbdf6009e470949d47f8285"
+      "checkedOn": "2026-10-28",
+      "sha256": "e301ccafd30c105c9a43abbdd471efcc982ac87a2dd1a9074c102b6c2d05c9a4"
     },
     {
       "id": "post-two-words",
-      "checkedOn": "2026-09-27",
-      "sha256": "cbfa9f1032de09fbd1d38df11b1f43aae235cf2ef0bcea25aad35448de2f9094"
+      "checkedOn": "2026-10-28",
+      "sha256": "dc66e7f458591da285d116f0402aa3d750134cd16ecbaf2157c47122e86ee24e"
     },
     {
       "id": "post-four-words",
-      "checkedOn": "2026-09-27",
-      "sha256": "ee7637e2d7a82e739f1e80ca92528566308e133f23a7e62e75416627c57b398d"
+      "checkedOn": "2026-10-28",
+      "sha256": "c535c0a21f4c65188c13156fc2f02b0e269736c68ceb19ca9473dad51ea25e02"
     },
     {
       "id": "post-hawqala",
-      "checkedOn": "2026-09-27",
-      "sha256": "57f04822ac069589897fe786f1660b26fcc2623084b8b06f2b5812db16a679a0"
+      "checkedOn": "2026-10-28",
+      "sha256": "becd77ae22eec52bfd3bf29c84fb567279b59f159d1636e1c8c408994e24e06d"
     },
     {
       "id": "post-guidance",
-      "checkedOn": "2026-09-27",
-      "sha256": "6b205bbc62d3f372d1d90719dc17553af2ba04e3b02221e9a8c1652fb4d5e001"
+      "checkedOn": "2026-10-28",
+      "sha256": "0cd9a7a2bef0a3bf40a734ed8ab9f369e9d106e4775550dc5af4b1a3ae086768"
     },
     {
       "id": "post-parents",
-      "checkedOn": "2026-09-27",
-      "sha256": "dc19d61e592d1f8f03c0e029c59f671bf65c93977851c30d1be0b2cfb135cd45"
+      "checkedOn": "2026-10-28",
+      "sha256": "80012dd32ddbee723b4b5602c8c50251d7b5e0d24bf909cdf6d724cd7ddbfadc"
     },
     {
       "id": "post-help",
-      "checkedOn": "2026-09-27",
-      "sha256": "6760a874a8236cf69901a461e865b8cb94c8d94796b968292dfcfbc826ccd6a8"
+      "checkedOn": "2026-10-28",
+      "sha256": "c7f7f44dda7b4aa05cb21b20422b4bd565be1efe5fb505530b38f76dbbd12d5c"
     },
     {
       "id": "post-kind-word",
-      "checkedOn": "2026-09-27",
-      "sha256": "326170bd21337cfd193aeff9f067a10da2fe6063b9e453302357189b63d6fb83"
+      "checkedOn": "2026-10-28",
+      "sha256": "a2067b39c627f5eed7173b7402b6b6ff623e9405438f7ef91eec4eff7ad35705"
     },
     {
       "id": "post-calm",
-      "checkedOn": "2026-09-27",
-      "sha256": "ac64a1cb9a8430dfc71131706a11a9c031060bddbe1644d6493473a54f0b29c3"
+      "checkedOn": "2026-10-28",
+      "sha256": "66b6ec3be3c7bba4707c4b59becc4b718c4110501a35060c72e53fab2d31f45f"
     },
     {
       "id": "post-kinship",
-      "checkedOn": "2026-09-27",
-      "sha256": "e6dcaf9f2c0a7f714541572f9a87f1855c8d8038ee8ab28f7f6459b3634c7774"
+      "checkedOn": "2026-10-28",
+      "sha256": "0582101b7a5f1b13c0e4d70469403a026a0fd434adbafdb1ae8f964f03846299"
     },
     {
       "id": "post-no-insult",
-      "checkedOn": "2026-09-27",
-      "sha256": "3d72640ff75220fd07707f0fb95b82f7ee50c52d996f01d1f493a6cd1ff9e26c"
+      "checkedOn": "2026-10-28",
+      "sha256": "90fe933ea326de3eb9c5879bafb8faf8484613dc2667bcaae79e98a28a7f2306"
     },
     {
       "id": "post-gentleness",
-      "checkedOn": "2026-09-29",
-      "sha256": "dddafaca7da4b78dbda650435fac22011d3d3e8feaf6706ef28d1a861fe2b407"
+      "checkedOn": "2026-10-28",
+      "sha256": "730f6f204347867f238a4e835d7eb62f11b3e05a8d5680c1acda1664368ee266"
     },
     {
       "id": "post-ease",
-      "checkedOn": "2026-09-29",
-      "sha256": "bf69865fb1a222940ed7805331dfe765d4bc6aaecf46d64a06e25bf65cc96aeb"
+      "checkedOn": "2026-10-28",
+      "sha256": "b2d1d8892769201f63f7b6b743bbd4c09d80416e151d08f390f5382fbecd3c94"
     },
     {
       "id": "post-cheerful-face",
-      "checkedOn": "2026-09-29",
-      "sha256": "47918443ef698bec9d05b105ad4405d9499398c8779276bee8c2f465d86e9360"
+      "checkedOn": "2026-10-28",
+      "sha256": "180ae7bef88b35f590a4d7121d43619e869dfe5a3c7d559c28dd10de4de80a36"
     },
     {
       "id": "post-mercy",
-      "checkedOn": "2026-09-29",
-      "sha256": "cb3028a15344285d53e1bc0ffea7078e6a7adf25735a7be4e29c1696570f658d"
+      "checkedOn": "2026-10-28",
+      "sha256": "aaf63afe1115f5249e295b8d3f973480f0f1544288f21a57432d4f6f69a1731d"
     },
     {
       "id": "post-food-and-salam",
-      "checkedOn": "2026-09-29",
-      "sha256": "c0879d505ffc2f9d5d695a87fc516bb95de1b1c549c2f34906759d3a9f70d2b5"
+      "checkedOn": "2026-10-28",
+      "sha256": "b5f08e8b0c758e162750888a47786781c6aed4cacf2146dc644b5f01b982c370"
     },
     {
       "id": "post-dua-for-others",
-      "checkedOn": "2026-09-29",
-      "sha256": "426f48b8449014d972aa044e4a05ab5a4ff78a116b8e80ff5003eb8d333bd661"
+      "checkedOn": "2026-10-28",
+      "sha256": "50220ae69bb0e5e44d26138cbc7f4273a9a7b65bdfa68d307dc8e2af8992436b"
     },
     {
       "id": "post-helping-others",
-      "checkedOn": "2026-09-29",
-      "sha256": "1d46debd8a14cbe66a7d1871148b0272958acc748e5ab137a65e7486b09d82bb"
+      "checkedOn": "2026-10-28",
+      "sha256": "b609ac708d13137c976ffeb7b187714f50255f237474b775842f4889f472dba2"
     },
     {
       "id": "post-charity-and-humility",
-      "checkedOn": "2026-09-29",
-      "sha256": "6979ca1fbce91f13f7de090be9e58be3d4cb6c311aaf862fc7e0b0a1c9afe66a"
+      "checkedOn": "2026-10-28",
+      "sha256": "893a4c75085929fa5551199509c1a447ef7ecd585cbdd61c270bf9cf92730e2f"
     },
     {
       "id": "post-consistency",
-      "checkedOn": "2026-09-29",
-      "sha256": "7b621a15bfd56c9ba4e05f5b95d41a0e4fceadf405f54181a63aa14abf8ee4eb"
+      "checkedOn": "2026-10-28",
+      "sha256": "4da0cbe68400584610cda04a07da628df3a62358666ed95639ddc303982284df"
     },
     {
       "id": "post-salawat",
-      "checkedOn": "2026-09-29",
-      "sha256": "68330d02690bf284eb4d61f5d214a7dad23e8a5915f90173d8e13cc6367fbc9c"
+      "checkedOn": "2026-10-28",
+      "sha256": "8ed7e59e9c2e0eb3128cf1eeb87acfe6565109aab9bc59aeb3945ba7e32af8d4"
     },
     {
       "id": "post-love-for-brother",
-      "checkedOn": "2026-10-04",
-      "sha256": "973209a49a33db0d6211c36eb8a443745c1e7166399bce7a78b3361e7375b0e6"
+      "checkedOn": "2026-10-28",
+      "sha256": "6fe0c7f0dd2b93b794f04a4e2bd4da68bb21c42004030585df49fa4a30ace562"
     },
     {
       "id": "post-good-word",
-      "checkedOn": "2026-10-04",
-      "sha256": "48ec6bf572cbc6b3b350564645e70962fecee8444dfa9d53e19d0b9c3cae533b"
+      "checkedOn": "2026-10-28",
+      "sha256": "d95854388ec5d88cf55ecc261022b720cd17a33e47a4d759c98941c712e42acb"
     },
     {
       "id": "post-small-charity",
-      "checkedOn": "2026-10-04",
-      "sha256": "ba712a1e510cc706788b68fed7559b80f85b56eb376bba1857ff1d34f48f0046"
+      "checkedOn": "2026-10-28",
+      "sha256": "016ffd95bbe8437c27f2ef3ff9fd7403635c138419418b9e3f521941b261da46"
     },
     {
       "id": "post-guidance-and-soundness",
-      "checkedOn": "2026-10-04",
-      "sha256": "13e01a88b82821b53fbf66cf1d60318e36902d0e561354476e23151c8eff7397"
+      "checkedOn": "2026-10-28",
+      "sha256": "88fb4ebb8d788c1795238d096576a53a11908626dd234f20778bbae0a15a93a7"
     },
     {
       "id": "post-do-not-be-angry",
-      "checkedOn": "2026-10-04",
-      "sha256": "6a9bcd79dbe0eab99358deec5b729ccffe96439ad902ec415f4625c31c446899"
+      "checkedOn": "2026-10-28",
+      "sha256": "6e2fff988fb91ee141eda69b1b9c7c27d64c26e7d61c3785df21652c9f2c89ac"
     },
     {
       "id": "post-sincere-counsel",
-      "checkedOn": "2026-10-04",
-      "sha256": "0c66597fd4b1da6d08f40a641ad1dc569601cf8c2d9238b3dec002e0565f762d"
+      "checkedOn": "2026-10-28",
+      "sha256": "e84cd92830b07d217d6116623421ddcc352de33641f1f1b4a3b5c1f6219e243c"
     },
     {
       "id": "post-learn-quran",
-      "checkedOn": "2026-10-04",
-      "sha256": "d2df3b938c9efa74553650ea169f530d25c63f7b6db867ff69a3440744b7db7f"
+      "checkedOn": "2026-10-28",
+      "sha256": "3b877fabb68c309db0cf2c701c5b6cae6fd481780a51b588c31724c239685086"
     },
     {
       "id": "post-understand-religion",
-      "checkedOn": "2026-10-04",
-      "sha256": "459616fd3f2642b00f0f3261dc27630e7df1653ea6c467a3910532626475a67e"
+      "checkedOn": "2026-10-28",
+      "sha256": "e2fcabd79d96132e49df722c51c584168aea5a6e8da7767c6eecdc1991954f88"
     },
     {
       "id": "post-purification-and-praise",
-      "checkedOn": "2026-10-04",
-      "sha256": "ee6fcbfec03b98b610046d055da4bbc9d483c7f02efe6a2dfb39a970c0b07d97"
+      "checkedOn": "2026-10-28",
+      "sha256": "cbe3f47f4df9de4f23b258acd5bfc425071342536db3e0cd02779befb95af85d"
     },
     {
       "id": "post-greet-first",
-      "checkedOn": "2026-10-04",
-      "sha256": "455b30d82fb657cbd25545a38d5e7b032dd2300e203b0f13a9199c434113feaf"
+      "checkedOn": "2026-10-28",
+      "sha256": "49082ad26a44f4987f4fb4c39b6ae0ebc565d54d4319ae1426e9d1f7f53649b1"
     },
     {
       "id": "post-backbiting",
-      "checkedOn": "2026-10-04",
-      "sha256": "0c79b3803a48d53d620c7b1f358b4ce2c5932a2be7f1132fb6a9c02897d57e96"
+      "checkedOn": "2026-10-28",
+      "sha256": "950f94323d8dcac5068129321c87e4ad1607ca7e04fec3171f9dfef2604e5a84"
     },
     {
       "id": "post-health-and-leisure",
-      "checkedOn": "2026-10-04",
-      "sha256": "28c612da5d0dd260831c077b8e018332e05f3e0d25c30d7b233a8e8d5e0c38b5"
+      "checkedOn": "2026-10-28",
+      "sha256": "7b2ac156841e99f3e91b7bf6ab5e7c09ff4f2ea2efb96d1e5cc47fad80a27fa4"
     },
     {
       "id": "post-benefit-and-help",
-      "checkedOn": "2026-10-04",
-      "sha256": "290e0ead0b3be0e15c888dfb53682804fe73fd590183e56dd14e6994936f2114"
+      "checkedOn": "2026-10-28",
+      "sha256": "17d069417a3f5b80f35eac169c7f7d23ea9a1714bf0548c433d09d5253d91878"
     },
     {
       "id": "post-patience",
-      "checkedOn": "2026-10-04",
-      "sha256": "2be59f6b5b7b4846b270203f6602d31a7a7e45af44b4716b7e9df8c79a1fb46e"
+      "checkedOn": "2026-10-28",
+      "sha256": "0e20ae913376d6b5d6238eba2cca20ce86ecdfe93d4f83c1d557d7e3a038a0b6"
     },
     {
       "id": "post-du-a-at-stopping-place",
-      "checkedOn": "2026-10-04",
-      "sha256": "d6699193ef71ba26cd1eeaadcff8699b04ace9e4e8aa82e5217ee93074831315"
+      "checkedOn": "2026-10-28",
+      "sha256": "5f6e8d4bb62ecb451ea6898a58c1abe2e5e6e7bd3b5948f27d19adfaace65789"
     },
     {
       "id": "post-praise-after-food",
-      "checkedOn": "2026-10-04",
-      "sha256": "524af87c9d043753521aa5046f1c0565258667b8695fb8e69f74a9276b7a989b"
+      "checkedOn": "2026-10-28",
+      "sha256": "8ef061b5afcf6ac69690158ee67068b5753a95c519e5afe583b4a82667d7ac76"
     },
     {
       "id": "post-affliction-expiation",
-      "checkedOn": "2026-10-04",
-      "sha256": "c93a054b65c7463817425a7aec031c755c5e9f8489a0808c3eb9a4d95c5ef67a"
+      "checkedOn": "2026-10-28",
+      "sha256": "a4e1f665bfe6138d50d650882211d6aba67f4593abf80065c45df55a0f809974"
     },
     {
       "id": "post-seek-forgiveness",
-      "checkedOn": "2026-10-04",
-      "sha256": "602bc8e08beb841742c5450d692064fd2d3047e0a2b31d2e33c56bbe997b0287"
+      "checkedOn": "2026-10-28",
+      "sha256": "91ea0dbfe49d008ec3b136f74adfd0b10394767b6076edc61202d9dca5ef2327"
     },
     {
       "id": "post-refuge-in-pleasure",
-      "checkedOn": "2026-10-04",
-      "sha256": "0da3c295a1793c4b2a127ad8ae427d7978ed53ea007dc1362a4abb4ad6627414"
+      "checkedOn": "2026-10-28",
+      "sha256": "593cd3a7446b05cf99bea833d4dcc60064765279d8866fb8aa841b8e1b9e9cb9"
     },
     {
       "id": "post-every-good-deed",
-      "checkedOn": "2026-10-04",
-      "sha256": "5f10e9b67cee5fbf438236b7f86ad0da54b91468cd8742f9db55197d99b51440"
+      "checkedOn": "2026-10-28",
+      "sha256": "d749f86cf157d8fbae7eabb3a4548619a9344225936e8598c55fceb20791f8c4"
     },
     {
       "id": "post-good-character",
@@ -396,6 +396,1506 @@
       "id": "post-quran-intercession",
       "checkedOn": "2026-10-06",
       "sha256": "303e1bc3244af1cf5eb1e69ece329fbe3dbe8fb706ecc7a889523566b605c43c"
+    },
+    {
+      "id": "post-congregational-prayer",
+      "checkedOn": "2026-10-09",
+      "sha256": "ad388b463992ad188b60184bb5bfc321acdf02c851179bb807c35ca539a6ea97"
+    },
+    {
+      "id": "post-build-mosque",
+      "checkedOn": "2026-10-09",
+      "sha256": "c427b4ab7d5e9bc1a94ebbfdce5d8803b92f2a6481663f3b49fe27fc8a23cd87"
+    },
+    {
+      "id": "post-siwak",
+      "checkedOn": "2026-10-09",
+      "sha256": "209477694315b004175f4193dd1fa68c305c5a872bd853917ffd09d04dd6f900"
+    },
+    {
+      "id": "post-maintain-quran",
+      "checkedOn": "2026-10-09",
+      "sha256": "c7eb96c40698e2c843ab87595607d5e40a2e6ccd4946be6766ffd49e23fc3a82"
+    },
+    {
+      "id": "post-quran-recitation-effort",
+      "checkedOn": "2026-10-09",
+      "sha256": "f1fe3c0c86a845f7aeab696fd0b5347251558acdd31352a85ccb048462dc3a15"
+    },
+    {
+      "id": "post-visit-sick",
+      "checkedOn": "2026-10-09",
+      "sha256": "cbcd9ed3c8495c1dac9f1e3b1c2b209dabbc2730b7848e561ad44179d084df18"
+    },
+    {
+      "id": "post-five-prayers",
+      "checkedOn": "2026-10-09",
+      "sha256": "cf2f5509931e33faa09855e74af41a1c9a5107259e2cef0f0cd995ed05c824fc"
+    },
+    {
+      "id": "post-attend-funeral",
+      "checkedOn": "2026-10-09",
+      "sha256": "92bc8b963c61254c6c2763d5cba7750cd921aac237edb87c743bd2f767c6fb23"
+    },
+    {
+      "id": "post-spend-on-family",
+      "checkedOn": "2026-10-09",
+      "sha256": "c5893e78ef52c4b71c0431389a72dc0fccf976c33c573dcc2138db8c4afcc47e"
+    },
+    {
+      "id": "post-family-spending-intention",
+      "checkedOn": "2026-10-09",
+      "sha256": "33e000c009cb02693ea28f1b8458fd633a3461baad46ac0ccb2aac1c479457e4"
+    },
+    {
+      "id": "post-work-with-hands",
+      "checkedOn": "2026-10-09",
+      "sha256": "166033efc49ec732cd9cf53df6351aa9f83532f7c965651584f97d61d38e2efc"
+    },
+    {
+      "id": "post-lenient-trade",
+      "checkedOn": "2026-10-09",
+      "sha256": "4352524544c6a61e231bff533eb459f826ab96a5b0ae05b169a6272fa236baa6"
+    },
+    {
+      "id": "post-forgive-debtor",
+      "checkedOn": "2026-10-09",
+      "sha256": "e1c7147dd00dcaf920fc1961190487ee386f719d599f1a4eebae4c1482e4a35e"
+    },
+    {
+      "id": "post-honest-trade",
+      "checkedOn": "2026-10-09",
+      "sha256": "b32effc86066b1c78ccd0ca5bea38862a19c6281ef01471b6491c8b2403ab579"
+    },
+    {
+      "id": "post-last-third-of-night",
+      "checkedOn": "2026-10-09",
+      "sha256": "03f6526dec433db1e36b5bd3467e61c5800c18d95b44cdd026d43986c805a599"
+    },
+    {
+      "id": "post-supplication-in-prostration",
+      "checkedOn": "2026-10-09",
+      "sha256": "0b6875a47ac779ba552b6720b82b2412882739f142e1a5007b1d5f40540a7514"
+    },
+    {
+      "id": "post-subhanallah-hundred",
+      "checkedOn": "2026-10-09",
+      "sha256": "719926439a58ab1f4436b948ccb11ee40a7d97eba1df8275dd4549970d11e1c9"
+    },
+    {
+      "id": "post-reconcile-hearts",
+      "checkedOn": "2026-10-09",
+      "sha256": "af66bc2c6ae0efbbf482a16c21ad8142b2cd1541dbc4a8e8c31ba07fb6c056b1"
+    },
+    {
+      "id": "post-believer-gratitude-patience",
+      "checkedOn": "2026-10-09",
+      "sha256": "f5201dc10498634a335a3172d126e0a1bb3b25632430246d56462a2fd6f18a86"
+    },
+    {
+      "id": "post-word-consequences",
+      "checkedOn": "2026-10-09",
+      "sha256": "033723b5c20fc7cab237cba3986f6397aa506bae5fdd790dea29bd123cd554db"
+    },
+    {
+      "id": "post-faithful-treasurer",
+      "checkedOn": "2026-10-09",
+      "sha256": "8c7aa95ec0c426f54a3a4189daf1795ac4304b635554b85ca7d1d32e240d67ae"
+    },
+    {
+      "id": "post-world-traveller",
+      "checkedOn": "2026-10-09",
+      "sha256": "79cfeddcad3cd0c7ffc377bc29ad6287a0a0b1e90dad344aa4a57fb62752b20d"
+    },
+    {
+      "id": "post-intentions",
+      "checkedOn": "2026-10-09",
+      "sha256": "e6d0af7f5db86d434c8c11c00913a1d4b79a9a4dc1ac537df4c06ff2b312eb01"
+    },
+    {
+      "id": "post-baqarah-at-home",
+      "checkedOn": "2026-10-09",
+      "sha256": "fc5b88b700bcfd0ac615c195f8f477e59834b0f9f5aed1dc547a3d8699b93610"
+    },
+    {
+      "id": "post-bedtime-supplication",
+      "checkedOn": "2026-10-09",
+      "sha256": "66fa8f72bb47b91502dd29793b6cc147964b905f98279ed995e6cfe85b3c5698"
+    },
+    {
+      "id": "post-pillars-of-islam",
+      "checkedOn": "2026-10-11",
+      "sha256": "757cc1db3666d4d12db72ced7925997773aad44fc076b78dd8e44a1a101dfdd8"
+    },
+    {
+      "id": "post-prayer-on-time",
+      "checkedOn": "2026-10-11",
+      "sha256": "8255b80cfc1f2c5facac16192bd6e798e5e09f42281bbb6b98e8272b7e6abbdc"
+    },
+    {
+      "id": "post-night-prayer-and-muharram",
+      "checkedOn": "2026-10-11",
+      "sha256": "097f7c0328f1bb4b3a9d10a8618ba39982055af449b092344cc1564bc3e61507"
+    },
+    {
+      "id": "post-fajr-sunnah",
+      "checkedOn": "2026-10-11",
+      "sha256": "1acadcec927a558f6de60210899071d0376ff3e66646cf8bdcdb91780143116b"
+    },
+    {
+      "id": "post-wudu-cleanses-sins",
+      "checkedOn": "2026-10-11",
+      "sha256": "f8609bb25ee382b206275063a9f361aa4f19b110828a84ac1ade13255f936bdb"
+    },
+    {
+      "id": "post-duha-charity",
+      "checkedOn": "2026-10-11",
+      "sha256": "a518e09de331fb35b70e45899ab448a03161e36afd7869dd547bb7ff5782ab2e"
+    },
+    {
+      "id": "post-thousand-good-deeds",
+      "checkedOn": "2026-10-11",
+      "sha256": "5d313f0e91af57e19413868ebee6b3b3d723a8cfbb664681d8ae68a9eb82d508"
+    },
+    {
+      "id": "post-tahlil-ten-times",
+      "checkedOn": "2026-10-11",
+      "sha256": "a54a1a2a5bc65dc9036aa6b24b2658967d59eb6883e52da8e32d68ab290e0cff"
+    },
+    {
+      "id": "post-draw-near-to-allah",
+      "checkedOn": "2026-10-11",
+      "sha256": "bc9f2c0004888aa0e4ef45dafd0891c3f18df240957760dd77329a0a87c7d9dd"
+    },
+    {
+      "id": "post-lasting-reward",
+      "checkedOn": "2026-10-11",
+      "sha256": "f0af29395f23f3890f1f5218057c54b9b9bbb7fa2ed365e82e24fc9d445485f1"
+    },
+    {
+      "id": "post-purify-my-soul",
+      "checkedOn": "2026-10-11",
+      "sha256": "996ae6c04cebc09f4173a6b103e8fd955140e33bfb631372b8fd231804d270e3"
+    },
+    {
+      "id": "post-protection-for-children",
+      "checkedOn": "2026-10-11",
+      "sha256": "1d97e76a0a2c3869a20867994c9a6f94d58ff61cd2a666a79b59ae448365a0a9"
+    },
+    {
+      "id": "post-supplication-for-healing",
+      "checkedOn": "2026-10-11",
+      "sha256": "26a89ea3069803d3dd0de5fc20cf92cb3648738819cdf5fa1dd37dbb0a7ae82f"
+    },
+    {
+      "id": "post-trial-and-good",
+      "checkedOn": "2026-10-11",
+      "sha256": "aa4386cf9e0cec1a5ef8db2f633eaabc1920ce01351b508b5147fac5c009a63e"
+    },
+    {
+      "id": "post-travel-supplication",
+      "checkedOn": "2026-10-11",
+      "sha256": "b58f29f7b1d39ce6ca392b681fe4d1727391b6b6f3d091d9b1fbe983a90d1ed1"
+    },
+    {
+      "id": "post-give-everyone-their-right",
+      "checkedOn": "2026-10-11",
+      "sha256": "96590a6cc58827a0f72cd9b2ce1ee5f831093aacb5cae8e75ede9f958165e4ff"
+    },
+    {
+      "id": "post-persist-in-kinship",
+      "checkedOn": "2026-10-11",
+      "sha256": "281926d6c645e6d75fd8ca43732e28507fea89c6ff1988ed011a8fbd7399115d"
+    },
+    {
+      "id": "post-charity-for-mother",
+      "checkedOn": "2026-10-11",
+      "sha256": "3bd0ecc420f015e7518bc4620557bc8af46b3a50d139c2480dddc7a21f103d06"
+    },
+    {
+      "id": "post-counsel-about-women",
+      "checkedOn": "2026-10-11",
+      "sha256": "6f7d2e6d2f138e8579c0bf2a7c5fecc67bbe7ec3986e8d140798c459a1322faa"
+    },
+    {
+      "id": "post-prophetic-forbearance",
+      "checkedOn": "2026-10-11",
+      "sha256": "f52d9c0d643c188cc49d3f2bbe96305f75fc77b7231dc814b6c7303dde159b11"
+    },
+    {
+      "id": "post-kindness-to-daughters",
+      "checkedOn": "2026-10-11",
+      "sha256": "7f0b7bb92500b725cdb4152379a8dfc42942de3628095af6e026d2b3304126bc"
+    },
+    {
+      "id": "post-richness-of-soul",
+      "checkedOn": "2026-10-11",
+      "sha256": "bf72982cc25f32062b62edad51cb157907b3687841d0d9e700a47b2b47726a04"
+    },
+    {
+      "id": "post-six-muslim-rights",
+      "checkedOn": "2026-10-11",
+      "sha256": "f31afcda870bd59aca1ca302ad5ce830021c914ec667e87e1fcee5b4b0625b14"
+    },
+    {
+      "id": "post-spread-salam",
+      "checkedOn": "2026-10-11",
+      "sha256": "7f0efa93a30a3cabace4abb9e04135c0e5e81b2dbf41642b5ac20432d834a877"
+    },
+    {
+      "id": "post-calling-to-guidance",
+      "checkedOn": "2026-10-11",
+      "sha256": "a2bbf93e9cb39f5ec0a1e5e2a377805880a13f18ffec825d3b3788d7e33a3aa3"
+    },
+    {
+      "id": "post-muslim-brotherhood",
+      "checkedOn": "2026-10-12",
+      "sha256": "e1044da2d936d73512c1adc3148cf20a0c928de25bcae532c7fcf74b45147124"
+    },
+    {
+      "id": "post-stop-injustice",
+      "checkedOn": "2026-10-12",
+      "sha256": "28c64bfcb2b95545436b1dc4b5256a2abd0288410b01c4acb7c27f3b59e9457e"
+    },
+    {
+      "id": "post-avoid-injustice-and-greed",
+      "checkedOn": "2026-10-12",
+      "sha256": "7aa310430512dc429f683811676bbf02d491a7104f0f0f282f5092227f3a2099"
+    },
+    {
+      "id": "post-settle-wrongs",
+      "checkedOn": "2026-10-12",
+      "sha256": "2aafdf912e3aab130e93dedf36c06519fd739a902f68eccee5ce578e1bc30a49"
+    },
+    {
+      "id": "post-accepting-gifts",
+      "checkedOn": "2026-10-12",
+      "sha256": "0143e109767c83ab26c35e81b9510e5d2e0af0f4d225601be50e76d665f5a4dc"
+    },
+    {
+      "id": "post-neighbour-gift",
+      "checkedOn": "2026-10-12",
+      "sha256": "8b3f36064869e514b29828beb32831a43c7459f57546aa2754260646e62d8147"
+    },
+    {
+      "id": "post-nearest-neighbour",
+      "checkedOn": "2026-10-12",
+      "sha256": "fe497116eb175eecb200c2f518fd466608f5e1a790ddc2db0b0f69b465ca7b3a"
+    },
+    {
+      "id": "post-orphan-sponsor",
+      "checkedOn": "2026-10-12",
+      "sha256": "9c02f736594417b7e8839b64d697c9f429a55c41f436b2a475ca2e04b8ac179a"
+    },
+    {
+      "id": "post-gentleness-and-good",
+      "checkedOn": "2026-10-12",
+      "sha256": "7500bf9a20e0753c7b75daaa55ecc69b4e9c1c025c55c7161e36b28a5140205f"
+    },
+    {
+      "id": "post-respect-parents-in-speech",
+      "checkedOn": "2026-10-12",
+      "sha256": "4e08e203a0a380dd70e3b58ea67d77b1f38d6dc3faa63a6ad4d07e0bc938a1ba"
+    },
+    {
+      "id": "post-asma-and-her-mother",
+      "checkedOn": "2026-10-12",
+      "sha256": "84e88ff2b9c1edeeecf8a1969d8b004066a072ee7be7994cbff3d3e1209b2e69"
+    },
+    {
+      "id": "post-righteousness-and-sin",
+      "checkedOn": "2026-10-12",
+      "sha256": "da29c2a3523fae777be2fd00c65bb5b14ec0159ea13b8fd53abd9702399897be"
+    },
+    {
+      "id": "post-hearts-and-actions",
+      "checkedOn": "2026-10-12",
+      "sha256": "e403eba3573d2c036c0ba9b42a7802cfeff2e18fc19faddd2014a4a51bef50d3"
+    },
+    {
+      "id": "post-intercede-for-good",
+      "checkedOn": "2026-10-12",
+      "sha256": "a4eed0566f5eeff855af8556666f3a229562fe651d292d77f5f32e7e373f68c4"
+    },
+    {
+      "id": "post-with-those-you-love",
+      "checkedOn": "2026-10-12",
+      "sha256": "b764a8bb55908d6c758015dcf8ce3ec024c544e021301b873cbc368ebc212192"
+    },
+    {
+      "id": "post-allah-loves-a-servant",
+      "checkedOn": "2026-10-12",
+      "sha256": "a903cb5bf9297a7270ec4098b7d0c1445df81e605e38c31200eae4b113890e6c"
+    },
+    {
+      "id": "post-avoid-excessiveness",
+      "checkedOn": "2026-10-12",
+      "sha256": "67c613ec4ba02200c64ef50fd10c3077b90ee596666898ea9e3a94ea788c8d62"
+    },
+    {
+      "id": "post-knowledge-and-scholars",
+      "checkedOn": "2026-10-12",
+      "sha256": "59805ef714a55f5839805d08c3fb9638089e2d8a7f3fe96445bdd771af86675d"
+    },
+    {
+      "id": "post-reconcile-between-people",
+      "checkedOn": "2026-10-12",
+      "sha256": "d34cefd43360ce44c264e19705a5b5f400a8dffa3af7ece0b7e1a6fad799b3c7"
+    },
+    {
+      "id": "post-moderation-and-mercy",
+      "checkedOn": "2026-10-12",
+      "sha256": "7256a21b9771ce18864c4121a4a5b4b8a736914d5c2a2f68800e655b86117f6a"
+    },
+    {
+      "id": "post-warning-against-severing-kinship",
+      "checkedOn": "2026-10-12",
+      "sha256": "e6802187c3f2ce3d07d3bbde822f448a1185863e7a36246939d0a1988792a3fc"
+    },
+    {
+      "id": "post-kinship-beyond-reciprocation",
+      "checkedOn": "2026-10-12",
+      "sha256": "d0d8e92f32066274ab86fc2ecabc09600cedceb19856a5bed646453cd0eeed7e"
+    },
+    {
+      "id": "post-visit-feed-and-give-water",
+      "checkedOn": "2026-10-12",
+      "sha256": "d6b1c94932616a24da78ace6faec22fac7f3395a1de4f0e5e43e6330682e2ec1"
+    },
+    {
+      "id": "post-seven-in-the-shade",
+      "checkedOn": "2026-10-12",
+      "sha256": "268332ff8b23c08c650819f88f1ecc09f5bb9cf886c0b9695fe422f57d917087"
+    },
+    {
+      "id": "post-the-real-bankrupt",
+      "checkedOn": "2026-10-12",
+      "sha256": "24f3034956188262cceba2fc79ce3ffa037b6e4038d6d5437969c43c6d374e3e"
+    },
+    {
+      "id": "post-the-giving-hand",
+      "checkedOn": "2026-10-12",
+      "sha256": "cd2318943daa62d577cc919db39764d1278bcedbb93d7237d5190fafd1b1fc70"
+    },
+    {
+      "id": "post-work-instead-of-asking",
+      "checkedOn": "2026-10-12",
+      "sha256": "45893c7c0e38d07008a38894670f4b1ab4b63999cadfc60d7b6bdd932d34072a"
+    },
+    {
+      "id": "post-sufficiency-and-contentment",
+      "checkedOn": "2026-10-12",
+      "sha256": "a59ac9876488f71a2037f1bc0fead215cdb26e8a02d98afee1a1b2f5f8f0420f"
+    },
+    {
+      "id": "post-begging-for-more",
+      "checkedOn": "2026-10-12",
+      "sha256": "065925dc8e6163bfbb0ab48b39ab80aa9830c595d62f7c0c4a98716b4875e662"
+    },
+    {
+      "id": "post-angels-and-spending",
+      "checkedOn": "2026-10-12",
+      "sha256": "72270b09d16abf36a75d502f153b42c9c39a9ac377c50f73ef60c6e8417126b5"
+    },
+    {
+      "id": "post-charity-from-the-garden",
+      "checkedOn": "2026-10-12",
+      "sha256": "dca8561d6c09c20db50187a6d4e3e2abab61be8b5af4f8ad0504e35ca03af865"
+    },
+    {
+      "id": "post-charity-from-good-earnings",
+      "checkedOn": "2026-10-12",
+      "sha256": "30d3be09818042d6f4d460200a61a1044b6b606c137686b1d5be9f0a97fddb05"
+    },
+    {
+      "id": "post-set-right-my-religion",
+      "checkedOn": "2026-10-12",
+      "sha256": "cb505fbdfd515002ffc9febdd7be20b176bd1eb13a30b5cb097e3c476ebd4317"
+    },
+    {
+      "id": "post-refuge-from-loss-of-blessings",
+      "checkedOn": "2026-10-12",
+      "sha256": "fb51c86769cf89efe6e511961d591321243e2a0072df2193f31e7b53819bbaa7"
+    },
+    {
+      "id": "post-good-in-both-worlds",
+      "checkedOn": "2026-10-12",
+      "sha256": "0e655b8a205dea86661238d81466c97f730f91700e2b3902fc34a3edb322d4c2"
+    },
+    {
+      "id": "post-praise-at-bedtime",
+      "checkedOn": "2026-10-12",
+      "sha256": "0ec6e71c0e426deb54ab7f600f0c1323e02ec35411ce32736d278e5df54e8ea9"
+    },
+    {
+      "id": "post-bedouin-remembrance-and-dua",
+      "checkedOn": "2026-10-12",
+      "sha256": "19cca210de80608b43bb969fbb864de9274146d445ceac625caa72e2f5f816b0"
+    },
+    {
+      "id": "post-responsibility-is-a-trust",
+      "checkedOn": "2026-10-12",
+      "sha256": "8c4562a660c85559add48af2d9f4ab901e937f8e043c7731a4ad9e4012acf627"
+    },
+    {
+      "id": "post-good-expectation-and-remembrance",
+      "checkedOn": "2026-10-12",
+      "sha256": "21d82ef39c2785c5347d9d05474e7deafe36ee29af9f434980369ffa3aa3dc56"
+    },
+    {
+      "id": "post-recording-good-and-bad-deeds",
+      "checkedOn": "2026-10-12",
+      "sha256": "f467cc9dc2dd7b3577e90654fd37ea18507843be0dbca5d3b43b38d5029d2310"
+    },
+    {
+      "id": "post-excellence-in-islam",
+      "checkedOn": "2026-10-12",
+      "sha256": "4b063d39e3edcca00cc76d682107df143ba3418ae79b813c6895fe29b2c03dc4"
+    },
+    {
+      "id": "post-repent-by-night-and-day",
+      "checkedOn": "2026-10-12",
+      "sha256": "6a78ae70e069f23356714c283afdabd1ba0a62c9db3c875e84e4f289a4752ca7"
+    },
+    {
+      "id": "post-love-for-the-prophet",
+      "checkedOn": "2026-10-12",
+      "sha256": "fd9405f256addbf65d0fec9744d7a6971b824440d6789de5585eb0f745d53ecd"
+    },
+    {
+      "id": "post-sweetness-of-faith",
+      "checkedOn": "2026-10-12",
+      "sha256": "f1da7b57ce3566b63a017e3a0b0c2f0b3a5a1e3c366c074645129bc3488018bb"
+    },
+    {
+      "id": "post-lawful-unlawful-and-heart",
+      "checkedOn": "2026-10-12",
+      "sha256": "af523db752aca8d69af59ab83325b73181d580d560e44a53594e7a200f766cfc"
+    },
+    {
+      "id": "post-life-and-death-supplication",
+      "checkedOn": "2026-10-12",
+      "sha256": "d024e2abdfb8d2941fa3b83dd5956f841f459d5c68907c36375e3f38196b0f07"
+    },
+    {
+      "id": "post-fasting-and-the-crescent",
+      "checkedOn": "2026-10-12",
+      "sha256": "3d757abefd959b372aaf01a5115816daa128b946478c7c93148f415436badb72"
+    },
+    {
+      "id": "post-blessing-in-suhur",
+      "checkedOn": "2026-10-12",
+      "sha256": "402889c2b1403a32fed9c01ba29392badcaf73a7681b1b0be6967439116e9a03"
+    },
+    {
+      "id": "post-fasting-and-false-speech",
+      "checkedOn": "2026-10-12",
+      "sha256": "a80ddcf471a70eedef8903bce1a8e90c190a3c784aad42201b7fcac7b37d48f3"
+    },
+    {
+      "id": "post-eating-forgetfully-while-fasting",
+      "checkedOn": "2026-10-12",
+      "sha256": "89184a806c489cae1b97fbef100cae893a86385866b468a59e0153735f827244"
+    },
+    {
+      "id": "post-table-etiquette",
+      "checkedOn": "2026-10-12",
+      "sha256": "3e0d33ac959c02f85442b9759b8f05dcb8f4e097d0b42dbbfe459b89a39fa04f"
+    },
+    {
+      "id": "post-no-fault-in-food",
+      "checkedOn": "2026-10-12",
+      "sha256": "f99e4c6590d27b9e81849e40c570bf9f9152d01da6edf244fead3066b2e5d151"
+    },
+    {
+      "id": "post-eat-drink-right",
+      "checkedOn": "2026-10-12",
+      "sha256": "85e8e26422b266a76513a42684b67c279598163606c1718775dda7bafbb9354c"
+    },
+    {
+      "id": "post-blessing-of-food",
+      "checkedOn": "2026-10-12",
+      "sha256": "deed32f769d9f2fe2514393fcf2a09b47fb9b2abba1973980617caf8ef63e9e2"
+    },
+    {
+      "id": "post-extinguish-fire",
+      "checkedOn": "2026-10-12",
+      "sha256": "e89f028edefee25595315f0b06fd268ebdb02ed4cd94d415fde630feb0daf9d8"
+    },
+    {
+      "id": "post-drink-in-three",
+      "checkedOn": "2026-10-12",
+      "sha256": "06cb8add442e0eb09a3a12ad044c1f13b5f184e6192bbcafe8c82f2d49255312"
+    },
+    {
+      "id": "post-priority-of-right",
+      "checkedOn": "2026-10-12",
+      "sha256": "cb26987efa8e98ca48077c637a88eef78c1dccb4f32ff8a7a0392a18055e38d5"
+    },
+    {
+      "id": "post-greeting-etiquette",
+      "checkedOn": "2026-10-12",
+      "sha256": "59cc221a93f508294e4f61cd66255925f667e12b31f69a1762ec82a4bccfa22a"
+    },
+    {
+      "id": "post-permission-three",
+      "checkedOn": "2026-10-12",
+      "sha256": "47fc4f567886007a09a44a8cdfe7d820f62b18b65dcdbc37c64fc9325f565c80"
+    },
+    {
+      "id": "post-permission-and-sight",
+      "checkedOn": "2026-10-12",
+      "sha256": "05123a8fa9b84263421b338629b6bb9bf670b970a7c9f1dccb461ab394d24f32"
+    },
+    {
+      "id": "post-greet-children",
+      "checkedOn": "2026-10-12",
+      "sha256": "9d3e302e9f05826ba50ebde9f99654e0394a996eb2e3a3140484450f541e3190"
+    },
+    {
+      "id": "post-avoid-excluding-one",
+      "checkedOn": "2026-10-12",
+      "sha256": "26048da86ec867b9573efd9523bbb3a06f15777289aac5d76aa9547364b9ce92"
+    },
+    {
+      "id": "post-respect-someones-seat",
+      "checkedOn": "2026-10-12",
+      "sha256": "fa6e53263d32c509946de2daee15a69743dd1219761e6fd29548d27e41224605"
+    },
+    {
+      "id": "post-road-rights",
+      "checkedOn": "2026-10-12",
+      "sha256": "f70f77a3916a3acae7a2ca0a13e522d1dce94a34d3358e6294e8ad7525120c9d"
+    },
+    {
+      "id": "post-tranquillity-in-prayer",
+      "checkedOn": "2026-10-12",
+      "sha256": "94bc76c822ccc2e7f6f3837eb674a7a558a6b385c09d865f06d076ce10decdc6"
+    },
+    {
+      "id": "post-companionship-by-prostration",
+      "checkedOn": "2026-10-12",
+      "sha256": "539b5c795e86dedad559954ab2131a99388c81b7ee1aa16a5c563e86449912ba"
+    },
+    {
+      "id": "post-prostration-and-rank",
+      "checkedOn": "2026-10-12",
+      "sha256": "ee3e49f97d64869217dd4636203d3ec29f908699e11bd871ee7e3127544b88ee"
+    },
+    {
+      "id": "post-wudu-remembrance",
+      "checkedOn": "2026-10-12",
+      "sha256": "501e9580093f6dc570bc7116f1842e79292c2edd5f84cab397fe75b23e52fd68"
+    },
+    {
+      "id": "post-prayer-with-reverence",
+      "checkedOn": "2026-10-12",
+      "sha256": "1c0c6b3a5990d96443b5d489d3dada105d6473d054fb729e1f635d6b7ebf604c"
+    },
+    {
+      "id": "post-wudu-steps-waiting",
+      "checkedOn": "2026-10-12",
+      "sha256": "53dad7ab2183e8e4b3a95e6056bce18832a6fa03e065576549f7a1cae0e1d9d2"
+    },
+    {
+      "id": "post-pray-as-taught",
+      "checkedOn": "2026-10-12",
+      "sha256": "42741c445574c080766f8419fe606900e3203bb1c912bbe18b42c3afba995f10"
+    },
+    {
+      "id": "post-straighten-rows",
+      "checkedOn": "2026-10-12",
+      "sha256": "612b862a8cc8d2e5b8c8ecbef952b2266400305152f0fefae385eb44f43e7afd"
+    },
+    {
+      "id": "post-dua-after-adhan",
+      "checkedOn": "2026-10-12",
+      "sha256": "194ba120cbe341d2e6e4e5d5aee16bb7b47b37234876080d3e484316a202725a"
+    },
+    {
+      "id": "post-witr-last",
+      "checkedOn": "2026-10-12",
+      "sha256": "c1a199bbd317fcdd0c2cefdf93d4a010d3d5b9cf6cb5bbabd28ea62c4eeafb11"
+    },
+    {
+      "id": "post-night-prayer-in-pairs",
+      "checkedOn": "2026-10-12",
+      "sha256": "85b6bc430c530a752815741041c8b9708e1332d241f6ffa7e3246d1da4f23463"
+    },
+    {
+      "id": "post-grateful-worship",
+      "checkedOn": "2026-10-12",
+      "sha256": "122b7863428f1efa72b356b02355d9221437bf02ceb5a973e33d1251c118f218"
+    },
+    {
+      "id": "post-twelve-rakahs",
+      "checkedOn": "2026-10-12",
+      "sha256": "27b19129374645f55d9b5824f89dfe67c31257aab80e3d32c90fe913cff154d7"
+    },
+    {
+      "id": "post-three-counsels",
+      "checkedOn": "2026-10-12",
+      "sha256": "b85c4617147282fed1b51134eaad45003832301021ed8d22b10f626f5daf9e63"
+    },
+    {
+      "id": "post-two-quran-lights",
+      "checkedOn": "2026-10-12",
+      "sha256": "6da93fb9aed38f918efe9b40387592d7cfadb85305f5c01b510684955381ea52"
+    },
+    {
+      "id": "post-last-two-baqarah",
+      "checkedOn": "2026-10-12",
+      "sha256": "194c8cc27cc41ad1163fc3b3e9fa1c60117d2b83db13cb8fb21cfce5942d6ade"
+    },
+    {
+      "id": "post-ikhlas-virtue",
+      "checkedOn": "2026-10-12",
+      "sha256": "e2126ebd5bbd74329630703cd4dd5e01889fd3c829105d87f44249c24c74b02d"
+    },
+    {
+      "id": "post-three-verses-in-prayer",
+      "checkedOn": "2026-10-12",
+      "sha256": "a19ea9b257706ca4947aefbf5c922c8ca0b6a7ea6c4e7174fb69ebd1d56ea7ae"
+    },
+    {
+      "id": "post-wealth-wisdom-benefit",
+      "checkedOn": "2026-10-12",
+      "sha256": "83246738ee60578f44f7cc61f0667655e28f707146f03204a5f64ca7d50767fe"
+    },
+    {
+      "id": "post-dua-for-learning-book",
+      "checkedOn": "2026-10-12",
+      "sha256": "55d6b72784d5cba22da89420853161ca5b354428304db17ed366281b3d1441ea"
+    },
+    {
+      "id": "post-sleep-on-right",
+      "checkedOn": "2026-10-12",
+      "sha256": "36e5eef6216f21883bac5e4003b3c1dab4b0f9ad88d8ace0fa57a74c12c9b806"
+    },
+    {
+      "id": "post-sleep-wake-dua",
+      "checkedOn": "2026-10-12",
+      "sha256": "eb9c44f441dc16386b1ffd3eafad86e58f601cb9151e12eebf04199fc7e00a08"
+    },
+    {
+      "id": "post-muawwidhat-at-bedtime",
+      "checkedOn": "2026-10-12",
+      "sha256": "20b76ad35c9e2ee44fcc33e43cd0426e64114c0627c8b42d0fac432ed1fb777a"
+    },
+    {
+      "id": "post-fatima-bedtime-remembrance",
+      "checkedOn": "2026-10-12",
+      "sha256": "94b3e7759f58827d53dd194b4d767b6302e3e0a81e5dd7353f09b418c7d88087"
+    },
+    {
+      "id": "post-remembrance-number-of-creation",
+      "checkedOn": "2026-10-12",
+      "sha256": "8e6b6269c768dc5e2b6d1ff53f7a8842e1feb4cd91764553419f11dc7b3f8a1c"
+    },
+    {
+      "id": "post-dua-for-all-mistakes",
+      "checkedOn": "2026-10-12",
+      "sha256": "489f7eccfaf4223eb2593f8a9523d47ee36e897718909620b769b241b97b474b"
+    },
+    {
+      "id": "post-anas-service",
+      "checkedOn": "2026-10-12",
+      "sha256": "012cb1862de01869f7f21f7ce4f250bccc5c309b5d1611d39cf18dfef1480166"
+    },
+    {
+      "id": "post-reward-illness-travel",
+      "checkedOn": "2026-10-12",
+      "sha256": "e9a24fb3ae9ce540aeda42f9da7c0daa6a7641fc9d189c1aa001b74ae5070c39"
+    },
+    {
+      "id": "post-modesty-prophetic-speech",
+      "checkedOn": "2026-10-12",
+      "sha256": "81bf7a12a8a7c165a9660aac643eaed59193a12fa477442efab28b4ebd3ac74f"
+    },
+    {
+      "id": "post-allah-gentle-gift",
+      "checkedOn": "2026-10-12",
+      "sha256": "df81eae8f99582f4b1f01bf20fceb87cd3a0927d7f5060aa1f64b98500d80749"
+    },
+    {
+      "id": "post-quran-reader-parable",
+      "checkedOn": "2026-10-12",
+      "sha256": "bc86ac58741cd302a339f09a3419c9a7ef7bd4ef6bdfec6f7318d3db67ab626e"
+    },
+    {
+      "id": "post-gravest-sins",
+      "checkedOn": "2026-10-12",
+      "sha256": "3a2cd30b838dbe5c9794acc7b4484899cde7c457c402883488c8218d59a6bce9"
+    },
+    {
+      "id": "post-guard-tongue-chastity",
+      "checkedOn": "2026-10-12",
+      "sha256": "36a447bdd912f13dcb2e7ebdb120cabcece2e7131b367f1bd8536e3ab176595b"
+    },
+    {
+      "id": "post-age-wealth-long-life",
+      "checkedOn": "2026-10-12",
+      "sha256": "a2a9522238f2ea4fa953c6a8eddaaf558364529bcfc2ff894c36d0f8228c7d28"
+    },
+    {
+      "id": "post-deeds-remain",
+      "checkedOn": "2026-10-12",
+      "sha256": "1627df832d6abb420044e4e6ac607acbb50a796d8404160a412cabe0e83c0c51"
+    },
+    {
+      "id": "post-nearness-of-hereafter",
+      "checkedOn": "2026-10-12",
+      "sha256": "d8525f26855f15f97254be2fb5ff2ab887545f1910834d74c09eca7e4c3f53c6"
+    },
+    {
+      "id": "post-changing-wrong-by-ability",
+      "checkedOn": "2026-10-13",
+      "sha256": "e10466cf2311afbe019093bffb5da299a5a2645eaf200da89340209f9aae1b83"
+    },
+    {
+      "id": "post-pride-and-beauty",
+      "checkedOn": "2026-10-13",
+      "sha256": "19b816b641967f3fa2a6942ca0b6c66b4516c95d7a1bf26fbe18d032db366d71"
+    },
+    {
+      "id": "post-no-concealing-food-defects",
+      "checkedOn": "2026-10-13",
+      "sha256": "51b59b046806605ab93ae81eb0468d6b526723237653717c7311a35fe24e625b"
+    },
+    {
+      "id": "post-neighbour-safe-from-harm",
+      "checkedOn": "2026-10-13",
+      "sha256": "ba87616cad843ce4559cb5a29a5ebc5228771df7fa9f45305c4d8e5db547acb6"
+    },
+    {
+      "id": "post-no-insulting-muslims",
+      "checkedOn": "2026-10-13",
+      "sha256": "2a8c839bddb250fca284555e988f1429fb7aab13caf72bb923fb405d76f0444c"
+    },
+    {
+      "id": "post-pledge-of-good-deeds",
+      "checkedOn": "2026-10-13",
+      "sha256": "16aa321cfd1b6cc1c244cde9d95fca2e8db1669c758c1af0ee33e3e4fa43a0b2"
+    },
+    {
+      "id": "post-modesty-part-of-faith",
+      "checkedOn": "2026-10-13",
+      "sha256": "9677914f5eb9d4be27d4e91b788b483ad44c8a6945daffff3571f774c4d74ee7"
+    },
+    {
+      "id": "post-spending-for-allahs-sake",
+      "checkedOn": "2026-10-13",
+      "sha256": "ae894aaa7352c64a024cccf7b7dcb0a085677be614e9771a94542c0e4766270a"
+    },
+    {
+      "id": "post-healing-for-disease",
+      "checkedOn": "2026-10-13",
+      "sha256": "8d1609be9569af45796b7602d1065d6630bb6bdee377446a6308a156c5d1b2d1"
+    },
+    {
+      "id": "post-prophets-severe-illness",
+      "checkedOn": "2026-10-13",
+      "sha256": "487f3851ef7dc622d501a98d292b4ac3d4a46f279783c2f81361512f32762ee4"
+    },
+    {
+      "id": "post-prophetic-daily-istighfar",
+      "checkedOn": "2026-10-13",
+      "sha256": "009625a0f5d0a203afd35de20a44d28de1d47144609512d4ee0540855bbd45a5"
+    },
+    {
+      "id": "post-bedtime-dua-debt-poverty",
+      "checkedOn": "2026-10-13",
+      "sha256": "f9fc3d55a4260e14a4b5d4fab122b69940b09a98abd05701238817e39be6ea7a"
+    },
+    {
+      "id": "post-evening-dua-for-good",
+      "checkedOn": "2026-10-13",
+      "sha256": "0b0c08f05a6437c1be07dd64436a93096a739ad61a7e3e705be9692504795fe7"
+    },
+    {
+      "id": "post-meeting-allah-at-death",
+      "checkedOn": "2026-10-13",
+      "sha256": "661d59a77b500feb5b0544ab6abf5c05e485b16fce70bebad1280e118c84acd2"
+    },
+    {
+      "id": "post-umrah-and-mabrur-hajj",
+      "checkedOn": "2026-10-13",
+      "sha256": "7ae4ba1d112183bf5ad10128ea15d12f6934d7a1cd365e8b8d657c35b9b00411"
+    },
+    {
+      "id": "post-ramadan-qadr-faith-reward",
+      "checkedOn": "2026-10-13",
+      "sha256": "dc383fdad600d41625f1c07b1e943084a21699dc340bd824bfb5dc5bf27e7470"
+    },
+    {
+      "id": "post-fasting-shield-and-joy",
+      "checkedOn": "2026-10-13",
+      "sha256": "df4fe8b68608bf9db712e98e752705d77af6cf0e6109b11a51eb0ebe59b635f1"
+    },
+    {
+      "id": "post-fasting-travel-hardship",
+      "checkedOn": "2026-10-13",
+      "sha256": "564f7e796f376c35fb5d7ae298a0c7c2e2fb1a523b434aeee52914631a12aeae"
+    },
+    {
+      "id": "post-charity-before-final-moment",
+      "checkedOn": "2026-10-13",
+      "sha256": "12c957d4f07894647fff635aaf855a79011da5814501076157bf7678ccbff78c"
+    },
+    {
+      "id": "post-restoration-of-rights",
+      "checkedOn": "2026-10-13",
+      "sha256": "63b7de03118dd5d3e8c6dcd318d00a18efc4353097fc4b0640e4034ece2b105a"
+    },
+    {
+      "id": "post-visit-for-allahs-sake",
+      "checkedOn": "2026-10-13",
+      "sha256": "cd4e8b53da64362f1d1c1f20acd5768e6c8cb9e6fb7d554a86427ba61cb2f497"
+    },
+    {
+      "id": "post-souls-acquaintance",
+      "checkedOn": "2026-10-13",
+      "sha256": "0ae3f9120b200ba11362de59c252f02a04abf30dd9b7416fd9f576dd5f5f26dc"
+    },
+    {
+      "id": "post-learn-from-one-bite",
+      "checkedOn": "2026-10-13",
+      "sha256": "9be4eaad43ae64c4599b2dc747018e5d9f6ca54b117a6c4900233a17392aeb93"
+    },
+    {
+      "id": "post-truthful-not-curse",
+      "checkedOn": "2026-10-13",
+      "sha256": "9ed72ec2d2be8f87f860de5ba6427df7683d6bcea273908d782ae6e377c24e4e"
+    },
+    {
+      "id": "post-sent-as-mercy",
+      "checkedOn": "2026-10-13",
+      "sha256": "a3d7cabdaaf71aead2428531d57cc255d642d81b31cbed0ff0cf991733f3df8b"
+    },
+    {
+      "id": "post-avoid-striking-the-face",
+      "checkedOn": "2026-10-13",
+      "sha256": "eff2c16e4b8c7b6332afb2a1f64bf2449cbb00df0b4964e1c2ecf1499e6688fa"
+    },
+    {
+      "id": "post-no-shaming-and-kind-service",
+      "checkedOn": "2026-10-13",
+      "sha256": "db30d39cb6650d188cd0bfcb916b1edd4d1785ff4d401a2a5e8f9df6016b2b5b"
+    },
+    {
+      "id": "post-prayer-imam-consideration",
+      "checkedOn": "2026-10-13",
+      "sha256": "6882311dc5b53436240acbeebbf17432bdee9c15f1d55bd02bc08537875a877e"
+    },
+    {
+      "id": "post-women-learning-and-charity",
+      "checkedOn": "2026-10-13",
+      "sha256": "b75d67633f0d7fd0d858aa7d2f0c1aa75d0e392520804663d673e0c73d51d870"
+    },
+    {
+      "id": "post-supporting-two-daughters",
+      "checkedOn": "2026-10-13",
+      "sha256": "718833624a177684379d98936dfd9d40a026d34fd25fb6ff587579e970c4226e"
+    },
+    {
+      "id": "post-ease-with-steady-worship",
+      "checkedOn": "2026-10-13",
+      "sha256": "774a326713d7b9a3d73d43dd147242452782207c3f0303b42b9b2633680c0a4b"
+    },
+    {
+      "id": "post-considerate-admonition",
+      "checkedOn": "2026-10-13",
+      "sha256": "e6c581055e94cb82dc2a1e9af862d374c36fdb828b5b5ae307d48d7169b93afd"
+    },
+    {
+      "id": "post-angels-fajr-asr",
+      "checkedOn": "2026-10-13",
+      "sha256": "4a2490994b2c81a0a1cb62f6c24ebf63859633f41f0c8bbe2740a896c75761bd"
+    },
+    {
+      "id": "post-catching-fajr-asr-rakah",
+      "checkedOn": "2026-10-13",
+      "sha256": "c4f6734e1f55ddf086a9619889760c57c92e7bdcb91dfcad6dd47ff55c6d6b22"
+    },
+    {
+      "id": "post-going-to-mosque",
+      "checkedOn": "2026-10-13",
+      "sha256": "96a8c92881c081e31072e6a811ae05965ca144ffea8982eb8622541f33c9c19f"
+    },
+    {
+      "id": "post-bilal-after-purification",
+      "checkedOn": "2026-10-13",
+      "sha256": "720aa4ec9e8ba51d116d42db6ad0ece0109ce008a84d048bc0188a653497c5d2"
+    },
+    {
+      "id": "post-mercy-beyond-a-mother",
+      "checkedOn": "2026-10-13",
+      "sha256": "be34270e72a40c124c09f4d3e628e3b98e954495a18873e715bad319776cf88f"
+    },
+    {
+      "id": "post-warning-against-tale-bearing",
+      "checkedOn": "2026-10-13",
+      "sha256": "6899d1d7408cb65642792095f4f2f44e2f9c3cae6b10d9eb477ebe7411521d39"
+    },
+    {
+      "id": "post-wealth-desire-and-repentance",
+      "checkedOn": "2026-10-13",
+      "sha256": "b0183f348d0072cec98ba1410ebefd13e19080c8839079fa9b31128c7f78919d"
+    },
+    {
+      "id": "post-migration-seeking-allah",
+      "checkedOn": "2026-10-13",
+      "sha256": "df528ba9380b4159af0e688196bc42ea67198bd970993d5022c84063395983ac"
+    },
+    {
+      "id": "post-forgiveness-after-sin",
+      "checkedOn": "2026-10-13",
+      "sha256": "1a7156381c513bb9db09597247a5fdf7bc8d4b15987a5fa56b03039e89f0a62c"
+    },
+    {
+      "id": "post-mercy-overcomes-wrath",
+      "checkedOn": "2026-10-13",
+      "sha256": "f6bbfdb9102ef1da89b3920246259b66a283b5f1e7cafd8af395f39933ec91e0"
+    },
+    {
+      "id": "post-supplication-of-oppressed",
+      "checkedOn": "2026-10-13",
+      "sha256": "512fbe9f97be57455858494ee53e9070f1727bfe92bf0ab0d456ca01506a730b"
+    },
+    {
+      "id": "post-hospitality-without-burden",
+      "checkedOn": "2026-10-13",
+      "sha256": "d1fd701e4ffea24b93fe0fbff94c9d0339eb0a030c43704be631e7b1fffdde05"
+    },
+    {
+      "id": "post-world-as-a-prison",
+      "checkedOn": "2026-10-13",
+      "sha256": "9d40914c9bdf8a3ac3be74ab6ae5bf1357be1bd035693e1b9e1aa7c42c2dfc1a"
+    },
+    {
+      "id": "post-adhan-front-row-and-prayers",
+      "checkedOn": "2026-10-13",
+      "sha256": "0c4a07d4294b94590d756d6c5bf8140352d2f91ebf8746f42c34d715cd01abd5"
+    },
+    {
+      "id": "post-walking-and-waiting-for-prayer",
+      "checkedOn": "2026-10-13",
+      "sha256": "c12c619ae06c35df6bb166a31ec5a6cddea5c2a72bd392a20415b7093c1bc9c3"
+    },
+    {
+      "id": "post-hajj-without-rafath-fusuq",
+      "checkedOn": "2026-10-13",
+      "sha256": "c433f1145c2d3fbc76b5d9000fdbbce9a8ba22c2b5168b4626c27c2aa5d72ed3"
+    },
+    {
+      "id": "post-one-part-of-mercy",
+      "checkedOn": "2026-10-13",
+      "sha256": "6e578645bfec2ae2fa83d3e223263896098b0365729197946e2c0553c931a088"
+    },
+    {
+      "id": "post-four-refuges-after-tashahhud",
+      "checkedOn": "2026-10-13",
+      "sha256": "1b595daecdc74f50ce53d0c052e527875cbeb05ce48c8e9c97c74de314f5acfa"
+    },
+    {
+      "id": "post-first-shock-patience",
+      "checkedOn": "2026-10-15",
+      "sha256": "e114443023332e255f43ee7e79253fdf075ea9cae3a8e2397a02da2b36520e5e"
+    },
+    {
+      "id": "post-ibrahim-tears-of-mercy",
+      "checkedOn": "2026-10-15",
+      "sha256": "ea396a8a0e284983940338bd43f884888ce702760d85e1ff8a666d771bd76788"
+    },
+    {
+      "id": "post-condolence-and-mercy",
+      "checkedOn": "2026-10-15",
+      "sha256": "92215411676ce1cf2ade71fe2a20f1037975116b4ca3f6872e145f65364cbfa1"
+    },
+    {
+      "id": "post-umm-salama-calamity-and-replacement",
+      "checkedOn": "2026-10-15",
+      "sha256": "77f1435f4557dec0880245d780a58e0cc3d46463c7a119c55a99eed0a1e62291"
+    },
+    {
+      "id": "post-abu-umayr-and-prayer",
+      "checkedOn": "2026-10-15",
+      "sha256": "80388dfde1712d84f4e339ed5910e2ac51fc339a3341fd7a87a9c02a4b97a3e1"
+    },
+    {
+      "id": "post-sudden-glance-averted",
+      "checkedOn": "2026-10-15",
+      "sha256": "2f3d02d2136bd8e301fc4c3e6b0b29e298aec2fd6fdedc11545f0387a18d83fc"
+    },
+    {
+      "id": "post-mahram-and-hajj-companion",
+      "checkedOn": "2026-10-15",
+      "sha256": "50263b8dcec1e4cbd57e027946a0504d1d353275789b70eeec4b3d41507e0495"
+    },
+    {
+      "id": "post-aisha-family-service",
+      "checkedOn": "2026-10-15",
+      "sha256": "3c40c52a28ef4322d3a464e181abcd6c86d0a796508157b91fb580be827205b9"
+    },
+    {
+      "id": "post-jarir-smile-and-steady-riding",
+      "checkedOn": "2026-10-15",
+      "sha256": "734d96adf4e480f5698c5456427ca062f806c72e28f1177f9f551e0c2b6d8f8f"
+    },
+    {
+      "id": "post-umar-pulpit-praise",
+      "checkedOn": "2026-10-15",
+      "sha256": "bfbbc624984ab3b9f82a981bd5f179b0ba77d6493ef01a38020dbfeab043df8f"
+    },
+    {
+      "id": "post-convey-without-fabrication",
+      "checkedOn": "2026-10-15",
+      "sha256": "faea1dc4c0bb3df848cd9e1d314803915bcb99c7fbd26c78f74c9a32e8d98f90"
+    },
+    {
+      "id": "post-hundred-killer-repentance",
+      "checkedOn": "2026-10-15",
+      "sha256": "783e26d5240da79b41f98cffa48ea05d23af0a787d57a87ebe45292d5d1d495c"
+    },
+    {
+      "id": "post-cat-care-not-neglect",
+      "checkedOn": "2026-10-15",
+      "sha256": "e02a4c1abc4c1b5901366e897d54fd59882418421e6cb8f8fd5e65b00f5b0ed7"
+    },
+    {
+      "id": "post-ihsan-and-sharp-blade",
+      "checkedOn": "2026-10-15",
+      "sha256": "3d82441be87f6395f37816e7b79245d13d0bebcb2cb3f5a592036cd19a92b086"
+    },
+    {
+      "id": "post-three-men-and-prophetic-sunnah",
+      "checkedOn": "2026-10-15",
+      "sha256": "0d6a695510f8c4c08bc2e72c5ecfd8e027a27ff4c778d44387a3014f2bfd5745"
+    },
+    {
+      "id": "post-abdullah-night-prayer-continuity",
+      "checkedOn": "2026-10-15",
+      "sha256": "6bc61d7a2d41f0633f53c825df295e35a6727fbf7d3add9db5ab2ca7bcdce302"
+    },
+    {
+      "id": "post-ibn-umar-ten-rakats",
+      "checkedOn": "2026-10-15",
+      "sha256": "3dd57d69f8d105e1112fd93f423779eaed1e88b4d7e4c04754edfe18b34ccfde"
+    },
+    {
+      "id": "post-imran-prayer-according-to-ability",
+      "checkedOn": "2026-10-15",
+      "sha256": "4f9229e668e2ed69f08ec823e58458e3543bf55ce6f23c0e96050272ad48c441"
+    },
+    {
+      "id": "post-abu-musa-quran-voice",
+      "checkedOn": "2026-10-15",
+      "sha256": "10ce8eac92cfb6ccb515e4296893339d993568d4d44762460ca653dab8553c9a"
+    },
+    {
+      "id": "post-kahf-first-ten-verses",
+      "checkedOn": "2026-10-15",
+      "sha256": "9fe579d11515a11b47b7778446195dc3e54ed0cc5a4e2fead90558adf6db3359"
+    },
+    {
+      "id": "post-ubayy-greatest-verse",
+      "checkedOn": "2026-10-15",
+      "sha256": "3ec55e104bbd69ac98308657af6f25d01883513feb554636c7c3e0639e934631"
+    },
+    {
+      "id": "post-abu-dharr-many-charities",
+      "checkedOn": "2026-10-15",
+      "sha256": "1118ca9f3a84b29a2c0070c089bb764b03c7398b72eae297f7accee1c6a8efe7"
+    },
+    {
+      "id": "post-abu-musa-charity-and-work",
+      "checkedOn": "2026-10-15",
+      "sha256": "02431d823709b75547886a8f924b886f239e3a522613da4bf473c6c2df5efcec"
+    },
+    {
+      "id": "post-generosity-iron-coats",
+      "checkedOn": "2026-10-15",
+      "sha256": "6721161e6e05fc66ecdfd24e3dfb7708db31496d45dbe96154ea9ed02e8991ee"
+    },
+    {
+      "id": "post-unnoticed-needy-person",
+      "checkedOn": "2026-10-15",
+      "sha256": "d9399441f28dd65a7dc4c725558da76fdbb17cc02ba9de32e7fe80b110e43654"
+    },
+    {
+      "id": "post-ibn-umar-fathers-friend",
+      "checkedOn": "2026-10-15",
+      "sha256": "da5772a5db91e21a569581b2809019b10da84193680481a2158377a1bb07dc30"
+    },
+    {
+      "id": "post-elderly-parents-opportunity",
+      "checkedOn": "2026-10-15",
+      "sha256": "627647c3f25632ada4a9658ff06b51b947cd699e56f86a2e707dbf5ecf7eef2c"
+    },
+    {
+      "id": "post-love-for-divine-majesty",
+      "checkedOn": "2026-10-15",
+      "sha256": "ba46a88679449197f24bc2d1ed4f51e14a856f928f71eed5161eb15901cca21a"
+    },
+    {
+      "id": "post-my-servants-no-oppression",
+      "checkedOn": "2026-10-15",
+      "sha256": "11d5f15b6903ddef9a7888a6f04fca6883744b14f5b95b8077539a147f994424"
+    },
+    {
+      "id": "post-do-not-point-weapons",
+      "checkedOn": "2026-10-15",
+      "sha256": "7fbbf970753eac3478ac57f0c0a79c547c16cab2826d29b6acdff36c9cb091d2"
+    },
+    {
+      "id": "post-unnoticed-person-oath",
+      "checkedOn": "2026-10-15",
+      "sha256": "81026c7ccc8a1ba6b4defb27f97c2f55f11482e6916e877789a6f993840fcb9b"
+    },
+    {
+      "id": "post-dates-household-food",
+      "checkedOn": "2026-10-15",
+      "sha256": "ad9adc4332f42a3bc7b15a290eba20c4fc2ec752e0853d7e166c4afaa5a9350d"
+    },
+    {
+      "id": "post-vinegar-good-condiment",
+      "checkedOn": "2026-10-15",
+      "sha256": "0e85f9ead4775852d83a3ff5ee415eeffd449d236732ae842bfc135e86360b73"
+    },
+    {
+      "id": "post-drinking-and-right-hand-etiquette",
+      "checkedOn": "2026-10-15",
+      "sha256": "f6cabe60e0996d3d48d11eb33ee2e36d0700437c949445b2a395c17c91cbbc0a"
+    },
+    {
+      "id": "post-firmness-in-supplication",
+      "checkedOn": "2026-10-15",
+      "sha256": "2fc921a52618f67e146b79092f56989cd8bfc09a5e4559f9e45a444326252592"
+    },
+    {
+      "id": "post-prostration-all-sins-forgiven",
+      "checkedOn": "2026-10-15",
+      "sha256": "28be853e3b6ae85e08d2f011f050f46a9d4744af9c2e9f8b72961a83c76b71c3"
+    },
+    {
+      "id": "post-aisha-glorification-quran-application",
+      "checkedOn": "2026-10-15",
+      "sha256": "71da6a7f50a0618c325cfba71919c68acce95c10a1beb25b86f7ebc74d01da61"
+    },
+    {
+      "id": "post-subbuh-quddus-bowing-and-prostration",
+      "checkedOn": "2026-10-15",
+      "sha256": "eb9b9d9222d573ad66d5f918296264b7b80ee194aa19b22e346b3f90ebed92c7"
+    },
+    {
+      "id": "post-forgotten-prayer-remembered",
+      "checkedOn": "2026-10-15",
+      "sha256": "a45fc1ddac44d2bf66633d9cb1edc7ebae562e1e491693e63a6080a39bf91ca7"
+    },
+    {
+      "id": "post-household-food-charity-no-waste",
+      "checkedOn": "2026-10-15",
+      "sha256": "ae3801537d02c88c033f207ed0a44a92921cac41461368d358b86d516688f0d7"
+    },
+    {
+      "id": "post-hearts-directed-to-obedience",
+      "checkedOn": "2026-10-15",
+      "sha256": "f1028da68b6d7401e83a1139b962b423d3fc8f639b57a997ecfba6d05559958b"
+    },
+    {
+      "id": "post-jarir-pledge-three-duties",
+      "checkedOn": "2026-10-15",
+      "sha256": "e1f78b6b39a989ac6e6f5e36d0796dfa1a7af897a4091f752fdc07486c71290c"
+    },
+    {
+      "id": "post-palm-tree-and-muslim",
+      "checkedOn": "2026-10-15",
+      "sha256": "2604ebaf80a34573b6a4006bdfb32e5d4b4b964a147d77d95482218e3f8e9fb2"
+    },
+    {
+      "id": "post-guidance-rain-and-land",
+      "checkedOn": "2026-10-15",
+      "sha256": "a671e31130873c71885b85e02a5dde2500075f2e9e5955d708c1418f2aad62b3"
+    },
+    {
+      "id": "post-repeating-for-understanding",
+      "checkedOn": "2026-10-15",
+      "sha256": "9eddc39e45d305dbf6e1e2d21fce03baec811fc9a98325bc55290cf56a91debb"
+    },
+    {
+      "id": "post-jabir-complete-istikhara",
+      "checkedOn": "2026-10-15",
+      "sha256": "822b72ff2b7e6da68d0e77e9e0d57b97a723ff4097237f2192bdee196246afb3"
+    },
+    {
+      "id": "post-good-and-troubling-dreams",
+      "checkedOn": "2026-10-15",
+      "sha256": "909e68727a3a73446fd589a4b60f110833003c9b380391cb01d543fd6fed68a2"
+    },
+    {
+      "id": "post-kinship-and-severing-ties",
+      "checkedOn": "2026-10-15",
+      "sha256": "6bdd0fd805dd460ae6231c4fe63ad6508717b76bd5cac5c9fd5f4ec8de6a5d8c"
+    },
+    {
+      "id": "post-five-fitra-practices",
+      "checkedOn": "2026-10-15",
+      "sha256": "e051d7d2907f2f88c908dd7338596548d84a82dfd182670d252286d365a5b3bd"
+    },
+    {
+      "id": "post-food-shared-among-more",
+      "checkedOn": "2026-10-15",
+      "sha256": "d57982a65fdcab61cef309a00588fbe456e68e1478a9a8c24d1705ff8d2b4036"
+    },
+    {
+      "id": "post-double-face-warning",
+      "checkedOn": "2026-10-16",
+      "sha256": "850484287466a25bc6e301774883050a4b7aeac5e09ea0e321b4e59e3b0b9333"
+    },
+    {
+      "id": "post-oaths-vows-and-harm",
+      "checkedOn": "2026-10-16",
+      "sha256": "43044fb8d62b2ab74967dc57400b83d1e06918dd4f782303338bf237e54d286a"
+    },
+    {
+      "id": "post-arms-and-deception",
+      "checkedOn": "2026-10-16",
+      "sha256": "2116d9b20bbc4f03ec2e25cb46cf403394ab41d7bd4044bce039516fd542b7ad"
+    },
+    {
+      "id": "post-two-unavoidable-outcomes",
+      "checkedOn": "2026-10-16",
+      "sha256": "c68373062562f332e78d2c0631ab5f54b3d1f943f95497bd0169a8be597e1e33"
+    },
+    {
+      "id": "post-world-stewardship-and-trials",
+      "checkedOn": "2026-10-16",
+      "sha256": "4bff5b9bbe23687ebaa3c96a8c1e7354041b12ff5c24c0e5bd51f3dae0ac3d4d"
+    },
+    {
+      "id": "post-pure-deeds-for-allah",
+      "checkedOn": "2026-10-16",
+      "sha256": "fce6cbfd8ef24148b15f7fe3f8b74f864cdf00fecfd070b65da0777e846ca665"
+    },
+    {
+      "id": "post-showing-off-warning",
+      "checkedOn": "2026-10-16",
+      "sha256": "a741f731f641242ce2e746681507a1f18c3f7b88d90eed8d96a632712e75eba5"
+    },
+    {
+      "id": "post-everyone-responsibility",
+      "checkedOn": "2026-10-16",
+      "sha256": "56ed182f10486fc7152f09643724616d7ba20e8d9d2ea506417f2faaa6989da0"
+    },
+    {
+      "id": "post-rejected-religious-innovation",
+      "checkedOn": "2026-10-16",
+      "sha256": "9d203c4f8841373c8268f051e0f5cda464d49b8af8e9e58967b48e24750e2af4"
+    },
+    {
+      "id": "post-ship-and-shared-safety",
+      "checkedOn": "2026-10-16",
+      "sha256": "6d5311a318f082608157a1f1731bf85ae6184a80b2ddd4e7268a06c3a33c6a5a"
+    },
+    {
+      "id": "post-asharis-sharing-food",
+      "checkedOn": "2026-10-16",
+      "sha256": "51631255e80ca992773b1810d1bbdecff15b3334d1fff667efd094c705c0272d"
+    },
+    {
+      "id": "post-sales-oaths-and-blessing",
+      "checkedOn": "2026-10-16",
+      "sha256": "e01fe854314f11aa939d9531af2f12dfb250157d073c0f9e3ac25ba86a64bb5b"
+    },
+    {
+      "id": "post-debts-intention-to-repay",
+      "checkedOn": "2026-10-16",
+      "sha256": "7d8d4a2b3e6f02b72fafc881bbe48c2076f7992a5f13754ac6d1e8b08a2f3b6e"
+    },
+    {
+      "id": "post-solvent-delay-in-payment",
+      "checkedOn": "2026-10-16",
+      "sha256": "700f75d0c5373a5b3cac9c7b5400066f3ef85dca0ff03dbccd79bc886d1b1470"
+    },
+    {
+      "id": "post-obedience-and-vows",
+      "checkedOn": "2026-10-16",
+      "sha256": "8887788a336688610e228120648463e69678be63481ab21807f499656fb0d66b"
+    },
+    {
+      "id": "post-adhan-salawat-and-wasilah",
+      "checkedOn": "2026-10-16",
+      "sha256": "2d9495c055db71544fc065f0b7264bc8c8b6d1fac54030f97669f11a76f1af12"
+    },
+    {
+      "id": "post-two-cool-prayers",
+      "checkedOn": "2026-10-16",
+      "sha256": "2a1f8a9ed356c59c15cc225482aaf092ece9781e87fc891d9df2fd7657bcfce5"
+    },
+    {
+      "id": "post-walking-to-iqamah-calmly",
+      "checkedOn": "2026-10-16",
+      "sha256": "2735da7d8ad1a87c102fccc79dc23f00c02f1edabeb254bbd9121dd771b1977a"
+    },
+    {
+      "id": "post-no-upward-gaze-in-prayer",
+      "checkedOn": "2026-10-16",
+      "sha256": "ff1bd84aa2c000cc32e033c12218560744e15cf4fd9fa53679e1e26fa53554d8"
+    },
+    {
+      "id": "post-standing-before-the-lord",
+      "checkedOn": "2026-10-16",
+      "sha256": "7ae6f7df65e867c0b263014ba73eddb3e1bf590534d4910a7a65d1386a6a77ee"
+    },
+    {
+      "id": "post-first-judgment-bloodshed",
+      "checkedOn": "2026-10-16",
+      "sha256": "54d57376a5f9d33b46636591c101f5962fcd82997adb66efd9caf0f7cc25fd78"
+    },
+    {
+      "id": "post-no-oath-against-forgiveness",
+      "checkedOn": "2026-10-16",
+      "sha256": "5720ca9d9641d7978ff8a6af0770dd11c2c5a05df0a08eb8f356802b2ccff0a4"
+    },
+    {
+      "id": "post-aisha-calm-reply",
+      "checkedOn": "2026-10-16",
+      "sha256": "14b0ad621c2f20cef4607ef0b146dda72be533bff63c9c6c148caa8396cca38e"
+    },
+    {
+      "id": "post-not-anticipating-ramadan",
+      "checkedOn": "2026-10-16",
+      "sha256": "8d200c194ab35e65d5778a5aefde5268dffe3a6669986c1c48b193b89b142f89"
+    },
+    {
+      "id": "post-hasten-iftar",
+      "checkedOn": "2026-10-16",
+      "sha256": "d46ec7133c0c21b43bdf750a64745fb8755d0646f1ec604d35f9fb2474196bdd"
+    },
+    {
+      "id": "post-six-days-shawwal",
+      "checkedOn": "2026-10-16",
+      "sha256": "13d3e0243ae705ff9775161e5f7f19ac953b18579ff37b5653759f6047f0d7f6"
+    },
+    {
+      "id": "post-rayyan-gate",
+      "checkedOn": "2026-10-16",
+      "sha256": "0773fe10dd6a3f59563a516c1881d1eb11388dbd5143b96cb4cb9f655c6541cf"
+    },
+    {
+      "id": "post-justice-in-family-and-authority",
+      "checkedOn": "2026-10-16",
+      "sha256": "96d1675ef294f62fc079a4e595b71a4ed89b8cac1de08d4dfa0bff75e8bae7af"
+    },
+    {
+      "id": "post-marital-confidentiality",
+      "checkedOn": "2026-10-16",
+      "sha256": "04dcd5838bb0a906182f1ac6cd5ede8ebf2d2965012f679301a49f2cbdbfb996"
+    },
+    {
+      "id": "post-six-forbidden-and-disliked-things",
+      "checkedOn": "2026-10-16",
+      "sha256": "61a00fc452c001e237b8ab1d826e403168f34d62b1cefd266593e328a063f9e2"
+    },
+    {
+      "id": "post-land-boundary-rights",
+      "checkedOn": "2026-10-16",
+      "sha256": "6e785fc42d7ef08d35dda2fec3177007762f57af38f883c5dbee600864d180ad"
+    },
+    {
+      "id": "post-avoid-pebble-flicking-harm",
+      "checkedOn": "2026-10-16",
+      "sha256": "13bc547c8c10efad28cfb7d1bd5a17fcf969ac9a1212222f05b69c14e67c849c"
+    },
+    {
+      "id": "post-sneezing-and-replies",
+      "checkedOn": "2026-10-16",
+      "sha256": "597cf99d50c6f959d85baa58576571c9ea523f2145db885b040e4b5234cc2950"
+    },
+    {
+      "id": "post-returning-to-your-seat",
+      "checkedOn": "2026-10-16",
+      "sha256": "1475d4475cf69b1d4f9ce2f2efc30a7ac549c1eb62f1ca53dbfe8078dcdade6f"
+    },
+    {
+      "id": "post-both-shoes-or-neither",
+      "checkedOn": "2026-10-16",
+      "sha256": "bf57f136b59032bd25d8ccada335fa473cb6dca94e6f85d1f04f771f49408cfe"
+    },
+    {
+      "id": "post-covered-vessels-and-doors",
+      "checkedOn": "2026-10-16",
+      "sha256": "f4de2ced359becb022d365f85a6d6323189b16a68f58880d2f797185e28e8544"
+    },
+    {
+      "id": "post-eating-without-reclining",
+      "checkedOn": "2026-10-16",
+      "sha256": "119bfec8f86982cf0bbb70e84f14741aabda93c860a3e71c737f9d174ac604e4"
+    },
+    {
+      "id": "post-hundred-dhikr-and-its-conditions",
+      "checkedOn": "2026-10-16",
+      "sha256": "cfe331dcff301e20aa11121213d59174b4cbffe894099b7d40aae6a2ca875d8e"
+    },
+    {
+      "id": "post-right-shoe-first",
+      "checkedOn": "2026-10-16",
+      "sha256": "58532fc40677b2a8c8fbe711c4ae83274ecce3c8611cd75c79cc567c767ffee9"
+    },
+    {
+      "id": "post-abu-bakr-forgiveness-prayer",
+      "checkedOn": "2026-10-16",
+      "sha256": "c2b57f2154bb76bf079a19b61e2db2a5a88798927b2965f8bd5da6ad69ee815b"
+    },
+    {
+      "id": "post-divine-help-and-unity",
+      "checkedOn": "2026-10-16",
+      "sha256": "217e92e756b73a724100711321288e50406d852f32908b70cf32975371cc6c17"
+    },
+    {
+      "id": "post-ibn-masud-recitation-and-tears",
+      "checkedOn": "2026-10-16",
+      "sha256": "1d084ad8c034183fea5b84a18b858260f54b0ab8768b5feb40d167b83c97e489"
+    },
+    {
+      "id": "post-quran-elevates-and-lowers",
+      "checkedOn": "2026-10-16",
+      "sha256": "a6d8d1c6de21b29598ee3c97edc749f370eb6eaf08f59417d15b06661cedefb9"
+    },
+    {
+      "id": "post-learning-verses-in-the-mosque",
+      "checkedOn": "2026-10-16",
+      "sha256": "01064c7d1f5e6c77e2ac9d19ae1f9b9871b14429ad4e11b7d7bc687ed0124c49"
+    },
+    {
+      "id": "post-do-not-claim-quran-neglect",
+      "checkedOn": "2026-10-16",
+      "sha256": "0721e08a1149cc6ae38e900b8387633d3aa9ef5783a9d2046982547b4c138666"
+    },
+    {
+      "id": "post-asma-giving-as-able",
+      "checkedOn": "2026-10-16",
+      "sha256": "555e1496a296a06237f262f2fb578eb9929da4661ef9c052c8591cc3edc72231"
+    },
+    {
+      "id": "post-first-charity-and-following-example",
+      "checkedOn": "2026-10-16",
+      "sha256": "788f7465216cfbe6c53436077ad38682757530089e231232cad8df32e714de56"
+    },
+    {
+      "id": "post-surplus-giving-and-dependents",
+      "checkedOn": "2026-10-16",
+      "sha256": "c1f252f8211bf285bf4e23b1303926d6bd1374d5be7bb07bcfebacf6c4065dac"
+    },
+    {
+      "id": "post-marriage-conditions-fulfilled",
+      "checkedOn": "2026-10-16",
+      "sha256": "aa879ff91b6fa927e1ca4d7882c64d8b9f0d61a7aae26d037ed95ed7129918e5"
+    },
+    {
+      "id": "post-riba-participants-warning",
+      "checkedOn": "2026-10-16",
+      "sha256": "08ced4da7e1f095fc76a2e057a8677ccca5daf9d7a8d59ddd9343b59e75d2f98"
     }
   ]
 }

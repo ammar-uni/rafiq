@@ -7,16 +7,17 @@ const canonical = value => Array.isArray(value) ? value.map(canonical) : value &
 export const contentFingerprint = card => createHash('sha256').update(JSON.stringify(canonical(card))).digest('hex');
 
 export function assertBalancedQuotationMarks(text, label = 'content') {
-  const closing = { '«': '»', '“': '”' };
+  const closing = { '«': '»', '“': '”', '(': ')', '[': ']', '{': '}', '﴿': '﴾' };
+  const closers = new Set(Object.values(closing));
   const expected = [];
   const reject = () => {
-    const error = new Error(`Unbalanced quotation marks in ${label}`);
+    const error = new Error(`Unbalanced quotation marks or brackets in ${label}`);
     error.code = 'CONTENT_QUOTATION_INVALID';
     throw error;
   };
   for (const character of text) {
     if (Object.hasOwn(closing, character)) expected.push(closing[character]);
-    else if ((character === '»' || character === '”') && expected.pop() !== character) reject();
+    else if (closers.has(character) && expected.pop() !== character) reject();
   }
   if (expected.length) reject();
 }
@@ -39,6 +40,7 @@ export function assertReviewedContent(cards = [...DHIKR_CARDS, ...GOOD_DEEDS, ..
     ids.add(card.id);
     const record = review.entries.filter(entry => entry.id === card.id);
     if (record.length !== 1 || record[0].sha256 !== contentFingerprint(card) || record[0].checkedOn !== card.source?.checkedOn) reject();
+    if (Number.isInteger(card.editorialNumber) && (/مقتطف|الدعاء من الحديث/u.test(card.source?.reference ?? '') || /…|\.\.\./u.test(card.body))) reject();
     checkQuotationMarks(card, card.id);
     if (!card.source?.citations?.length) reject();
     for (const ref of card.source.citations) {

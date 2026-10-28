@@ -37,7 +37,7 @@ export function serverPostPayload(event, roleId = null, mentionEveryone = false)
 }
 export function serverHomePayload(p = DEFAULT_SERVER, notice = '') {
   return serverEnvelope([
-    serverText(`-# إعدادات المشرف · تظهر لك وحدك\n## رفيق في سيرفرك\nتذكيرات قصيرة يختار محتواها رفيق من ${PUBLIC_POSTS.length.toLocaleString('ar')} منشورًا بأحاديث من الصحيحين، مع مصادرها المراجعة.`),
+    serverText(`-# إعدادات المشرف · تظهر لك وحدك\n## رفيق في سيرفرك\nتذكيرات بأحاديث كاملة من الصحيحين، مع مصادرها المراجعة. يختار رفيق منشورات القناة من مكتبة تضم ${PUBLIC_POSTS.length.toLocaleString('ar')} منشورًا.`),
     ...(notice ? [serverText(notice)] : []),
     serverText(`**النشر ${p.enabled ? 'مفعّل' : 'متوقف'}**${p.issue ? '\n' + (p.issue === 'permissions' ? 'توقف النشر بسبب صلاحيات القناة أو المنشن. راجعها ثم أعد التفعيل.' : 'تعذّر إرسال أحد المنشورات؛ لن نكرر محاولة إرساله.') : ''}`),
     serverDivider(),
