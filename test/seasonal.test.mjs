@@ -202,10 +202,10 @@ test('claim persistence, correction dedupe, opt-out, deletion and retention surv
   assert.equal(s.db.prepare('SELECT count(*) AS n FROM seasonal_attempts').get().n, 0);
 });
 
-test('notification text is short, qualified and sourced; preview never creates a DM', () => {
+test('notification text contains the complete narration, stays within Discord limits and is sourced; preview never creates a DM', () => {
   for (const event of events) {
     const message = seasonalReminderPayload(event), native = toDiscord(message);
-    assert.ok(native.content.length < 700); assert.ok(native.content.includes(SEASONAL_CARDS[event.key].text));
+    assert.ok(native.content.length <= 2000); assert.ok(native.content.includes(SEASONAL_CARDS[event.key].text));
     assert.match(native.content, /الموعد المتوقع في السعودية/); assert.doesNotMatch(native.content, /غدًا|بعد غد/);
     assert.deepEqual(native.allowedMentions.parse, []);
     assert.match(JSON.stringify(message.components), /seasonal_off/);
