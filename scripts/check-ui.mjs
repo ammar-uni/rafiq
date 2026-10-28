@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { assertBalancedQuotationMarks } from '../src/content-review.mjs';
 import { welcomePayload, reminderPayload, enabledPayload, settingsPayload, ideaPayload, pausedPayload, disabledPayload, homePayload, libraryPayload, sourcePayload, methodologyPayload, privacyPayload, supportPayload, forgetPromptPayload, breakPayload, breakReminderPayload, FLAGS } from '../src/messages.mjs';
 import { DHIKR_CARDS, GOOD_DEEDS, PUBLIC_POSTS, IDEA_CATEGORIES } from '../src/content.mjs';
 import { publicPostSourcePayload, reminderIntroPayload, ideaSourcePayload, favoritesPayload, notificationHelpPayload } from '../src/messages.mjs';
@@ -76,6 +77,7 @@ for (const payload of samples) {
   else {
     assert.equal(typeof payload.content, 'string');
     assert.ok(payload.content.length > 0 && payload.content.length <= 2000);
+    assertBalancedQuotationMarks(payload.content, 'Discord message content');
     assert.ok(payload.components.length <= 5);
     assert.ok(!(payload.flags & FLAGS.ephemeral));
   }
@@ -127,7 +129,10 @@ for (const payload of samples) {
       if (component.type === 8) assert.deepEqual(component.channel_types, [0]);
       assert.ok((component.default_values || []).length <= 1);
     }
-    if (component.type === 10) characters += component.content.length;
+    if (component.type === 10) {
+      assertBalancedQuotationMarks(component.content, 'Discord text component');
+      characters += component.content.length;
+    }
     if (component.type === 13) assert.ok(payload.attachments.some(file => component.file.url === `attachment://${file.filename}`));
     if (component.type === 12) {
       assert.ok(component.items.length >= 1 && component.items.length <= 10);
