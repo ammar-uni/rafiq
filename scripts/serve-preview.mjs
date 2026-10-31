@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { findPrayerCities } from '../src/prayer-geocoding.mjs';
+import { BRAND } from '../src/messages.mjs';
 
 export function createPreviewServer({ lookup = findPrayerCities } = {}) {
 let searches = [];
@@ -14,6 +15,14 @@ return createServer(async (request, response) => {
   }
   if (request.method !== 'GET') { response.writeHead(405, { Allow: 'GET' }); response.end(); return; }
   const url = new URL(request.url, 'http://127.0.0.1');
+  if (url.pathname === `/assets/${BRAND.appScreenshot}`) {
+    try {
+      const image = await readFile(new URL(`../assets/${BRAND.appScreenshot}`, import.meta.url));
+      response.writeHead(200, { 'Content-Type': 'image/png', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
+      response.end(image);
+    } catch { response.writeHead(404); response.end(); }
+    return;
+  }
   if (url.pathname === '/api/cities') {
     const json = (status, value) => { response.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }); response.end(JSON.stringify(value)); };
     searches = searches.filter(at => Date.now() - at < 60000);

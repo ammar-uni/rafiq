@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { assertBalancedQuotationMarks } from '../src/content-review.mjs';
-import { welcomePayload, reminderPayload, enabledPayload, settingsPayload, ideaPayload, pausedPayload, disabledPayload, homePayload, libraryPayload, sourcePayload, methodologyPayload, privacyPayload, supportPayload, forgetPromptPayload, breakPayload, breakReminderPayload, FLAGS } from '../src/messages.mjs';
+import { welcomePayload, appLaunchPayload, reminderPayload, enabledPayload, settingsPayload, ideaPayload, pausedPayload, disabledPayload, homePayload, libraryPayload, sourcePayload, methodologyPayload, privacyPayload, supportPayload, forgetPromptPayload, breakPayload, breakReminderPayload, FLAGS } from '../src/messages.mjs';
 import { DHIKR_CARDS, GOOD_DEEDS, PUBLIC_POSTS, IDEA_CATEGORIES } from '../src/content.mjs';
 import { publicPostSourcePayload, reminderIntroPayload, ideaSourcePayload, favoritesPayload, notificationHelpPayload } from '../src/messages.mjs';
 import { prayerPayload, prayerLocationPayload, prayerCitiesPayload, prayerCalculationPayload, prayerAudioPayload, prayerReminderPayload, prayerTestPayload } from '../src/messages.mjs';
@@ -14,10 +14,11 @@ import { remindersMenuPayload, explorePayload, helpMenuPayload, dailyDetailPaylo
 import { seasonalPayload, seasonalReminderPayload, seasonalSourcePayload } from '../src/messages.mjs';
 import { seasonalYearEvents } from '../src/seasonal-times.mjs';
 import { DEFAULT_SERVER, serverTimesForCount } from '../src/server-config.mjs';
-import { serverHomePayload, serverDraftPayload, serverSchedulePayload, serverMentionPayload, serverReviewPayload, serverGuidePayload, serverNoticePayload, serverPostPayload } from '../src/server-messages.mjs';
+import { serverHomePayload, serverChannelPayload, serverDraftPayload, serverSchedulePayload, serverMentionPayload, serverReviewPayload, serverGuidePayload, serverNoticePayload, serverPostPayload } from '../src/server-messages.mjs';
 loadPrayerSounds();
 const fivePerDaySamples = [settingsPayload({frequency:'session5',enabled:true}), reminderIntroPayload({frequency:'session5'}), enabledPayload({frequency:'session5'})];
 const samples = [welcomePayload(), reminderPayload(), reminderPayload({silent:false}), reminderPayload({preview:true}), reminderPayload({preview:true,enabled:false}), reminderPayload({preview:true,paused:true}), enabledPayload(), settingsPayload(), settingsPayload({frequency:'session',delivery:'silent',enabled:true,paused:true}), pausedPayload(), disabledPayload(), ...GOOD_DEEDS.map((_,i)=>ideaPayload(i)), homePayload(), homePayload({enabled:true}), homePayload({enabled:true,dmBlocked:true}), ...DHIKR_CARDS.flatMap(card=>[libraryPayload({selectedId:card.id}),sourcePayload(card.id)]), libraryPayload({onlyFavorites:true}), libraryPayload({onlyFavorites:true,favorites:['guidance'],selectedId:'guidance'}), methodologyPayload(), privacyPayload(), forgetPromptPayload(), breakPayload(), breakPayload({breakAt:1800000000000}), breakReminderPayload()];
+samples.push(appLaunchPayload());
 samples.push(privacyPayload({privacyURL:'https://rafiq.test/privacy',supportURL:'https://rafiq.test/support'}), supportPayload(), supportPayload({supportURL:'https://rafiq.test/support'}), supportPayload({feedbackEnabled:true,privacyURL:'https://rafiq.test/privacy'}));
 samples.push(...PUBLIC_POSTS.map(card => publicPostSourcePayload(card.id)), reminderIntroPayload(), reminderIntroPayload({enabled:true}), homePayload({breakAt:1800000000000,favoriteCount:5}), ...IDEA_CATEGORIES.flatMap(category => GOOD_DEEDS.filter(idea => category.id === 'all' || idea.category === category.id).flatMap(idea => [ideaPayload(GOOD_DEEDS.indexOf(idea), {category:category.id}), ideaSourcePayload(idea.id, {category:category.id})])), ...DHIKR_CARDS.map(card => sourcePayload(card.id, {onlyFavorites:true})), supportPayload({supportURL:'https://rafiq.test/support',reportCard:DHIKR_CARDS[0]}));
 samples.push(favoritesPayload(), favoritesPayload({dhikrCount:5,ideaCount:6}), ideaPayload(0,{category:'saved'}), settingsPayload({enabled:true,inGuild:true,paused:true,pausedUntil:1800000000000}), breakPayload({paused:true}), breakPayload({dmBlocked:true}), breakPayload({breakAt:1800000000000,delivery:'normal'}));
@@ -64,7 +65,7 @@ for (const state of [{}, { seasonalAt: 0 }, { seasonalAt: 1800000000000 }, { sea
 }
 for (const event of seasonalYearEvents(1448)) samples.push(seasonalReminderPayload(event), seasonalReminderPayload(event, { silent: true }), seasonalReminderPayload(event, { preview: true }), setupWrapPayload(seasonalReminderPayload(event, { preview: true })), seasonalSourcePayload(event.key), setupWrapPayload(seasonalSourcePayload(event.key)));
 const serverToken = '0123456789abcdef';
-samples.push(serverGuidePayload(), serverGuidePayload(true), serverHomePayload(), serverDraftPayload(DEFAULT_SERVER, serverToken), serverNoticePayload('تنبيه', 'راجع الإعدادات.'));
+samples.push(serverGuidePayload(), serverGuidePayload(true), serverHomePayload(), serverChannelPayload(DEFAULT_SERVER, serverToken), serverChannelPayload({...DEFAULT_SERVER, channelId:'101'}, serverToken), serverDraftPayload(DEFAULT_SERVER, serverToken), serverNoticePayload('تنبيه', 'راجع الإعدادات.'));
 for (const dailyCount of [0, 1, 2, 3]) for (const seasonal of [false, true]) for (const mentions of [{roleId:null,mentionEveryone:false}, {roleId:'202',mentionEveryone:false}, {roleId:null,mentionEveryone:true}]) {
   const p = { ...structuredClone(DEFAULT_SERVER), channelId: '101', ...mentions, dailyCount, seasonal, times: serverTimesForCount(dailyCount) };
   const event = dailyCount ? { kind: 'daily', day: '2026-09-25', slot: 0 } : seasonal ? { kind: 'seasonal', campaign: seasonalYearEvents(1448)[0] } : null;
