@@ -3,7 +3,7 @@ import { DEFAULT_PRAYER, DAILY_REMINDERS, DEFAULT_ADHKAR_OFFSET_MINUTES, OCCASIO
 import { prayerClock } from './prayer-times.mjs';
 /** Native Discord REST payloads. Rendering only; these functions never send messages. */
 export const FLAGS = Object.freeze({ componentsV2: 32768, ephemeral: 64, silent: 4096 });
-export const BRAND = Object.freeze({ name: 'رفيق', accent: 0x65ac89, gold: 0xcab17a, blue: 0x8aaec4, banner: 'rafiq-banner-v3.webp' });
+export const BRAND = Object.freeze({ name: 'رفيق', accent: 0x65ac89, gold: 0xcab17a, blue: 0x8aaec4, banner: 'rafiq-banner-v3.webp', appScreenshot: 'rafiq-windows-launch.png', windowsURL: 'https://rafiq.ammarbalkhi.com/#windows', windowsStoreURL: 'https://apps.microsoft.com/detail/9NN8WLLF8P7Z' });
 export const SOURCE = DHIKR_CARDS[0].source.citations[0].url;
 export const COPY = Object.freeze({
   welcomeTitle: 'خيرٌ خفيف، في وقته.',
@@ -45,9 +45,28 @@ export function welcomePayload() {
       text(`-# ${COPY.welcomeDetail}`),
       separator(),
       row(button('ابدأ مع رفيق', 'setup_start', 3), button('أقرأ الآن', 'explore')),
-      row(button('دليل إعداد السيرفر', 'server_guide'))
+      row(button('إعداد سيرفرك', 'server_begin'), button('دليل إعداد السيرفر', 'server_guide')),
+      text('### ✨ جديد · رفيق على جهازك\nمواقيت الصلاة والعدّ التنازلي في شريط المهام. تطبيق ويندوز متاح مجانًا على Microsoft Store.'),
+      row(linkButton('تنزيل من Microsoft Store', BRAND.windowsStoreURL), linkButton('شاهد التطبيق', BRAND.windowsURL)),
+      text('-# للمشرف: قناة مثل «رفيق الخير» لبطاقة البداية، وأخرى مثل «تذكيرات» للمنشورات. الأسماء أمثلة فقط؛ اختر ما يناسب سيرفرك.'),
+      text('-# أضف رفيق إلى سيرفرك، وذكّر أصدقاءك بالخير 🌿')
     ], { silent: true }),
     attachments: [{ id: '0', filename: BRAND.banner, description: 'غلاف رفيق' }]
+  };
+}
+
+/** Separate launch announcement. It is never part of the scheduled reminders. */
+export function appLaunchPayload() {
+  return {
+    ...envelope([
+      text('## ✨ جديد · رفيق على جهازك\n**تطبيق رفيق متاح الآن على Microsoft Store**'),
+      { type: 12, items: [{ media: { url: `attachment://${BRAND.appScreenshot}` }, description: 'لقطة فعلية للرئيسية في تطبيق رفيق: الصلاة القادمة والوقت المتبقي ومواقيت اليوم. مكة المكرمة مثال توضيحي.' }] },
+      text('🕰️ **مواقيت الصلاة في شريط المهام**\nشريط اختياري يعرض الصلاة القادمة والوقت المتبقي، أمامك أثناء استخدام جهازك.\n🌿 **أذكار وأحاديث كاملة** مع مصادرها.\n🔔 **تنبيهات تختارها** بالصوت وطريقة العرض التي تناسبك.'),
+      text('**مجاني · Windows 11 ‏(x64)** · بالعربية والإنجليزية.'),
+      row(linkButton('نزّل رفيق من Microsoft Store', BRAND.windowsStoreURL), linkButton('شاهد التطبيق', BRAND.windowsURL)),
+      text('-# نسختا macOS وLinux قيد التطوير. الصورة من واجهة التطبيق؛ مكة والمواقيت مثال توضيحي.')
+    ], { accent: BRAND.gold }),
+    attachments: [{ id: '0', filename: BRAND.appScreenshot, description: 'واجهة تطبيق رفيق لويندوز' }]
   };
 }
 

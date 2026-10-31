@@ -41,7 +41,7 @@ export function serverHomePayload(p = DEFAULT_SERVER, notice = '') {
     ...(notice ? [serverText(notice)] : []),
     serverText(`**النشر ${p.enabled ? 'مفعّل' : 'متوقف'}**${p.issue ? '\n' + (p.issue === 'permissions' ? 'توقف النشر بسبب صلاحيات القناة أو المنشن. راجعها ثم أعد التفعيل.' : 'تعذّر إرسال أحد المنشورات؛ لن نكرر محاولة إرساله.') : ''}`),
     serverDivider(),
-    serverText(`**القناة:** ${p.channelId ? `<#${p.channelId}>` : 'لم تُحدّد بعد'}\n**اليومية:** ${serverFrequency(p.dailyCount)}\n**مواسم الخير:** ${p.seasonal ? 'مختارة' : 'متوقفة'}\n**المنشن:** ${serverMentionLabel(p)}`),
+    serverText(`**قناة التذكيرات:** ${p.channelId ? `<#${p.channelId}>` : 'لم تُحدّد بعد'}\n**اليومية:** ${serverFrequency(p.dailyCount)}\n**مواسم الخير:** ${p.seasonal ? 'مختارة' : 'متوقفة'}\n**المنشن:** ${serverMentionLabel(p)}`),
     ...(p.channelId ? [serverText(`**مواعيد النشر**\n${serverScheduleLabel(p)}`)] : []),
     serverRow(serverButton(p.channelId ? 'تعديل الإعدادات' : 'ابدأ إعداد النشر', 'begin', 3), ...(p.enabled ? [serverButton('إيقاف كل المنشورات', 'pause', 4)] : [])),
     serverRow(serverButton('دليل إعداد السيرفر', 'guide'), serverPersonalHome()),
@@ -50,11 +50,13 @@ export function serverHomePayload(p = DEFAULT_SERVER, notice = '') {
 }
 export function serverGuidePayload(canManage = false) {
   return serverEnvelope([
-    serverText('-# دليل المشرف\n## رفيق، في مكان واضح\nابدأ بقناة واحدة ومحتوى قليل يناسب أهل سيرفرك.'),
-    serverText('**١ · أنشئ قناة نصية**\nسمّها مثلًا «رفيق الخير». اسمح للأعضاء بقراءتها، ويمكنك تخصيص الكتابة للبوت والمشرفين.'),
-    serverText('**٢ · انشر بطاقة البداية**\nاستخدم `/rafiq-setup` واختر القناة، ثم ثبّت البطاقة. منها يفتح كل عضو مساحته وتذكيراته الخاصة.'),
-    serverText('**٣ · اختر منشورات القناة**\nمن الرئيسية داخل السيرفر، افتح «إعدادات هذا السيرفر»، أو استخدم `/rafiq-server`. اختر القناة، ثم ١ أو ٢ أو ٣ تذكيرات يوميًا، أو مواسم الخير وحدها. راجع التوقيت والمعاينة ثم احفظ.'),
-    serverText('**٤ · المنشن اختياري**\nاختر بدون منشن، أو رتبة للراغبين بالتذكير، أو @everyone لتنبيه جميع من يستطيعون رؤية القناة. خيار الجميع يحتاج صلاحية «ذكر الجميع» لك وللبوت. لا يحتاج رفيق صلاحية «مسؤول». التنبيهات تخضع أيضًا لإعدادات كل عضو في ديسكورد.'),
+    serverText('-# دليل إعداد السيرفر\n## قناتان، وكل شيء واضح\nالأسماء أمثلة؛ استخدم قنوات موجودة أو أنشئها بالأسماء التي تناسب سيرفرك.'),
+    serverText('### #رفيق الخير · بطاقة البداية\nاسم مقترح فقط. اكتب `/rafiq-setup` داخل قناة البطاقة، فتظهر فيها مباشرة. ثبّتها من قائمة الرسالة لتبقى سهلة الوصول. منها يفتح كل عضو إعداداته الخاصة، ويجد المشرف «إعداد سيرفرك».'),
+    serverText('### #تذكيرات · المنشورات\nاجعلها للأحاديث الموثّقة ومواسم الخير. اسمح للأعضاء بقراءتها، ويمكنك تخصيص الكتابة للبوت والمشرفين حتى لا تضيع المنشورات بين المحادثات.'),
+    serverDivider(),
+    serverText('**ثلاث خطوات من «إعداد سيرفرك»**\n**١** اختر قناة التذكيرات.\n**٢** اختر ١ أو ٢ أو ٣ تذكيرات يوميًا، أو مواسم الخير وحدها، واضبط المواعيد والمنشن.\n**٣** راجع نموذج الرسالة ثم اضغط «حفظ وتفعيل النشر». لا يبدأ النشر قبل الحفظ.'),
+    serverText('-# يمكن وضع البطاقة والمنشورات في قناة واحدة إذا أردت، لكن فصلهما يجعل البطاقة أسهل وصولًا. الأمر `/rafiq-setup` يحدّث البطاقة الموجودة ولا يكررها؛ خيار channel متاح لاختيار قناة أخرى.'),
+    serverText('**المنشن اختياري**\nاختر بدون منشن، أو رتبة للراغبين بالتذكير، أو @everyone لتنبيه جميع من يستطيعون رؤية القناة. خيار الجميع يحتاج صلاحية «ذكر الجميع» لك وللبوت. لا يحتاج رفيق صلاحية «مسؤول». التنبيهات تخضع أيضًا لإعدادات كل عضو في ديسكورد.'),
     serverText('**تحكّم واضح**\nيمكنك تعديل المواعيد أو إيقاف المنشورات من إعدادات السيرفر. هذه الإعدادات تخص القناة؛ تذكيرات الأعضاء في الخاص مستقلة. التذكير داخل القنوات الصوتية غير متاح في هذه المرحلة.'),
     ...(!canManage ? [serverText('-# إعدادات النشر لمن يملك صلاحية إدارة السيرفر. افتح رفيق داخل السيرفر المطلوب لتظهر أدوات إدارته إن كانت لديك الصلاحية.')] : []),
     serverRow(...(canManage ? [serverButton('إعدادات هذا السيرفر', 'home', 3)] : []), serverPersonalHome())
@@ -63,18 +65,29 @@ export function serverGuidePayload(canManage = false) {
 export function serverNoticePayload(title, body, action = 'home') {
   return serverEnvelope([serverText(`## ${title}\n${body}`), serverRow(serverButton('رجوع', action))]);
 }
+export function serverChannelPayload(p, token, notice = '') {
+  return serverEnvelope([
+    serverText('-# ١ من ٣ · قناة التذكيرات\n## أين ننشر التذكيرات؟\nقناة مثل «رفيق الخير» لبطاقة البداية، وأخرى مثل «تذكيرات» للمنشورات. اختر قناة المنشورات هنا؛ الأسماء أمثلة فقط.'),
+    ...(notice ? [serverText(notice)] : []),
+    serverRow({ type: 8, custom_id: `rafiq:v1:server_${token}_channel`, channel_types: [0], placeholder: 'اختر قناة التذكيرات', min_values: 1, max_values: 1, ...(p.channelId ? { default_values: [{ id: p.channelId, type: 'channel' }] } : {}) }),
+    serverText(p.channelId ? `**المختارة:** <#${p.channelId}>\nيمكنك تغييرها الآن. لا نرسل شيئًا أثناء الإعداد.` : 'أنشئ القناة من ديسكورد إن لم تكن موجودة، ثم اخترها من القائمة. يمكنك استخدام أي قناة نصية عادية وبأي اسم.'),
+    serverDivider(),
+    serverRow({ ...serverButton('التالي: المحتوى والمواعيد', `${token}_edit`, 3), disabled: !p.channelId }, serverButton('إلغاء', 'home')),
+    serverText('-# فصل القناتين مقترح للتنظيم؛ تستطيع اختيار قناة البطاقة نفسها. لن نغيّر أسماء القنوات أو صلاحياتها.')
+  ]);
+}
 export function serverDraftPayload(p, token, notice = '') {
   const a = action => `${token}_${action}`;
   return serverEnvelope([
-    serverText('-# ١ من ٢ · إعداد المنشورات\n## خيرٌ يجمع أهل السيرفر\nاختر ما يناسب قناتك. لن يبدأ النشر حتى تراجع الإعدادات وتحفظها.'),
+    serverText('-# ٢ من ٣ · المحتوى والمواعيد\n## خيرٌ يجمع أهل السيرفر\nاختر ما يناسب قناتك. لن يبدأ النشر حتى تراجع الإعدادات وتحفظها.'),
     ...(notice ? [serverText(notice)] : []),
-    serverRow({ type: 8, custom_id: `rafiq:v1:server_${a('channel')}`, channel_types: [0], placeholder: 'اختر قناة المنشورات، مثل رفيق-الخير', min_values: 1, max_values: 1, ...(p.channelId ? { default_values: [{ id: p.channelId, type: 'channel' }] } : {}) }),
+    serverText(`**قناة التذكيرات:** ${p.channelId ? `<#${p.channelId}>` : 'لم تُحدّد بعد'}`),
     serverSelect(a('count'), 'التذكيرات اليومية', [0, 1, 2, 3].map(count => ({ label: serverFrequency(count), value: String(count), default: p.dailyCount === count, ...(count === 0 ? { description: 'يمكنك الاكتفاء بمواسم الخير' } : {}) }))),
     serverSection(`**مواسم الخير · ${p.seasonal ? 'مفعّلة' : 'متوقفة'}**\nتذكيرات قليلة في السنة.`, serverButton(p.seasonal ? 'إيقاف المواسم' : 'تفعيل المواسم', a('seasonal'))),
     serverSection(`**مواعيد النشر**\n${serverScheduleLabel(p)}`, serverButton('تعديل المواعيد', a('schedule'))),
     serverSection(`**المنشن · ${serverMentionLabel(p)}**\nبدون منشن، أو رتبة، أو الجميع.`, serverButton('اختيار المنشن', a('mention'))),
     serverDivider(),
-    serverRow(serverButton('التالي: المراجعة', a('review'), 3), serverButton('إلغاء', 'home'))
+    serverRow(serverButton('التالي: المراجعة', a('review'), 3), serverButton('رجوع', a('channel_step')), serverButton('إلغاء', 'home'))
   ]);
 }
 export function serverSchedulePayload(p, token, notice = '') {
@@ -105,7 +118,7 @@ export function serverMentionPayload(p, token, notice = '') {
 export function serverReviewPayload(p, token, event, notice = '') {
   const post = event ? serverPostPayload(event, p.roleId, p.mentionEveryone) : null;
   return serverEnvelope([
-    serverText('-# ٢ من ٢ · المراجعة\n## جاهز للنشر التلقائي؟'),
+    serverText('-# ٣ من ٣ · المراجعة\n## جاهز للنشر التلقائي؟'),
     ...(notice ? [serverText(notice)] : []),
     serverText(`**القناة:** <#${p.channelId}>\n**اليومية:** ${serverFrequency(p.dailyCount)}\n**مواسم الخير:** ${p.seasonal ? 'مفعّلة' : 'متوقفة'}\n**المنشن:** ${serverMentionLabel(p)}\n**المواعيد:** ${serverScheduleLabel(p)}`),
     serverText(p.seasonal ? '-# تذكير الموسم يحلّ محل أول تذكير يومي في يومه. إذا أوقفت اليومية يبقى للموسم موعد واحد. التواريخ تقديرية بحسب السعودية ما لم يثبت الإعلان.' : '-# يتناوب رفيق على محتوى موثّق. لا يقرأ محادثات الأعضاء لاختيار المنشورات.'),
