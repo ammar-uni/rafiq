@@ -1,0 +1,16 @@
+# Imported inside the rafiq.ammarbalkhi.com site block.
+# These paths are independent of /opt/rafiq-website/current.
+handle /release.json {
+    root * /var/opt/rafiq-downloads/public
+    header Cache-Control "no-store"
+    header X-Rafiq-Download-Channel "managed"
+    file_server
+}
+
+handle /downloads/* {
+    root * /var/opt/rafiq-downloads/public
+    header Cache-Control "no-store, no-transform"
+    header Content-Disposition "attachment"
+    header X-Rafiq-Download-Channel "managed"
+    file_server
+}
