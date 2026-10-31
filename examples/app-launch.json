@@ -1,0 +1,66 @@
+{
+  "flags": 32768,
+  "allowed_mentions": {
+    "parse": [],
+    "replied_user": false
+  },
+  "components": [
+    {
+      "type": 17,
+      "accent_color": 13283706,
+      "components": [
+        {
+          "type": 10,
+          "content": "## ✨ جديد · رفيق على جهازك\n**تطبيق رفيق متاح الآن على Microsoft Store**"
+        },
+        {
+          "type": 12,
+          "items": [
+            {
+              "media": {
+                "url": "attachment://rafiq-windows-launch.png"
+              },
+              "description": "لقطة فعلية للرئيسية في تطبيق رفيق: الصلاة القادمة والوقت المتبقي ومواقيت اليوم. مكة المكرمة مثال توضيحي."
+            }
+          ]
+        },
+        {
+          "type": 10,
+          "content": "🕰️ **مواقيت الصلاة في شريط المهام**\nشريط اختياري يعرض الصلاة القادمة والوقت المتبقي، أمامك أثناء استخدام جهازك.\n🌿 **أذكار وأحاديث كاملة** مع مصادرها.\n🔔 **تنبيهات تختارها** بالصوت وطريقة العرض التي تناسبك."
+        },
+        {
+          "type": 10,
+          "content": "**مجاني · Windows 11 ‏(x64)** · بالعربية والإنجليزية."
+        },
+        {
+          "type": 1,
+          "components": [
+            {
+              "type": 2,
+              "label": "نزّل رفيق من Microsoft Store",
+              "style": 5,
+              "url": "https://apps.microsoft.com/detail/9NN8WLLF8P7Z"
+            },
+            {
+              "type": 2,
+              "label": "شاهد التطبيق",
+              "style": 5,
+              "url": "https://rafiq.ammarbalkhi.com/#windows"
+            }
+          ]
+        },
+        {
+          "type": 10,
+          "content": "-# نسختا macOS وLinux قيد التطوير. الصورة من واجهة التطبيق؛ مكة والمواقيت مثال توضيحي."
+        }
+      ]
+    }
+  ],
+  "attachments": [
+    {
+      "id": "0",
+      "filename": "rafiq-windows-launch.png",
+      "description": "واجهة تطبيق رفيق لويندوز"
+    }
+  ]
+}
