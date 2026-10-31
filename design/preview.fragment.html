@@ -24,7 +24,7 @@
     #rafiq-native-preview .rn-context { font-size:12px; color:var(--rn-muted); }
     #rafiq-native-preview .rn-container { max-width:600px; background:var(--rn-panel); border:1px solid var(--rn-line); border-inline-start:3px solid #65ac89; border-radius:9px; padding:16px; }
     #rafiq-native-preview .rn-gallery { margin:0 0 17px; }
-    #rafiq-native-preview .rn-gallery img { width:100%; height:auto; aspect-ratio:3/1; display:block; border-radius:6px; }
+    #rafiq-native-preview .rn-gallery img { width:100%; height:auto; display:block; border-radius:6px; }
     #rafiq-native-preview .rn-text + .rn-text { margin-top:11px; }
     #rafiq-native-preview .rn-text { white-space:normal; overflow-wrap:anywhere; }
     #rafiq-native-preview .rn-section { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:10px 0; }
@@ -40,7 +40,8 @@
     #rafiq-native-preview .rn-rule { border:0; border-top:1px solid var(--rn-line); margin:16px 0 13px; }
     #rafiq-native-preview .rn-row { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-top:8px; }
     #rafiq-native-preview .rn-row + .rn-row { margin-top:9px; }
-    #rafiq-native-preview button { font:500 14px/1.5 "Segoe UI",Tahoma,Arial,sans-serif; min-height:38px; display:inline-flex; align-items:center; justify-content:center; padding:8px 13px; border:1px solid transparent; border-radius:5px; background:var(--rn-button); color:var(--rn-ink); cursor:pointer; transition:filter 120ms; }
+    #rafiq-native-preview button, #rafiq-native-preview .rn-link-button { font:500 14px/1.5 "Segoe UI",Tahoma,Arial,sans-serif; min-height:38px; display:inline-flex; align-items:center; justify-content:center; padding:8px 13px; border:1px solid transparent; border-radius:5px; background:var(--rn-button); color:var(--rn-ink); cursor:pointer; transition:filter 120ms; }
+    #rafiq-native-preview .rn-link-button { text-decoration:none; }
     #rafiq-native-preview button:hover { filter:brightness(1.08); }
     #rafiq-native-preview button.rn-positive { color:light-dark(#fff,#fff); background:var(--rn-success); }
     #rafiq-native-preview .rn-select-label { display:block; font-size:13px; color:var(--rn-muted); margin-top:13px; }
@@ -100,6 +101,7 @@
       <button type="button" data-action="setup">مستخدم جديد</button>
       <button type="button" data-action="reminders">التذكيرات</button>
       <button type="button" data-action="welcome">بطاقة السيرفر</button>
+      <button type="button" data-action="app_launch">منشور إطلاق التطبيق</button>
       <button type="button" data-action="server_home">إعدادات السيرفر</button>
       <button type="button" data-action="server_guide">دليل الإعداد</button>
       <button type="button" data-demo="theme" aria-pressed="false">المظهر الفاتح</button>
@@ -108,7 +110,7 @@
     </details>
   </div>
   <div class="rn-window">
-    <div class="rn-top"><span class="rn-channel" id="rn-channel">رفيق</span><span class="rn-preview-label">معاينة تفاعلية</span></div>
+    <div class="rn-top"><span class="rn-channel" id="rn-channel">رفيق الخير</span><span class="rn-preview-label">معاينة تفاعلية</span></div>
     <div class="rn-message">
       <img class="rn-avatar" src="__AVATAR_WEBP__" alt="أيقونة رفيق" width="40" height="40">
       <div class="rn-content">
@@ -128,6 +130,10 @@
     const queue={run:(_id,task)=>Promise.resolve().then(task)};
     let simulatedMessages=0, theme=getComputedStyle(root).colorScheme==='light'?'light':'dark', busy=false, currentAction='home';
     const previewParams=new URLSearchParams(location.search);
+    if(previewParams.get('view')==='message'){
+      root.querySelector('.rn-stage').hidden=true;
+      root.closest('main').style.margin='0 auto';
+    }
     let viewer=['admin','member','dm'].includes(previewParams.get('viewer'))?previewParams.get('viewer'):'admin';
     root.querySelector('#rn-viewer').value=viewer;
     async function findPrayerCities(query) {
@@ -141,7 +147,7 @@
     const serverApp=new ServerApp({store,checkTarget:async({preferences:p})=>!['101','102'].includes(p.channelId)?'اختر إحدى قناتي المعاينة.':p.roleId&&!['201','202'].includes(p.roleId)?'اختر إحدى رتب المعاينة.':null});
     const escapeHtml=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const markdown=value=>value.split('\n').map(line=>{
-      line=line.replaceAll('<#101>','#رفيق الخير').replaceAll('<#102>','#التذكيرات').replaceAll('<@&201>','@أرغب بالتذكير').replaceAll('<@&202>','@أهل الخير');
+      line=line.replaceAll('<#101>','#رفيق الخير').replaceAll('<#102>','#تذكيرات').replaceAll('<@&201>','@أرغب بالتذكير').replaceAll('<@&202>','@أهل الخير');
       const safe=escapeHtml(line).replace(/\[([^\]]+)\]\((https:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/&lt;t:(\d+):(R|f)&gt;/g,(_,seconds,style)=>{if(style==='f')return new Date(Number(seconds)*1000).toLocaleString('ar',{dateStyle:'medium',timeStyle:'short'});const minutes=Math.ceil((Number(seconds)*1000-Date.now())/60000);return minutes>0?'بعد نحو '+minutes.toLocaleString('ar')+' دقيقة':'حان الموعد';});
       if(safe.startsWith('### '))return '<h3>'+safe.slice(4)+'</h3>';
       if(safe.startsWith('## '))return '<h2>'+safe.slice(3)+'</h2>';
@@ -151,18 +157,21 @@
     }).join('');
     function component(item) {
       if(item.type===6||item.type===8){
-        const key=item.custom_id.slice(9), choices=item.type===8?[['101','رفيق الخير'],['102','التذكيرات']]:[['201','أرغب بالتذكير'],['202','أهل الخير']];
+        const key=item.custom_id.slice(9), choices=item.type===8?[['101','رفيق الخير'],['102','تذكيرات']]:[['201','أرغب بالتذكير'],['202','أهل الخير']];
         const selected=item.default_values?.[0]?.id;
         return '<div style="width:100%"><label class="rn-select-label" for="rn-'+key+'">'+escapeHtml(item.placeholder)+'</label><select id="rn-'+key+'" data-preference="'+key+'">'+(!selected?'<option disabled selected value="">'+escapeHtml(item.placeholder)+'</option>':'')+choices.map(([id,label])=>'<option value="'+id+'" '+(selected===id?'selected':'')+'>'+escapeHtml(label)+'</option>').join('')+'</select><div class="rn-help">'+(item.type===8?'قنوات تجريبية؛ في ديسكورد تظهر قنوات سيرفرك.':'هذه رتب تجريبية؛ في ديسكورد تظهر رتب سيرفرك. لا ترسل المعاينة أي منشن.')+'</div></div>';
       }
       if(item.type===17)return '<div class="rn-container" style="border-inline-start-color:#'+item.accent_color.toString(16).padStart(6,'0')+'">'+item.components.map(component).join('')+'</div>';
       if(item.type===9)return '<div class="rn-section"><div>'+item.components.map(component).join('')+'</div>'+component(item.accessory)+'</div>';
       if(item.type===10)return '<div class="rn-text">'+markdown(item.content)+'</div>';
-      if(item.type===12)return '<figure class="rn-gallery"><img src="'+banner+'" alt="'+escapeHtml(item.items[0].description)+'" width="1536" height="512"></figure>';
+      if(item.type===12){
+        const appImage=item.items[0].media.url===`attachment://${BRAND.appScreenshot}`;
+        return '<figure class="rn-gallery"><img src="'+(appImage?'/assets/'+BRAND.appScreenshot:banner)+'" alt="'+escapeHtml(item.items[0].description)+'" width="'+(appImage?'1440':'1536')+'" height="'+(appImage?'960':'512')+'"></figure>';
+      }
       if(item.type===14)return '<hr class="rn-rule">';
       if(item.type===1)return '<div class="rn-row">'+item.components.map(component).join('')+'</div>';
       if(item.type===2){
-        if(item.style===5)return '<a href="'+escapeHtml(item.url)+'" target="_blank" rel="noopener noreferrer">'+escapeHtml(item.label)+'</a>';
+        if(item.style===5)return '<a class="rn-link-button" href="'+escapeHtml(item.url)+'" target="_blank" rel="noopener noreferrer">'+escapeHtml(item.label)+' ↗</a>';
         return '<button type="button" '+(item.disabled?'disabled ':'')+'data-action="'+item.custom_id.slice(9)+'" class="'+(item.style===3?'rn-positive':'')+'">'+escapeHtml(item.label)+'</button>';
       }
       if(item.type===3){
@@ -178,7 +187,7 @@
       themeButton.textContent=theme==='dark'?'المظهر الفاتح':'المظهر الداكن';
       themeButton.setAttribute('aria-pressed',String(theme==='light'));
       root.querySelectorAll('.rn-scenarios [data-action]').forEach(button=>{if(button.dataset.action===currentAction)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');});
-      root.querySelector('#rn-context').textContent=currentAction==='welcome'?'بطاقة الترحيب':currentAction==='notification'?'نموذج رسالة الخاص · لا يُرسل':viewer==='admin'?'معاينة المشرف · لك وحدك':viewer==='member'?'معاينة العضو · لك وحدك':'معاينة الخاص';
+      root.querySelector('#rn-context').textContent=currentAction==='app_launch'?'معاينة منشور الإطلاق · لم يُرسل':currentAction==='welcome'?'بطاقة الترحيب':currentAction==='notification'?'نموذج رسالة الخاص · لا يُرسل':viewer==='admin'?'معاينة المشرف · لك وحدك':viewer==='member'?'معاينة العضو · لك وحدك':'معاينة الخاص';
       view.innerHTML=(payload.content?'<div class="rn-text">'+markdown(payload.content)+'</div>':'')+payload.components.map(component).join('');
       root.querySelector('#rn-simulation').textContent='تجربة محلية · لا تُرسل رسائل ولا تُحفظ بيانات'+(simulatedMessages?' · جُرّب الإرسال محليًا':'');
       if(focus){const heading=view.querySelector('h2');if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true});}else view.querySelector('button,select')?.focus({preventScroll:true});}
@@ -204,7 +213,7 @@
       }
       try{
         currentAction=action;
-        payload=action==='welcome'?welcomePayload():action.startsWith('server_')?await serverApp.handle(serverInput):await app.handle({...context,action,values});
+        payload=action==='welcome'?welcomePayload():action==='app_launch'?appLaunchPayload():action.startsWith('server_')?await serverApp.handle(serverInput):await app.handle({...context,action,values});
         render(payload,focus);
       }catch{
         payload=noticePayload('تعذّر عرض المعاينة','ابدأ تجربة جديدة ثم حاول مرة أخرى.');
@@ -235,7 +244,7 @@
       root.querySelector('[data-preference="'+key+'"]')?.focus({preventScroll:true});
     });
     const initialScreen=previewParams.get('screen');
-    void navigate(['server_home','server_guide'].includes(initialScreen)?initialScreen:'home',[],false);
+    void navigate(['welcome','app_launch','server_home','server_guide','server_begin'].includes(initialScreen)?initialScreen:'home',[],false);
   })();
   </script>
 </div>

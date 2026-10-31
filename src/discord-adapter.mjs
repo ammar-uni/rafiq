@@ -14,7 +14,7 @@ export function toDiscord(payload, { forEdit = false, sounds = [] } = {}) {
   if (payload.attachments?.length) {
     if (payload.attachments.length !== 1) throw new Error('Unknown attachment');
     const attachment = payload.attachments[0];
-    if (attachment.filename === BRAND.banner && !attachment.soundId) result.files = [{ attachment: fileURLToPath(new URL(`../assets/${BRAND.banner}`, import.meta.url)), name: BRAND.banner, description: 'غلاف رفيق' }];
+    if (!attachment.soundId && [BRAND.banner, BRAND.appScreenshot].includes(attachment.filename)) result.files = [{ attachment: fileURLToPath(new URL(`../assets/${attachment.filename}`, import.meta.url)), name: attachment.filename, description: attachment.filename === BRAND.banner ? 'غلاف رفيق' : 'واجهة تطبيق رفيق لويندوز' }];
     else {
       const sound = sounds.find(item => item.id === attachment.soundId && item.filename === attachment.filename);
       if (!sound) throw new Error('Unknown attachment');
@@ -46,10 +46,12 @@ export function canManageGuild(interaction) {
 
 export async function setupPanel({ interaction, store }) {
   if (!canManageGuild(interaction)) return noticePayload('هذا الإعداد للمشرف', 'تحتاج صلاحية إدارة السيرفر لنشر بطاقة رفيق.');
-  const channel = interaction.options.getChannel('channel', true);
-  if (channel.guildId !== interaction.guildId || channel.type !== 0) return noticePayload('اختر قناة نصية', 'اختر قناة نصية عادية داخل هذا السيرفر.');
+  const channel = interaction.options.getChannel('channel') || interaction.channel;
+  if (!channel || channel.guildId !== interaction.guildId || channel.type !== 0) return noticePayload('افتح قناة نصية', 'اكتب /rafiq-setup داخل القناة النصية التي تريد وضع بطاقة رفيق فيها، أو اختر قناة من خيار channel.');
   const me = interaction.guild.members.me || await interaction.guild.members.fetchMe();
   if (!channel.permissionsFor(me)?.has(INSTALL_PERMISSIONS)) return noticePayload('أحتاج صلاحيات القناة', 'اسمح لرفيق بعرض القناة، وإرسال الرسائل، وإرفاق الملفات، وقراءة سجل الرسائل، ثم أعد الأمر.');
+  const member = await interaction.guild.members.fetch({ user: interaction.user.id, force: true });
+  if (!member.permissions.has(PermissionFlagsBits.ManageGuild) || !channel.permissionsFor(member)?.has(PermissionFlagsBits.ViewChannel | PermissionFlagsBits.SendMessages)) return noticePayload('تحقّق من صلاحياتك', 'تحتاج صلاحية إدارة السيرفر، وعرض قناة البطاقة وإرسال الرسائل فيها.');
   const previous = store.getPanel(interaction.guildId);
   let oldMessage = null;
   if (previous) {
@@ -64,7 +66,7 @@ export async function setupPanel({ interaction, store }) {
   const payload = toDiscord(welcomePayload(), { forEdit: Boolean(oldMessage) });
   const message = oldMessage ? await oldMessage.edit(payload) : await channel.send(payload);
   store.setPanel(interaction.guildId, channel.id, message.id);
-  return noticePayload(oldMessage ? 'تحدّثت بطاقة رفيق' : 'بطاقة رفيق جاهزة', `يمكن للأعضاء فتح مساحتهم منها، والتفعيل اختياري لكل عضو. يمكنك تثبيتها يدويًا.\n[افتح البطاقة](${message.url})`);
+  return noticePayload(oldMessage ? 'تحدّثت بطاقة رفيق' : 'بطاقة رفيق جاهزة', `**١ · هذه قناة البطاقة**\n[افتح البطاقة](${message.url}) وثبّتها من قائمة الرسالة. يفتح الأعضاء تذكيراتهم الخاصة من «ابدأ مع رفيق».\n**٢ · قناة التذكيرات**\nأنشئ قناة أخرى مثل «تذكيرات»، أو استخدم قناة موجودة. من البطاقة اضغط «إعداد سيرفرك»، واختر قناة التذكيرات ثم المحتوى والمواعيد، وراجع قبل التشغيل. لم يبدأ أي نشر تلقائي بمجرد إضافة البطاقة.`);
 }
 
 export function statusPayload(interaction, store) {

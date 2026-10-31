@@ -1,5 +1,5 @@
 import { mkdir, writeFile } from 'node:fs/promises';
-import { welcomePayload, reminderPayload, enabledPayload, settingsPayload, ideaPayload, homePayload, libraryPayload, breakPayload, methodologyPayload, privacyPayload, supportPayload } from '../src/messages.mjs';
+import { welcomePayload, appLaunchPayload, reminderPayload, enabledPayload, settingsPayload, ideaPayload, homePayload, libraryPayload, breakPayload, methodologyPayload, privacyPayload, supportPayload } from '../src/messages.mjs';
 import { publicPostSourcePayload, reminderIntroPayload, sourcePayload, ideaSourcePayload, favoritesPayload } from '../src/messages.mjs';
 import { prayerPayload, prayerCalculationPayload, prayerAudioPayload, prayerLocationPayload, prayerReminderPayload } from '../src/messages.mjs';
 import { DEFAULT_PRAYER } from '../src/prayer-config.mjs';
@@ -11,11 +11,12 @@ import { remindersMenuPayload, explorePayload, helpMenuPayload, dailyDetailPaylo
 import { seasonalPayload, seasonalReminderPayload, seasonalSourcePayload } from '../src/messages.mjs';
 import { seasonalYearEvents } from '../src/seasonal-times.mjs';
 import { DEFAULT_SERVER } from '../src/server-config.mjs';
-import { serverHomePayload, serverDraftPayload, serverGuidePayload, serverReviewPayload, serverPostPayload } from '../src/server-messages.mjs';
+import { serverHomePayload, serverChannelPayload, serverDraftPayload, serverGuidePayload, serverReviewPayload, serverPostPayload } from '../src/server-messages.mjs';
 const destination = new URL('../examples/', import.meta.url);
 await mkdir(destination, { recursive:true });
 const payloads = {welcome:welcomePayload(),reminder:reminderPayload(),enabled:enabledPayload(),settings:settingsPayload(),idea:ideaPayload(),home:homePayload(),library:libraryPayload(),break:breakPayload(),methodology:methodologyPayload(),privacy:privacyPayload(),support:supportPayload(),'reminder-intro':reminderIntroPayload(),source:sourcePayload('majlis'),'idea-source':ideaSourcePayload('parents')};
 payloads['feedback-help'] = supportPayload({feedbackEnabled:true});
+payloads['app-launch'] = appLaunchPayload();
 payloads['feedback-suggestion'] = supportPayload({feedbackEnabled:true,suggestion:true});
 payloads.favorites = favoritesPayload({dhikrCount:1,ideaCount:1});
 payloads['home-admin'] = homePayload({inGuild:true,canManageServer:true});
@@ -23,6 +24,7 @@ const serverExample = { ...structuredClone(DEFAULT_SERVER), channelId: '101' };
 const serverExampleEvent = { kind: 'daily', day: '2026-09-25', slot: 0 };
 payloads['server-guide'] = serverGuidePayload(true);
 payloads['server-home'] = serverHomePayload();
+payloads['server-channel'] = serverChannelPayload(DEFAULT_SERVER, '0123456789abcdef');
 payloads['server-draft'] = serverDraftPayload(serverExample, '0123456789abcdef');
 payloads['server-review'] = serverReviewPayload(serverExample, '0123456789abcdef', serverExampleEvent);
 payloads['server-post'] = serverPostPayload(serverExampleEvent);

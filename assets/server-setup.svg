@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="480" viewBox="0 0 1000 480" role="img" aria-labelledby="title desc">
+  <title id="title">قناتان لرفيق</title>
+  <desc id="desc">قناة مثل رفيق الخير لبطاقة البداية والإعدادات، وقناة مثل تذكيرات للأحاديث ومواسم الخير. الأسماء أمثلة فقط. الأمر رفيق سيت أب ينشر البطاقة في القناة الحالية، ثم يختار المشرف قناة التذكيرات.</desc>
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#122821"/><stop offset="1" stop-color="#142028"/></linearGradient></defs>
+  <rect width="1000" height="480" rx="24" fill="url(#bg)"/>
+  <g font-family="Tahoma, Arial, sans-serif" text-anchor="middle" fill="#ecf3ed">
+    <text x="500" y="55" font-size="28" font-weight="700" direction="rtl">رفيق في سيرفرك</text>
+    <text x="500" y="90" font-size="17" fill="#bfd2c8" direction="rtl">بطاقة ثابتة للبداية، وقناة للمنشورات</text>
+    <rect x="540" y="125" width="405" height="230" rx="18" fill="#20382f" stroke="#65ac89" stroke-width="2"/>
+    <text x="742" y="175" font-size="29" font-weight="700" direction="rtl">#رفيق الخير</text>
+    <text x="742" y="212" font-size="18" direction="rtl">بطاقة البداية · ثبّتها هنا</text>
+    <text x="742" y="249" font-size="20" fill="#b4dfc6">/rafiq-setup</text>
+    <rect x="623" y="275" width="240" height="48" rx="10" fill="#00814b"/>
+    <text x="742" y="306" font-size="19" font-weight="700" direction="rtl">إعداد سيرفرك</text>
+    <path d="M521 242H480M489 232l-11 10 11 10" fill="none" stroke="#93bfa7" stroke-width="3" stroke-linecap="round"/>
+    <rect x="55" y="125" width="405" height="230" rx="18" fill="#203039" stroke="#8aaec4" stroke-width="2"/>
+    <text x="258" y="175" font-size="29" font-weight="700" direction="rtl">#تذكيرات</text>
+    <text x="258" y="220" font-size="19" direction="rtl">أحاديث كاملة مع مصادرها</text>
+    <text x="258" y="258" font-size="19" direction="rtl">ومواسم الخير</text>
+    <text x="258" y="305" font-size="17" fill="#bfd2c8" direction="rtl">بالمحتوى والمواعيد التي تختارها</text>
+    <text x="500" y="402" font-size="19" direction="rtl">١ · قناة التذكيرات     ←     ٢ · المحتوى والمواعيد     ←     ٣ · المراجعة والتشغيل</text>
+    <text x="500" y="445" font-size="16" fill="#bfd2c8" direction="rtl">الأسماء أمثلة فقط؛ يمكن استخدام قنوات موجودة بأي أسماء تناسب سيرفرك</text>
+  </g>
+</svg>

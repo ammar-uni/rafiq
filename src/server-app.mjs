@@ -1,6 +1,6 @@
 import { DEFAULT_SERVER, validateServer, serverTimesForCount, serverId, serverEvents } from './server-config.mjs';
 import { seasonalPreviewEvent } from './seasonal-times.mjs';
-import { serverHomePayload, serverDraftPayload, serverSchedulePayload, serverMentionPayload, serverReviewPayload, serverModal, serverGuidePayload, serverNoticePayload } from './server-messages.mjs';
+import { serverHomePayload, serverChannelPayload, serverDraftPayload, serverSchedulePayload, serverMentionPayload, serverReviewPayload, serverModal, serverGuidePayload, serverNoticePayload } from './server-messages.mjs';
 
 export class ServerApp {
   constructor({ store, checkTarget, now = Date.now, token = () => globalThis.crypto.randomUUID().replaceAll('-', '').slice(0, 16) }) {
@@ -41,19 +41,19 @@ export class ServerApp {
       const token = this.token();
       if (!/^[a-f0-9]{16}$/.test(token)) throw new TypeError('Invalid draft token');
       const p = structuredClone(current);
-      p.channelId ||= this.store.getPanel(guildId)?.channel_id || null;
       this.drafts.set(token, { guildId, userId, p, base: JSON.stringify(current), expires: this.now() + 15 * 60000, reviewed: false });
-      return serverDraftPayload(p, token);
+      return serverChannelPayload(p, token);
     }
     const found = this.draftFor(input);
     if (!found) return serverNoticePayload('انتهت هذه المعاينة', 'ابدأ الإعداد من جديد. لم نغيّر إعدادات السيرفر.');
     const { draft, token, op } = found;
     const p = draft.p;
-    if (op === 'edit') return serverDraftPayload(p, token);
+    if (op === 'channel_step') return serverChannelPayload(p, token);
+    if (op === 'edit') return p.channelId ? serverDraftPayload(p, token) : serverChannelPayload(p, token, 'اختر قناة التذكيرات أولًا.');
     if (op === 'schedule') return serverSchedulePayload(p, token);
     if (op === 'mention') return serverMentionPayload(p, token);
     if (op === 'review' || op === 'save') {
-      if (!p.channelId) return serverDraftPayload(p, token, 'اختر قناة نصية للمنشورات أولًا.');
+      if (!p.channelId) return serverChannelPayload(p, token, 'اختر قناة نصية للتذكيرات أولًا.');
       if (op === 'save' && !draft.reviewed) return serverDraftPayload(p, token, 'راجع الإعدادات قبل الحفظ.');
       if (JSON.stringify(this.store.getServer(guildId)) !== draft.base) {
         this.drafts.delete(token);
@@ -101,9 +101,9 @@ export class ServerApp {
     // Check channel and role permissions before showing the draft as accepted.
     if (['channel', 'role', 'everyone'].includes(op)) {
       const issue = await this.checkTarget({ guildId, userId, preferences: next });
-      if (issue) return op !== 'channel' ? serverMentionPayload(p, token, issue) : serverDraftPayload(p, token, issue);
+      if (issue) return op !== 'channel' ? serverMentionPayload(p, token, issue) : serverChannelPayload(p, token, issue);
     }
     draft.p = next; draft.reviewed = false;
-    return op.startsWith('zone') || op === 'time_save' ? serverSchedulePayload(next, token) : serverDraftPayload(next, token);
+    return op === 'channel' ? serverChannelPayload(next, token) : op.startsWith('zone') || op === 'time_save' ? serverSchedulePayload(next, token) : serverDraftPayload(next, token);
   }
 }
